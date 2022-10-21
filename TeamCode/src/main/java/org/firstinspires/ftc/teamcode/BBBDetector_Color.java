@@ -1,4 +1,6 @@
 package org.firstinspires.ftc.teamcode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import org.opencv.core.CvType;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -17,6 +19,13 @@ import java.util.List;
 
  public class BBBDetector_Color extends OpenCvPipeline{
 
+
+     private double RX;
+     private double RY; // Distance in pixels from the top
+     private double RW;
+     private double RH;
+
+
         /*
          * An enum to define the team element position
          */
@@ -26,103 +35,78 @@ import java.util.List;
             CENTER,
             RIGHT
         }
-        public int detect;
-        // public int Yval;
-       //  public int Cbval;
-       //  public int Crval;
+
+        // This will get the value of the H channel
          public int Hval;
+
         /*
          * Some color constants
          */
         static final Scalar ORANGE = new Scalar(255, 100, 0);
-        //static final Scalar GREEN = new Scalar(0, 255, 0);
-        static final int    RED = 6;
-        static final int    YELLOW = 33;
-        static final int    GREEN = 78;
 
-        // Green
-    // public static Scalar scalarLowerYCrCb = new Scalar(  0.0, 0.0, 0.0);
-    // public static Scalar scalarUpperYCrCb = new Scalar(255.0, 120.0, 120.0);
+        //Position 1 :  Color Range on HSV Chart
+        static final int    Pos1min = 10;
+        static final int    Pos1max = 42;
+        static final String Pos1str = "YELLOW";
 
+        //Position 2 :  Color Range on HSV Chart
+        static final int    Pos2min = 60;
+        static final int    Pos2max = 93;
+        static final String Pos2str = "Green";
 
-        /*
-         * The core values which define the location and size of the sample regions
-         */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(590,460);
-        static final int REGION_WIDTH = 100;
-        static final int REGION_HEIGHT = 200;
+        //Position 3 :  Color Range on HSV Chart
+        static final int    Pos3min = 95;
+        static final int    Pos3max = 125;
+        static final String Pos3str = "Blue";
 
-        /*
-         * Points which actually define the sample region rectangles, derived from above values
-         *
-         * Example of how points A and B work to define a rectangle
-         *
-         *   ------------------------------------
-         *   | (0,0) Point A                    |
-         *   |                                  |
-         *   |                                  |
-         *   |                                  |
-         *   |                                  |
-         *   |                                  |
-         *   |                                  |
-         *   |                  Point B (70,50) |
-         *   ------------------------------------
-         *
-         */
-        Point region1_pointA = new Point(
-                REGION1_TOPLEFT_ANCHOR_POINT.x,
-                REGION1_TOPLEFT_ANCHOR_POINT.y);
-        Point region1_pointB = new Point(
-                REGION1_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-                REGION1_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
-
+     Point region1_pointA; //= new Point(RX-RW/2,RY-RH/2);
+     Point region1_pointB;// = new Point(RX+RW/2,RY+RH/2);
         /*
          * Working variables
          */
-      //  Mat region1_Cb;
-      //  Mat region1_Cr;
-      //  Mat region1_Y;
+
         Mat region1_H;
-      //  Mat YCrCb = new Mat();
-      //  Mat Cr = new Mat();
-      //  Mat Y = new Mat();
-      //  Mat Cb = new Mat();
         Mat H = new Mat();
-      //  Mat processed = new Mat();
         Mat hsv = new Mat();
-        int avg1;
+
 
         // Volatile since accessed by OpMode thread w/o synchronization
-        private volatile BBBDetector_Color.ElementPosition position = BBBDetector_Color.ElementPosition.LEFT;
-        //private volatile int detect = 0;
+        private volatile BBBDetector_Color.ElementPosition position = BBBDetector_Color.ElementPosition.CENTER;
+
 
         /*
-         * This function takes the RGB frame, converts to YCrCb,
-         * and extracts the Cb channel to the 'Cb' variable
+         * This function takes the RGB frame, converts to HSV,
+         * and extracts the H channel to the 'H' variable
          */
-        void inputToCb(Mat input)
+        void inputToH(Mat input)
         {
-          //  Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
             Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-
-            /*Core.extractChannel(YCrCb, Cb, 2);
-            Core.extractChannel(YCrCb, Cr, 1);
-            Core.extractChannel(YCrCb, Y, 0);*/
             Core.extractChannel(hsv, H, 0);
-/*
-            Core.inRange(YCrCb, scalarLowerYCrCb, scalarUpperYCrCb, processed);
-            // Remove Noise
-            Imgproc.morphologyEx(processed, processed, Imgproc.MORPH_OPEN, new Mat());
-            Imgproc.morphologyEx(processed, processed, Imgproc.MORPH_CLOSE, new Mat());
-            // GaussianBlur
-            Imgproc.GaussianBlur(processed, processed, new Size(5.0, 15.0), 0.00);
-            Core.bitwise_and(YCrCb, processed, new Mat());
-*/
         }
+
+     public BBBDetector_Color(double RX,double RY,double RW,double RH) {
+         this.RX = RX;
+         this.RY = RY;
+         this.RW = RW;
+         this.RH = RH;
+     }
+
+     public void configureBorders(double RX, double RY, double RW, double RH) {
+             this.RX = RX;
+             this.RY = RY;
+             this.RW = RW;
+             this.RH = RH;
+     }
 
         @Override
         public void init(Mat firstFrame)
         {
+            /*
+            Region to look at to based on the center point and width and height
+         */
+            region1_pointA = new Point(RX-RW/2,RY-RH/2);
+            region1_pointB = new Point(RX+RW/2,RY+RH/2);
+
             /*
              * We need to call this in order to make sure the 'Cb'
              * object is initialized, so that the submats we make
@@ -132,61 +116,34 @@ import java.util.List;
              * buffer would be re-allocated the first time a real frame
              * was crunched)
              */
-            inputToCb(firstFrame);
+            inputToH(firstFrame);
 
             /*
              * Submats are a persistent reference to a region of the parent
              * buffer. Any changes to the child affect the parent, and the
              * reverse also holds true.
              */
-           /* region1_Cb = Cb.submat(new Rect(region1_pointA, region1_pointB));
-            region1_Cr = Cr.submat(new Rect(region1_pointA, region1_pointB));
-            region1_Y = Y.submat(new Rect(region1_pointA, region1_pointB));*/
+
             region1_H = H.submat(new Rect(region1_pointA, region1_pointB));
         }
 
         @Override
         public Mat processFrame(Mat input)
         {
-            /*
+
+             /*
              * Overview of what we're doing:
              *
-             * We first convert to YCrCb color space, from RGB color space.
+             * We first convert to HSV color space, from RGB color space.
              * Why do we do this? Well, in the RGB color space, chroma and
-             * luma are intertwined. In YCrCb, chroma and luma are separated.
-             * YCrCb is a 3-channel color space, just like RGB. YCrCb's 3 channels
-             * are Y, the luma channel (which essentially just a B&W image), the
-             * Cr channel, which records the difference from red, and the Cb channel,
-             * which records the difference from blue. Because chroma and luma are
-             * not related in YCrCb, vision code written to look for certain values
-             * in the Cr/Cb channels will not be severely affected by differing
-             * light intensity, since that difference would most likely just be
-             * reflected in the Y channel.
-             *
-             * After we've converted to YCrCb, we extract just the 2nd channel, the
-             * Cb channel. We do this because stones are bright yellow and contrast
-             * STRONGLY on the Cb channel against everything else, including SkyStones
-             * (because SkyStones have a black label).
-             *
-             * We then take the average pixel value of 3 different regions on that Cb
-             * channel, one positioned over each stone. The brightest of the 3 regions
-             * is where we assume the SkyStone to be, since the normal stones show up
-             * extremely darkly.
-             *
-             * We also draw rectangles on the screen showing where the sample regions
-             * are, as well as drawing a solid rectangle over top the sample region
-             * we believe is on top of the SkyStone.
-             *
-             * In order for this whole process to work correctly, each sample region
-             * should be positioned in the center of each of the first 3 stones, and
-             * be small enough such that only the stone is sampled, and not any of the
-             * surroundings.
+             * luma are intertwined.
+             * Check a small region of the frame and see in what range of color of H it falls in
              */
 
             /*
-             * Get the Cb channel of the input frame after conversion to YCrCb
+             * Get the H channel of the input frame after conversion to HSV
              */
-            inputToCb(input);
+            inputToH(input);
 
             /*
              * Compute the average pixel value of each submat region. We're
@@ -196,9 +153,6 @@ import java.util.List;
              * at index 2 here.
              */
 
-            //Cbval = (int) Core.mean(region1_Cb).val[0];
-           // Crval = (int) Core.mean(region1_Cr).val[0];
-           // Yval = (int) Core.mean(region1_Y).val[0];
             Hval = (int) Core.mean(region1_H).val[0];
 
             /*
@@ -216,50 +170,23 @@ import java.util.List;
              * Draw a solid rectangle on top of the chosen region.
              * Simply a visual aid. Serves no functional purpose.
              */
-            // Adding Text
-           /* Imgproc.putText (
-                    input,                          // Matrix obj of the image
-                    "Cb: "+ String.valueOf(Cbval),          // Text to be added
-                    new Point (590,400),               // point
-                    3,      // front face
-                    .75,                               // front scale
-                    new Scalar(0, 0, 0),             // Scalar object for color
-                    2                                // Thickness
-            );
-            Imgproc.putText (
-                    input,                          // Matrix obj of the image
-                    "Cr: "+ String.valueOf(Crval),          // Text to be added
-                    new Point (590,420),               // point
-                    3,      // front face
-                    .75,                               // front scale
-                    new Scalar(0, 0, 0),             // Scalar object for color
-                    2                                // Thickness
-            );
-            Imgproc.putText (
-                    input,                          // Matrix obj of the image
-                    "Y: "+ String.valueOf(Yval),          // Text to be added
-                    new Point (590,440),               // point
-                    3,      // front face
-                    .75,                               // front scale
-                    new Scalar(0, 0, 0),             // Scalar object for color
-                    2                                // Thickness
-            );*/
+            // Adding Text with the H Value
             Imgproc.putText (
                     input,                          // Matrix obj of the image
                     "H: "+ String.valueOf(Hval),          // Text to be added
-                    REGION1_TOPLEFT_ANCHOR_POINT,               // point
+                    new Point (RX ,RY),               // point
                     3,      // front face
                     .75,                               // front scale
                     new Scalar(0, 0, 0),             // Scalar object for color
                     2                                // Thickness
             );
 
-          if (Hval < RED)
+          if (Hval < Pos1max && Hval > Pos1min)
             {
                 Imgproc.putText (
                         input,                          // Matrix obj of the image
-                        "RED",          // Text to be added
-                        new Point (590,440),               // point
+                        Pos1str,          // Text to be added
+                        new Point (RX ,RY+30),               // point
                         3,      // front face
                         .75,                               // front scale
                         new Scalar(0, 0, 0),             // Scalar object for color
@@ -267,44 +194,34 @@ import java.util.List;
                 );
                 position = ElementPosition.LEFT;
             }
-          else if (Hval < YELLOW) {
+          else if (Hval < Pos2max && Hval > Pos2min) {
               Imgproc.putText(
                       input,                          // Matrix obj of the image
-                      "Yellow",          // Text to be added
-                      new Point(590, 440),               // point
+                      Pos2str,          // Text to be added
+                      new Point (RX ,RY+30),               // point
                       3,      // front face
                       .75,                               // front scale
                       new Scalar(0, 0, 0),             // Scalar object for color
                       2                                // Thickness
               );
+              position = ElementPosition.CENTER;
           }
-          else if (Hval < GREEN)
+          else if (Hval < Pos3max && Hval > Pos3min)
           {
               Imgproc.putText (
                       input,                          // Matrix obj of the image
-                      "GREEN",          // Text to be added
-                      new Point (590,440),               // point
+                      Pos3str,          // Text to be added
+                      new Point (RX ,RY+30),               // point
                       3,      // front face
                       .75,                               // front scale
                       new Scalar(0, 0, 0),             // Scalar object for color
                       2                                // Thickness
               );
+              position = ElementPosition.RIGHT;
 
           }
-/*
-if hue_value < 5:
-color = "RED"
-elif hue_value < 22:
-color = "ORANGE"
-elif hue_value < 33:
-color = "YELLOW"
-elif hue_value < 78:
-color = "GREEN"
-elif hue_value < 131:
-color = "BLUE"
-elif hue_value < 170:
-color = "VIOLET"
 
+            /*
              * Render the 'input' buffer to the viewport. But note this is not
              * simply rendering the raw camera feed, because we called functions
              * to add some annotations to this buffer earlier up.

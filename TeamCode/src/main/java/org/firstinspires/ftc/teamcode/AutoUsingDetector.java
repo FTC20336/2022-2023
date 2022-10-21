@@ -16,29 +16,14 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 public class AutoUsingDetector extends LinearOpMode {
     private OpenCvCamera webcam;
 
+
     private static final int CAMERA_WIDTH  = 1280; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 720; // height of wanted camera resolution
 
-    private double CrLowerUpdate = 160;
-    private double CbLowerUpdate = 100;
-    private double CrUpperUpdate = 255;
-    private double CbUpperUpdate = 255;
-
-    public static double borderLeftX    = 0.2;   //fraction of pixels from the left side of the cam to skip
-    public static double borderRightX   = 0.2;   //fraction of pixels from the right of the cam to skip
-    public static double borderTopY     = 0.0;   //fraction of pixels from the top of the cam to skip
-    public static double borderBottomY  = 0.0;   //fraction of pixels from the bottom of the cam to skip
-
-    private double lowerruntime = 0;
-    private double upperruntime = 0;
-
-    // Color1 Range   Green                                   Y      Cr     Cb
-    public static Scalar scalarLowerYCrCb = new Scalar(  0.0, 0.0, 0.0);
-    public static Scalar scalarUpperYCrCb = new Scalar(255.0, 120.0, 120.0);
-
-    // Yellow Range
-   // public static Scalar scalarLowerYCrCb = new Scalar(0.0, 100.0, 0.0);
-    //public static Scalar scalarUpperYCrCb = new Scalar(255.0, 170.0, 120.0);
+    private static double RegionCenterX = CAMERA_WIDTH/2;
+    private static double RegionCenterY = 360; // Distance in pixels from the top
+    private static double RegionWidth = 50;
+    private static double RegionHeight = 50;
 
     @Override
     public void runOpMode()
@@ -46,9 +31,10 @@ public class AutoUsingDetector extends LinearOpMode {
         // OpenCV webcam
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"), cameraMonitorViewId);
+
         //OpenCV Pipeline
         BBBDetector_Color myPipeline;
-        webcam.setPipeline(myPipeline = new BBBDetector_Color());
+        webcam.setPipeline(myPipeline = new BBBDetector_Color(RegionCenterX, RegionCenterY, RegionWidth, RegionHeight));
 
         // Webcam Streaming
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -75,20 +61,19 @@ public class AutoUsingDetector extends LinearOpMode {
 
             telemetry.addData("Detector Results:" , myPipeline.getAnalysis() );
             telemetry.update();
-/*
-            if(myPipeline.getRectArea() > 2000){
-                if(myPipeline.getRectMidpointX() > 400){
-                    AUTONOMOUS_C();
-                }
-                else if(myPipeline.getRectMidpointX() > 200){
-                    AUTONOMOUS_B();
-                }
-                else {
-                    AUTONOMOUS_A();
-                }
+
+
+            if( myPipeline.getAnalysis() == BBBDetector_Color.ElementPosition.RIGHT ){
+                AUTONOMOUS_C();
+            }
+            else if(myPipeline.getAnalysis() == BBBDetector_Color.ElementPosition.CENTER){
+                AUTONOMOUS_B();
+            }
+            else {
+                AUTONOMOUS_A();
             }
 
- */
+
         }
     }
     public void AUTONOMOUS_A(){
