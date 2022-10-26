@@ -48,12 +48,14 @@ public class AutoUsingDetector extends LinearOpMode {
             @Override
             public void onError(int errorCode)
             {
+                telemetry.addLine("Camera Opening Error !!!!!");
+                telemetry.update();
                 /*
                  * This will be called if the camera could not be opened
                  */
             }
         });
-
+        telemetry.addData("Push Camera Stream and push screen to update image.. Align the square to the cone","");
         telemetry.update();
         waitForStart();
 

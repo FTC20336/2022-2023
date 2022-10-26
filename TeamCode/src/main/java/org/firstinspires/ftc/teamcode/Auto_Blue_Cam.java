@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,7 +20,7 @@ import org.opencv.core.Core;
 import org.opencv.core.Rect;
 
 
-
+@Disabled
 @Autonomous(name="Autonomous Blue Position 1 Webcam 2", group="Pushbot")
 
 public class Auto_Blue_Cam extends LinearOpMode {

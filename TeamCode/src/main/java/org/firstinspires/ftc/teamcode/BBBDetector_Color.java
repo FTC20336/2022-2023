@@ -45,12 +45,12 @@ import java.util.List;
         static final Scalar ORANGE = new Scalar(255, 100, 0);
 
         //Position 1 :  Color Range on HSV Chart
-        static final int    Pos1min = 10;
+        static final int    Pos1min = 1;
         static final int    Pos1max = 42;
         static final String Pos1str = "YELLOW";
 
         //Position 2 :  Color Range on HSV Chart
-        static final int    Pos2min = 60;
+        static final int    Pos2min = 43;
         static final int    Pos2max = 93;
         static final String Pos2str = "Green";
 
@@ -181,7 +181,7 @@ import java.util.List;
                     2                                // Thickness
             );
 
-          if (Hval < Pos1max && Hval > Pos1min)
+          if (Hval <= Pos1max && Hval >= Pos1min)
             {
                 Imgproc.putText (
                         input,                          // Matrix obj of the image
@@ -194,7 +194,7 @@ import java.util.List;
                 );
                 position = ElementPosition.LEFT;
             }
-          else if (Hval < Pos2max && Hval > Pos2min) {
+          else if (Hval <= Pos2max && Hval >= Pos2min) {
               Imgproc.putText(
                       input,                          // Matrix obj of the image
                       Pos2str,          // Text to be added
@@ -206,7 +206,7 @@ import java.util.List;
               );
               position = ElementPosition.CENTER;
           }
-          else if (Hval < Pos3max && Hval > Pos3min)
+          else if (Hval <= Pos3max && Hval >= Pos3min)
           {
               Imgproc.putText (
                       input,                          // Matrix obj of the image
