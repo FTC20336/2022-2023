@@ -3,23 +3,25 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class RobotArm {
 
-    public DcMotorEx Arm;
-    public DcMotorEx ArmJoint;
-    public CRServo Claw;
+    public DcMotorEx SwingyArmMotor;
+    public DcMotorEx ViperSlideMotor;
+    public Servo Claw;
 
-    static private double GEAR_3_RATIO = 2.89;
+    /*static private double GEAR_3_RATIO = 2.89;
     static private double GEAR_4_RATIO = 3.61;
-    static private double GEAR_5_RATIO = 5.23;
+    static private double GEAR_5_RATIO = 5.23;*/
+    static private double SWING_ARM_RATIO = 188;
+    static private double VIPER_SLIDE_RATIO = 19.2;
 
-    static double COUNT_PER_DEGREE_ARM = 28 * GEAR_3_RATIO * GEAR_4_RATIO * GEAR_5_RATIO * (125.0 / 30.0) * (90.0 / 45.0) / 360;
-    static double COUNT_PER_DEGREE_ARMJOINT = 28 * GEAR_3_RATIO * GEAR_4_RATIO * GEAR_5_RATIO / 360;
+    static double COUNT_PER_DEGREE_ARM = 28 * SWING_ARM_RATIO / 360;
+    static double COUNT_PER_DEGREE_SLIDE = 28 * VIPER_SLIDE_RATIO / 360;
 
     // Local OpMode members
     HardwareMap hwMap = null;
@@ -32,31 +34,35 @@ public class RobotArm {
 
     }
     // Negative Value Closes the Claw
-    public void ClawGrab(long timeout)
+    public void ClawGrab(long timeout, int repeat)
     {
-        Claw.setPower(-.25);
+        if (repeat == 0)
+            repeat = 1;
+        Claw.setPosition(Claw.getPosition() + (0.002 * repeat));
         if (timeout >= 0)
             MyOp.sleep(timeout);
     }
-    public void ClawOpen(long timeout){
-
+    public void ClawOpen(long timeout, int repeat){
+        if (repeat == 0)
+            repeat = 1;
+        Claw.setPosition(Claw.getPosition() - (0.002 * repeat));
         if (timeout >= 0)
             MyOp.sleep(timeout);
     }
     public void ClawStop( long timeout){
-        Claw.setPower(0);
+        Claw.setPosition(Claw.getPosition());
         if (timeout >= 0)
             MyOp.sleep(timeout);
     }
 
 
-    public void ArmSetPos(double angle, double speed, long timeout){
-        Arm.setTargetPosition( (int) (angle *COUNT_PER_DEGREE_ARM) );
-        Arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Arm.setVelocity(speed * COUNT_PER_DEGREE_ARM);
+    public void SwingyArmSetPos(double angle, double speed, long timeout){
+        SwingyArmMotor.setTargetPosition( (int) (angle *COUNT_PER_DEGREE_ARM) );
+        SwingyArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        SwingyArmMotor.setVelocity(speed * COUNT_PER_DEGREE_ARM);
 
         if (timeout < 0 ){
-            while (MyOp.opModeIsActive() && Arm.isBusy())
+            while (MyOp.opModeIsActive() && SwingyArmMotor.isBusy())
             {}
 
             MyOp.sleep(Math.abs(timeout));
@@ -64,12 +70,12 @@ public class RobotArm {
 
     }
 
-    public void ArmJointSetPos(double angle, double speed, long timeout){
-        ArmJoint.setTargetPosition( (int) (angle * COUNT_PER_DEGREE_ARMJOINT) );
-        ArmJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        ArmJoint.setVelocity(speed * COUNT_PER_DEGREE_ARMJOINT);
+    public void ArmJointSetPos(double length, double speed, long timeout){
+        ViperSlideMotor.setTargetPosition( (int) (length * COUNT_PER_DEGREE_SLIDE) );
+        ViperSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        ViperSlideMotor.setVelocity(speed * COUNT_PER_DEGREE_SLIDE);
         if (timeout < 0 ){
-            while (MyOp.opModeIsActive() && Arm.isBusy())
+            while (MyOp.opModeIsActive() && SwingyArmMotor.isBusy())
             {}
         }
         else {
@@ -91,14 +97,20 @@ public class RobotArm {
         hwMap = ahwMap;
         MyOp = MyOpin;
 
-        ArmJoint = hwMap.get(DcMotorEx.class, "arm joint");
-        Arm = hwMap.get(DcMotorEx.class, "arm");
-        Claw = hwMap.get(CRServo.class, "claw");
+        ViperSlideMotor = hwMap.get(DcMotorEx.class, "ViperSlideMotor");
+        SwingyArmMotor = hwMap.get(DcMotorEx.class, "SwingyArmMotor");
+        Claw = hwMap.get(Servo.class, "claw");
 
         // Reverse one of the drive motors.
-        ArmJoint.setDirection(DcMotorEx.Direction.REVERSE);
+        ViperSlideMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        Arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        ArmJoint.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        SwingyArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        ViperSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        SwingyArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ViperSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        SwingyArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ViperSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }
