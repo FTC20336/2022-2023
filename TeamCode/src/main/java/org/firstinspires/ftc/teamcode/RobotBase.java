@@ -9,19 +9,19 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 public class RobotBase {
 
   //May have to make these public
-  public DcMotorEx MotorRight;
-  public DcMotorEx MotorLeft;
-  public DcMotorEx frontRightWheel;
-  public DcMotorEx frontLeftMotor;
-  public DcMotorEx TopWheel;
+  public DcMotorEx LeftFront;
+  public DcMotorEx LeftBack;
+  public DcMotorEx RightFront;
+  public DcMotorEx RightBack;
   public RobotArm BeepArm= new RobotArm();
 
   static private double PI = 3.141592;
-  static private double CIRCUMFERENCE = 76 / 25.4 * PI;
-  static private double GEAR_3_RATIO = 2.89;
+  static private double CIRCUMFERENCE = 96 / 25.4 * PI;
+  /*static private double GEAR_3_RATIO = 2.89;
   static private double GEAR_4_RATIO = 3.61;
-  static private double GEAR_5_RATIO = 5.23;
-  static private double COUNTS_PER_IN_DRIVE = 28 * GEAR_3_RATIO * GEAR_4_RATIO * GEAR_3_RATIO / CIRCUMFERENCE;
+  static private double GEAR_5_RATIO = 5.23;*/
+  static private double MOTOR_GEAR_RATIO = 19.2;
+  static private double COUNTS_PER_IN_DRIVE = 28 * MOTOR_GEAR_RATIO / CIRCUMFERENCE;
 
   // How Many Encoder Tick for a 360 turn with all wheel turning
   static private double COUNT_PER_360_ROTATE = 6300;
@@ -37,52 +37,34 @@ public class RobotBase {
 
   }
 
-  public void DuckWheelRed(){
-    DuckWheel(-.5);
-  }
-
-  public void DuckWheelBlue(){
-    DuckWheel(.5);
-  }
-
-
-  // Direction.. -1 Spins Wheel for Red Position
-//              1 Spins Wheel for Blue Position
-  private void DuckWheel(double Direction){
-    TopWheel.setPower (Direction);
-  }
-
-  public void DuckWheelStop(){
-    TopWheel.setPower (0);
-  }
 
   // Distance in inches
   // Speed in inches/sec
   public void move(double distance, double speed, long timeout) {
-    MotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    MotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    frontRightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    RightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    LeftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    LeftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    RightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-    MotorRight.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
-    MotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    MotorRight.setVelocity(COUNTS_PER_IN_DRIVE * speed); // Set Velocity is in Ticks per Second
+    RightBack.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+    RightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    RightBack.setVelocity(COUNTS_PER_IN_DRIVE * speed); // Set Velocity is in Ticks per Second
 
-    frontLeftMotor.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
-    frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    frontLeftMotor.setVelocity(COUNTS_PER_IN_DRIVE * speed);
+    LeftFront.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+    LeftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    LeftFront.setVelocity(COUNTS_PER_IN_DRIVE * speed);
 
-    frontRightWheel.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
-    frontRightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    frontRightWheel.setVelocity(COUNTS_PER_IN_DRIVE * speed);
-
-
-    MotorLeft.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
-    MotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    MotorLeft.setVelocity(COUNTS_PER_IN_DRIVE * speed);
+    RightFront.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+    RightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    RightFront.setVelocity(COUNTS_PER_IN_DRIVE * speed);
 
 
-    while (MyOp.opModeIsActive() && ( MotorLeft.isBusy() || MotorRight.isBusy() || frontLeftMotor.isBusy() || frontRightWheel.isBusy()))
+    LeftBack.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+    LeftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    LeftBack.setVelocity(COUNTS_PER_IN_DRIVE * speed);
+
+
+    while (MyOp.opModeIsActive() && ( LeftBack.isBusy() || RightBack.isBusy() || LeftFront.isBusy() || RightFront.isBusy()))
     {}
 
     MyOp.sleep(Math.abs(timeout));
@@ -93,28 +75,28 @@ public class RobotBase {
   // Degrees and degrees per sec
   public void rotate(double angle, double speed, long timeout) {
 
-    MotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    MotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    frontRightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    RightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    LeftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    LeftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    RightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-    MotorRight.setTargetPosition((int) ((angle / 360) * COUNT_PER_360_ROTATE));
-    MotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    MotorRight.setVelocity(speed * COUNT_PER_360_ROTATE_SPEED);
+    RightBack.setTargetPosition((int) ((angle / 360) * COUNT_PER_360_ROTATE));
+    RightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    RightBack.setVelocity(speed * COUNT_PER_360_ROTATE_SPEED);
 
-    MotorLeft.setTargetPosition((int) ((-angle / 360) * COUNT_PER_360_ROTATE));
-    MotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    MotorLeft.setVelocity(speed * COUNT_PER_360_ROTATE_SPEED);
+    LeftBack.setTargetPosition((int) ((-angle / 360) * COUNT_PER_360_ROTATE));
+    LeftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    LeftBack.setVelocity(speed * COUNT_PER_360_ROTATE_SPEED);
 
-    frontRightWheel.setTargetPosition((int) ((angle / 360) * COUNT_PER_360_ROTATE));
-    frontRightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    frontRightWheel.setVelocity(speed * COUNT_PER_360_ROTATE_SPEED);
+    RightFront.setTargetPosition((int) ((angle / 360) * COUNT_PER_360_ROTATE));
+    RightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    RightFront.setVelocity(speed * COUNT_PER_360_ROTATE_SPEED);
 
-    frontLeftMotor.setTargetPosition((int) ((-angle / 360) * COUNT_PER_360_ROTATE));
-    frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    frontLeftMotor.setVelocity(speed * COUNT_PER_360_ROTATE_SPEED);
+    LeftFront.setTargetPosition((int) ((-angle / 360) * COUNT_PER_360_ROTATE));
+    LeftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    LeftFront.setVelocity(speed * COUNT_PER_360_ROTATE_SPEED);
 
-    while (MyOp.opModeIsActive() && ( MotorLeft.isBusy() || MotorRight.isBusy() || frontLeftMotor.isBusy() || frontRightWheel.isBusy()))
+    while (MyOp.opModeIsActive() && ( LeftBack.isBusy() || RightBack.isBusy() || LeftFront.isBusy() || RightFront.isBusy()))
     {}
 
     MyOp.sleep(Math.abs(timeout));
@@ -126,33 +108,33 @@ public class RobotBase {
   public void strafe(double distance, double angle, double speed, long timeout) {
 
 
-    MotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    MotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    frontRightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    RightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    LeftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    LeftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    RightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
     double y = Math.cos(angle * PI / 180) * speed;
     double x = Math.sin(angle * PI / 180) * speed;
     double dy = Math.cos(angle * PI / 180) * distance;
     double dx = Math.sin(angle * PI / 180) * distance;
 
-    MotorRight.setTargetPosition((int) ((dy + dx) * COUNTS_PER_IN_DRIVE)); // Set Velocity is in Ticks per Second
-    frontLeftMotor.setTargetPosition((int) ((dy + dx) * COUNTS_PER_IN_DRIVE));
-    frontRightWheel.setTargetPosition((int) ((dy - dx) * COUNTS_PER_IN_DRIVE));
-    MotorLeft.setTargetPosition((int) ((dy - dx) * COUNTS_PER_IN_DRIVE));
+    RightBack.setTargetPosition((int) ((dy + dx) * COUNTS_PER_IN_DRIVE)); // Set Velocity is in Ticks per Second
+    LeftFront.setTargetPosition((int) ((dy + dx) * COUNTS_PER_IN_DRIVE));
+    RightFront.setTargetPosition((int) ((dy - dx) * COUNTS_PER_IN_DRIVE));
+    LeftBack.setTargetPosition((int) ((dy - dx) * COUNTS_PER_IN_DRIVE));
 
-    MotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    frontRightWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    MotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    RightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    LeftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    RightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    LeftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-    MotorRight.setVelocity((y + x) * COUNTS_PER_IN_DRIVE); // Set Velocity is in Ticks per Second
-    frontLeftMotor.setVelocity((y + x) * COUNTS_PER_IN_DRIVE);
-    frontRightWheel.setVelocity((y - x) * COUNTS_PER_IN_DRIVE);
-    MotorLeft.setVelocity((y - x) * COUNTS_PER_IN_DRIVE);
+    RightBack.setVelocity((y + x) * COUNTS_PER_IN_DRIVE); // Set Velocity is in Ticks per Second
+    LeftFront.setVelocity((y + x) * COUNTS_PER_IN_DRIVE);
+    RightFront.setVelocity((y - x) * COUNTS_PER_IN_DRIVE);
+    LeftBack.setVelocity((y - x) * COUNTS_PER_IN_DRIVE);
 
 
-    while (MyOp.opModeIsActive() && ( MotorLeft.isBusy() || MotorRight.isBusy() || frontLeftMotor.isBusy() || frontRightWheel.isBusy()))
+    while (MyOp.opModeIsActive() && ( LeftBack.isBusy() || RightBack.isBusy() || LeftFront.isBusy() || RightFront.isBusy()))
     {}
 
     MyOp.sleep(Math.abs(timeout));
@@ -174,23 +156,22 @@ public class RobotBase {
 
     // Define and Initialize Motors.  Assign Names that match the setup on the DriverHub
 
-    MotorLeft = hwMap.get(DcMotorEx.class, "MotorLeft");
-    MotorRight = hwMap.get(DcMotorEx.class, "MotorRight");
-    frontLeftMotor = hwMap.get(DcMotorEx.class, "frontLeftMotor");
-    frontRightWheel = hwMap.get(DcMotorEx.class, "frontRightWheel");
-    TopWheel = hwMap.get(DcMotorEx.class, "topwheelmotor");
+    LeftBack = hwMap.get(DcMotorEx.class, "LeftBack");
+    RightBack = hwMap.get(DcMotorEx.class, "RightBack");
+    LeftFront = hwMap.get(DcMotorEx.class, "LeftFront");
+    RightFront = hwMap.get(DcMotorEx.class, "RightFront");
 
 
     // Reverse one of the drive motors.
-    frontRightWheel.setDirection(DcMotorEx.Direction.FORWARD);
-    frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-    MotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
-    MotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+    RightFront.setDirection(DcMotorEx.Direction.FORWARD);
+    LeftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+    RightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+    LeftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
-    MotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    MotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    frontRightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    RightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    LeftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    LeftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    RightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
   }
 }
