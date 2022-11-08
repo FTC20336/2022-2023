@@ -70,7 +70,7 @@ public class RobotArm {
 
     }
 
-    public void ArmJointSetPos(double length, double speed, long timeout){
+    public void ViperSlideSetPos(double length, double speed, long timeout){
         ViperSlideMotor.setTargetPosition( (int) (length * COUNT_PER_DEGREE_SLIDE) );
         ViperSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         ViperSlideMotor.setVelocity(speed * COUNT_PER_DEGREE_SLIDE);

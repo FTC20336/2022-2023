@@ -59,7 +59,7 @@ public class AutoUsingDetector extends LinearOpMode {
                  */
             }
         });
-        telemetry.addData("Push Camera Stream and push screen to update image.. Align the square to the cone","");
+        telemetry.addData("Push Camera Stream and tap screen to update image.. Align the square to the cone","");
         telemetry.update();
         waitForStart();
 
@@ -83,15 +83,25 @@ public class AutoUsingDetector extends LinearOpMode {
         }
     }
     public void AUTONOMOUS_A(){
-        telemetry.addLine("Autonomous A");
+        telemetry.addLine("Autonomous A - Yellow - Left");
         telemetry.update();
 
-        Beep.move(6,24,-1);
+        Beep.strafe(24,-90,1, 1000);
+        Beep.move(24, 1, 1000);
     }
     public void AUTONOMOUS_B(){
-        telemetry.addLine("Autonomous B");
+        telemetry.addLine("Autonomous B - Green - Center");
+        telemetry.update();
+
+        Beep.strafe(24,-90,1, 1000);
+        Beep.move(48, 1, 1000);
+        Beep.strafe(24,90,1, 1000);
     }
     public void AUTONOMOUS_C(){
-        telemetry.addLine("Autonomous C");
+        telemetry.addLine("Autonomous C - Blue - Right");
+        telemetry.update();
+
+        Beep.strafe(24,90,1, 1000);
+        Beep.move(24, 1, 1000);
     }
 }
