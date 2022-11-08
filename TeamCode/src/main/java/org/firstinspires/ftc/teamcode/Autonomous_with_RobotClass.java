@@ -3,11 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import org.firstinspires.ftc.teamcode.RobotBase;
 
-@Autonomous(name="Autonomous with RobotClass", group="Auto Blue")
-@Disabled
+@Autonomous(name="Autonomous with RobotClass", group="Auto Test")
+//@Disabled
 public class Autonomous_with_RobotClass extends LinearOpMode {
 
     //Create New Robot based on RobotBase
@@ -36,10 +35,10 @@ public class Autonomous_with_RobotClass extends LinearOpMode {
             // Beep.BeepArm.ArmSetPos(40,60, -1000);
             //Beep.BeepArm.ArmJointSetPos(50,45,0);
 
-            Beep.move(10.5,15,-1);
+           // Beep.move(72,24,-1);
             //Position 1
-            Beep.strafe(28, 90, 15,-6000);
-            Beep.rotate(360,90,0);
+            //Beep.strafe(24, 45, 12,-6000);
+            Beep.rotate(720,90,0);
             //  Beep.move(11.5,20,-1);
 
             //Drop the block on the top level

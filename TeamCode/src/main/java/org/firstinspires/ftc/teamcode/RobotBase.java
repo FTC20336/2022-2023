@@ -22,11 +22,12 @@ public class RobotBase {
   static private double GEAR_5_RATIO = 5.23;*/
   static private double MOTOR_GEAR_RATIO = 19.2;
   static private double COUNTS_PER_IN_DRIVE = 28 * MOTOR_GEAR_RATIO / CIRCUMFERENCE;
+  static private double STRAFE_FACTOR = 1.0;
 
   // How Many Encoder Tick for a 360 turn with all wheel turning
-  static private double COUNT_PER_360_ROTATE = 6300;
+  static private double COUNT_PER_360_ROTATE = 3990;
   // How Many Encoder Tick per second for 1 turn in 1 second with all wheel turning
-  static private double COUNT_PER_360_ROTATE_SPEED = 25.5;
+  static private double COUNT_PER_360_ROTATE_SPEED = 11.5;
 
   // Local OpMode members
   HardwareMap hwMap = null;
@@ -118,10 +119,10 @@ public class RobotBase {
     double dy = Math.cos(angle * PI / 180) * distance;
     double dx = Math.sin(angle * PI / 180) * distance;
 
-    RightBack.setTargetPosition((int) ((dy + dx) * COUNTS_PER_IN_DRIVE)); // Set Velocity is in Ticks per Second
-    LeftFront.setTargetPosition((int) ((dy + dx) * COUNTS_PER_IN_DRIVE));
-    RightFront.setTargetPosition((int) ((dy - dx) * COUNTS_PER_IN_DRIVE));
-    LeftBack.setTargetPosition((int) ((dy - dx) * COUNTS_PER_IN_DRIVE));
+    RightBack.setTargetPosition((int) ((dy + dx) * COUNTS_PER_IN_DRIVE*STRAFE_FACTOR)); // Set Velocity is in Ticks per Second
+    LeftFront.setTargetPosition((int) ((dy + dx) * COUNTS_PER_IN_DRIVE*STRAFE_FACTOR));
+    RightFront.setTargetPosition((int) ((dy - dx) * COUNTS_PER_IN_DRIVE*STRAFE_FACTOR));
+    LeftBack.setTargetPosition((int) ((dy - dx) * COUNTS_PER_IN_DRIVE*STRAFE_FACTOR));
 
     RightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     LeftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -165,7 +166,7 @@ public class RobotBase {
     // Reverse one of the drive motors.
     RightFront.setDirection(DcMotorEx.Direction.FORWARD);
     LeftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-    RightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+    RightBack.setDirection(DcMotorSimple.Direction.FORWARD);
     LeftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
     RightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

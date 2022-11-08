@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-
+import org.firstinspires.ftc.teamcode.RobotBase;
 import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -16,6 +16,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 public class AutoUsingDetector extends LinearOpMode {
     private OpenCvCamera webcam;
 
+    //Create New Robot based on RobotBase
+    RobotBase Beep = new RobotBase();
 
     private static final int CAMERA_WIDTH  = 1280; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 720; // height of wanted camera resolution
@@ -28,6 +30,8 @@ public class AutoUsingDetector extends LinearOpMode {
     @Override
     public void runOpMode()
     {
+        Beep.init(hardwareMap, this);
+
         // OpenCV webcam
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"), cameraMonitorViewId);
@@ -80,6 +84,9 @@ public class AutoUsingDetector extends LinearOpMode {
     }
     public void AUTONOMOUS_A(){
         telemetry.addLine("Autonomous A");
+        telemetry.update();
+
+        Beep.move(6,24,-1);
     }
     public void AUTONOMOUS_B(){
         telemetry.addLine("Autonomous B");
