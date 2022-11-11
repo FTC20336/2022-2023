@@ -37,8 +37,14 @@ public class Autonomous_with_RobotClass extends LinearOpMode {
 
            // Beep.move(72,24,-1);
             //Position 1
-            //Beep.strafe(24, 45, 12,-6000);
-            Beep.rotate(720,90,0);
+            //Beep.strafe(24, 0, 12,0 );
+            //Beep.strafe(24, 45, 12,  0);
+            //Beep.strafe(24, 225, 12,  0);
+            Beep.strafe(24, 0, 12,  0);
+            Beep.strafe(24, 90, 12,  0);
+            Beep.strafe(24, 180, 12,  0);
+            Beep.strafe(24, -90, 12,  0);
+            //Beep.rotate(720,90,0);
             //  Beep.move(11.5,20,-1);
 
             //Drop the block on the top level

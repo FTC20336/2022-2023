@@ -22,7 +22,7 @@ public class RobotBase {
   static private double GEAR_5_RATIO = 5.23;*/
   static private double MOTOR_GEAR_RATIO = 19.2;
   static private double COUNTS_PER_IN_DRIVE = 28 * MOTOR_GEAR_RATIO / CIRCUMFERENCE;
-  static private double STRAFE_FACTOR = 1.17;
+  static private double STRAFE_FACTOR = 1.1;
 
   // How Many Encoder Tick for a 360 turn with all wheel turning
   static private double COUNT_PER_360_ROTATE = 3990;
@@ -114,15 +114,18 @@ public class RobotBase {
     LeftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     RightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-    double y = Math.cos(angle * PI / 180) * speed;
-    double x = Math.sin(angle * PI / 180) * speed;
-    double dy = Math.cos(angle * PI / 180) * distance;
-    double dx = Math.sin(angle * PI / 180) * distance;
+    //Speeds
+    double y = Math.cos( Math.toRadians(angle)) * speed;
+    double x = Math.sin(Math.toRadians(angle)) * speed;
 
-    RightBack.setTargetPosition((int) ((dy + dx) * COUNTS_PER_IN_DRIVE*STRAFE_FACTOR)); // Set Velocity is in Ticks per Second
-    LeftFront.setTargetPosition((int) ((dy + dx) * COUNTS_PER_IN_DRIVE*STRAFE_FACTOR));
-    RightFront.setTargetPosition((int) ((dy - dx) * COUNTS_PER_IN_DRIVE*STRAFE_FACTOR));
-    LeftBack.setTargetPosition((int) ((dy - dx) * COUNTS_PER_IN_DRIVE*STRAFE_FACTOR));
+    //Position
+    double dy = Math.cos(Math.toRadians(angle)) * distance;
+    double dx = Math.sin(Math.toRadians(angle)) * distance * STRAFE_FACTOR;
+
+    RightBack.setTargetPosition((int) ((dy + dx) * COUNTS_PER_IN_DRIVE)); // Set Position is in Ticks per Second
+    LeftFront.setTargetPosition((int) ((dy + dx) * COUNTS_PER_IN_DRIVE));
+    RightFront.setTargetPosition((int) ((dy - dx) * COUNTS_PER_IN_DRIVE));
+    LeftBack.setTargetPosition((int) ((dy - dx) * COUNTS_PER_IN_DRIVE));
 
     RightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     LeftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -133,6 +136,56 @@ public class RobotBase {
     LeftFront.setVelocity((y + x) * COUNTS_PER_IN_DRIVE);
     RightFront.setVelocity((y - x) * COUNTS_PER_IN_DRIVE);
     LeftBack.setVelocity((y - x) * COUNTS_PER_IN_DRIVE);
+
+
+    while (MyOp.opModeIsActive() && ( LeftBack.isBusy() || RightBack.isBusy() || LeftFront.isBusy() || RightFront.isBusy()))
+    {}
+
+    MyOp.sleep(Math.abs(timeout));
+
+
+
+  }
+
+
+  public void strafe2(double distance, double angle, double speed, double rotateangle, long timeout) {
+
+
+    RightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    LeftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    LeftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    RightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+    //Speeds
+    double y = Math.cos( Math.toRadians(angle)) * speed;
+    double x = Math.sin(Math.toRadians(angle)) * speed * STRAFE_FACTOR;
+
+    double xrotated = x;//  - y ;
+    double yrotated = y ;// - y ;
+    double rxs = rotateangle ;// * speed;
+
+    //Position
+    double dy = Math.cos(Math.toRadians(angle)) * distance;
+    double dx = Math.sin(Math.toRadians(angle)) * distance * STRAFE_FACTOR;
+
+    double xrotateds = dx ;//- dy ;
+    double yrotateds = dy ;// - dy ;
+    double rx = rotateangle ;// * speed;
+
+    RightBack.setTargetPosition((int) ((yrotateds + xrotateds - rx) * COUNTS_PER_IN_DRIVE*STRAFE_FACTOR)); // Set Velocity is in Ticks per Second
+    LeftFront.setTargetPosition((int) ((yrotateds + xrotateds + rx) * COUNTS_PER_IN_DRIVE*STRAFE_FACTOR));
+    RightFront.setTargetPosition((int) ((yrotateds - xrotateds - rx) * COUNTS_PER_IN_DRIVE*STRAFE_FACTOR));
+    LeftBack.setTargetPosition((int) ((yrotateds - xrotateds + rx) * COUNTS_PER_IN_DRIVE*STRAFE_FACTOR));
+
+    RightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    LeftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    RightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    LeftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    RightBack.setVelocity((yrotated + xrotated - rxs ) * COUNTS_PER_IN_DRIVE); // Set Velocity is in Ticks per Second
+    LeftFront.setVelocity((yrotated + xrotated + rxs ) * COUNTS_PER_IN_DRIVE);
+    RightFront.setVelocity((yrotated - xrotated - rxs) * COUNTS_PER_IN_DRIVE);
+    LeftBack.setVelocity((yrotated - xrotated + rxs) * COUNTS_PER_IN_DRIVE);
 
 
     while (MyOp.opModeIsActive() && ( LeftBack.isBusy() || RightBack.isBusy() || LeftFront.isBusy() || RightFront.isBusy()))

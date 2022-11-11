@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import java.util.Stack;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -20,7 +22,7 @@ import org.opencv.core.Core;
 import org.opencv.core.Rect;
 
 
-
+@Disabled
 @Autonomous(name="Autonomous Red Position 2 Webcam", group="Red Pos")
 
 public class Autonomous_Red_2_Webcam extends LinearOpMode {

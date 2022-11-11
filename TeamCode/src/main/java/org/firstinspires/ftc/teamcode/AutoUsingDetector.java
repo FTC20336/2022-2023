@@ -18,7 +18,6 @@ public class AutoUsingDetector extends LinearOpMode {
 
     //Create New Robot based on RobotBase
     RobotBase Beep = new RobotBase();
-
     private static final int CAMERA_WIDTH  = 1280; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 720; // height of wanted camera resolution
 
@@ -78,7 +77,8 @@ public class AutoUsingDetector extends LinearOpMode {
             else {
                 AUTONOMOUS_A();
             }
-
+            // Get out that loop so we don't fetch the cone like a dog
+            break;
 
         }
     }
@@ -88,6 +88,7 @@ public class AutoUsingDetector extends LinearOpMode {
 
         Beep.strafe(24,-90,1, 1000);
         Beep.move(24, 1, 1000);
+
     }
     public void AUTONOMOUS_B(){
         telemetry.addLine("Autonomous B - Green - Center");
