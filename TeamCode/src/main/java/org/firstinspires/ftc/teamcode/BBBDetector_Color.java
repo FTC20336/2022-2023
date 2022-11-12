@@ -1,22 +1,15 @@
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-import org.opencv.core.CvType;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
+@Disabled
  public class BBBDetector_Color extends OpenCvPipeline{
 
 
@@ -25,7 +18,7 @@ import java.util.List;
      private double RW;
      private double RH;
 
-
+     public int dummy;
         /*
          * An enum to define the team element position
          */
@@ -46,18 +39,18 @@ import java.util.List;
 
         //Position 1 :  Color Range on HSV Chart
         static final int    Pos1min = 1;
-        static final int    Pos1max = 42;
-        static final String Pos1str = "YELLOW";
+        static final int    Pos1max = 47;
+        static final String Pos1str = "Yellow - Left";
 
         //Position 2 :  Color Range on HSV Chart
-        static final int    Pos2min = 43;
+        static final int    Pos2min = Pos1max+1;
         static final int    Pos2max = 93;
-        static final String Pos2str = "Green";
+        static final String Pos2str = "Green - Center";
 
         //Position 3 :  Color Range on HSV Chart
-        static final int    Pos3min = 95;
+        static final int    Pos3min = Pos2max+1;
         static final int    Pos3max = 125;
-        static final String Pos3str = "Blue";
+        static final String Pos3str = "Blue - Right";
 
      Point region1_pointA; //= new Point(RX-RW/2,RY-RH/2);
      Point region1_pointB;// = new Point(RX+RW/2,RY+RH/2);
@@ -71,7 +64,7 @@ import java.util.List;
 
 
         // Volatile since accessed by OpMode thread w/o synchronization
-        private volatile BBBDetector_Color.ElementPosition position = BBBDetector_Color.ElementPosition.CENTER;
+        public volatile ElementPosition position = ElementPosition.LEFT;
 
 
         /*
@@ -176,7 +169,7 @@ import java.util.List;
                     "H: "+ String.valueOf(Hval),          // Text to be added
                     new Point (RX ,RY),               // point
                     3,      // front face
-                    .75,                               // front scale
+                    2,                               // front scale
                     new Scalar(0, 0, 0),             // Scalar object for color
                     2                                // Thickness
             );
@@ -186,9 +179,9 @@ import java.util.List;
                 Imgproc.putText (
                         input,                          // Matrix obj of the image
                         Pos1str,          // Text to be added
-                        new Point (RX ,RY+30),               // point
+                        new Point (RX ,RY+80),               // point
                         3,      // front face
-                        .75,                               // front scale
+                        2,                               // front scale
                         new Scalar(0, 0, 0),             // Scalar object for color
                         2                                // Thickness
                 );
@@ -198,9 +191,9 @@ import java.util.List;
               Imgproc.putText(
                       input,                          // Matrix obj of the image
                       Pos2str,          // Text to be added
-                      new Point (RX ,RY+30),               // point
+                      new Point (RX ,RY+80),               // point
                       3,      // front face
-                      .75,                               // front scale
+                      2,                               // front scale
                       new Scalar(0, 0, 0),             // Scalar object for color
                       2                                // Thickness
               );
@@ -211,9 +204,9 @@ import java.util.List;
               Imgproc.putText (
                       input,                          // Matrix obj of the image
                       Pos3str,          // Text to be added
-                      new Point (RX ,RY+30),               // point
+                      new Point (RX ,RY+80),               // point
                       3,      // front face
-                      .75,                               // front scale
+                      2,                               // front scale
                       new Scalar(0, 0, 0),             // Scalar object for color
                       2                                // Thickness
               );

@@ -22,7 +22,7 @@ public class RobotBase {
   static private double GEAR_5_RATIO = 5.23;*/
   static private double MOTOR_GEAR_RATIO = 19.2;
   static private double COUNTS_PER_IN_DRIVE = 28 * MOTOR_GEAR_RATIO / CIRCUMFERENCE;
-  static private double STRAFE_FACTOR = 1.1;
+  static private double STRAFE_FACTOR = 1.12;
 
   // How Many Encoder Tick for a 360 turn with all wheel turning
   static private double COUNT_PER_360_ROTATE = 3990;

@@ -6,10 +6,16 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.RobotBase;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous(name="AutoUsingDetector", group="Tutorials")
 
@@ -18,17 +24,18 @@ public class AutoUsingDetector extends LinearOpMode {
 
     //Create New Robot based on RobotBase
     RobotBase Beep = new RobotBase();
-    private static final int CAMERA_WIDTH  = 1280; // width  of wanted camera resolution
+    private static final int CAMERA_WIDTH = 1280; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 720; // height of wanted camera resolution
 
-    private static double RegionCenterX = CAMERA_WIDTH/2;
+    private static double RegionCenterX = 850;
     private static double RegionCenterY = 360; // Distance in pixels from the top
     private static double RegionWidth = 50;
     private static double RegionHeight = 50;
 
+    private BBBDetector_Color.ElementPosition ParkingPos;
+
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() {
         Beep.init(hardwareMap, this);
 
         // OpenCV webcam
@@ -40,17 +47,14 @@ public class AutoUsingDetector extends LinearOpMode {
         webcam.setPipeline(myPipeline = new BBBDetector_Color(RegionCenterX, RegionCenterY, RegionWidth, RegionHeight));
 
         // Webcam Streaming
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened()
-            {
+            public void onOpened() {
                 webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
-            public void onError(int errorCode)
-            {
+            public void onError(int errorCode) {
                 telemetry.addLine("Camera Opening Error !!!!!");
                 telemetry.update();
                 /*
@@ -58,51 +62,47 @@ public class AutoUsingDetector extends LinearOpMode {
                  */
             }
         });
-        telemetry.addData("Push Camera Stream and tap screen to update image.. Align the square to the cone","");
+        telemetry.addData("Push Camera Stream and tap screen to update image \nAlign the square to the cone \n \n Wait at least 5 Sec before Pressing Start", "");
         telemetry.update();
+
         waitForStart();
 
-        while (opModeIsActive()) {
 
-            telemetry.addData("Detector Results:" , myPipeline.getAnalysis() );
-            telemetry.update();
+        ParkingPos = myPipeline.getAnalysis();
 
-
-            if( myPipeline.getAnalysis() == BBBDetector_Color.ElementPosition.RIGHT ){
-                AUTONOMOUS_C();
-            }
-            else if(myPipeline.getAnalysis() == BBBDetector_Color.ElementPosition.CENTER){
-                AUTONOMOUS_B();
-            }
-            else {
-                AUTONOMOUS_A();
-            }
-            // Get out that loop so we don't fetch the cone like a dog
-            break;
-
+        if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
+            AUTONOMOUS_C();
+        } else if (ParkingPos == BBBDetector_Color.ElementPosition.CENTER) {
+            AUTONOMOUS_B();
+        } else if (ParkingPos == BBBDetector_Color.ElementPosition.LEFT) {
+            AUTONOMOUS_A();
         }
+
     }
-    public void AUTONOMOUS_A(){
+
+    public void AUTONOMOUS_A() {
         telemetry.addLine("Autonomous A - Yellow - Left");
         telemetry.update();
 
-        Beep.strafe(24,-90,1, 1000);
-        Beep.move(24, 1, 1000);
+        Beep.strafe(27, -85, 12, 0);
+        Beep.move(24, 12, 0);
 
     }
-    public void AUTONOMOUS_B(){
+
+    public void AUTONOMOUS_B() {
         telemetry.addLine("Autonomous B - Green - Center");
         telemetry.update();
 
-        Beep.strafe(24,-90,1, 1000);
-        Beep.move(48, 1, 1000);
-        Beep.strafe(24,90,1, 1000);
+        Beep.strafe(27, -85, 12, 0);
+        Beep.move(48, 12, 0);
+        Beep.strafe(24, 90, 12, 0);
     }
-    public void AUTONOMOUS_C(){
+
+    public void AUTONOMOUS_C() {
         telemetry.addLine("Autonomous C - Blue - Right");
         telemetry.update();
 
-        Beep.strafe(24,90,1, 1000);
-        Beep.move(24, 1, 1000);
+        Beep.strafe(26, 90, 12, 0);
+        Beep.move(24, 12, 0);
     }
 }
