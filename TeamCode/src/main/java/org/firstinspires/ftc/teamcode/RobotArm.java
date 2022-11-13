@@ -23,6 +23,8 @@ public class RobotArm {
     static double COUNT_PER_DEGREE_ARM = 28 * SWING_ARM_RATIO / 360;
     static double COUNT_PER_DEGREE_SLIDE = 28 * VIPER_SLIDE_RATIO / 360;
 
+    static double SLIDE_TURN_PER_INCH = (38.4 / 8.7) * 28;
+
     // Local OpMode members
     HardwareMap hwMap = null;
 
@@ -71,9 +73,9 @@ public class RobotArm {
     }
 
     public void ViperSlideSetPos(double length, double speed, long timeout){
-        ViperSlideMotor.setTargetPosition( (int) (length * COUNT_PER_DEGREE_SLIDE) );
+        ViperSlideMotor.setTargetPosition( (int) (length * SLIDE_TURN_PER_INCH) );
         ViperSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        ViperSlideMotor.setVelocity(speed * COUNT_PER_DEGREE_SLIDE);
+        ViperSlideMotor.setVelocity(speed * SLIDE_TURN_PER_INCH);
         if (timeout < 0 ){
             while (MyOp.opModeIsActive() && SwingyArmMotor.isBusy())
             {}
@@ -103,6 +105,7 @@ public class RobotArm {
 
         // Reverse one of the drive motors.
         ViperSlideMotor.setDirection(DcMotor.Direction.REVERSE);
+        SwingyArmMotor.setDirection(DcMotor.Direction.REVERSE);
 
         SwingyArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         ViperSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

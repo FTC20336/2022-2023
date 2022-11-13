@@ -73,9 +73,9 @@ public class AutoUsingDetector extends LinearOpMode {
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
             AUTONOMOUS_C();
         } else if (ParkingPos == BBBDetector_Color.ElementPosition.CENTER) {
-            AUTONOMOUS_B();
+            AUTONOMOUS_C();
         } else if (ParkingPos == BBBDetector_Color.ElementPosition.LEFT) {
-            AUTONOMOUS_A();
+            AUTONOMOUS_C();
         }
 
     }
@@ -84,9 +84,13 @@ public class AutoUsingDetector extends LinearOpMode {
         telemetry.addLine("Autonomous A - Yellow - Left");
         telemetry.update();
 
+        Beep.BeepArm.ClawGrab(0, 2);
         Beep.strafe(27, -85, 12, 0);
         Beep.move(24, 12, 0);
-
+        Beep.BeepArm.SwingyArmSetPos(Beep.BeepArm.SwingyArmMotor.getCurrentPosition(), 0, 0);
+        Beep.BeepArm.ViperSlideSetPos(Beep.BeepArm.ViperSlideMotor.getCurrentPosition(), 0, 0);
+        Beep.BeepArm.ClawOpen(0, 2);
+        Beep.BeepArm.ViperSlideSetPos(Beep.BeepArm.ViperSlideMotor.getCurrentPosition(), 0, 0);
     }
 
     public void AUTONOMOUS_B() {
@@ -102,7 +106,20 @@ public class AutoUsingDetector extends LinearOpMode {
         telemetry.addLine("Autonomous C - Blue - Right");
         telemetry.update();
 
-        Beep.strafe(26, 90, 12, 0);
-        Beep.move(24, 12, 0);
+        //Beep.BeepArm.ClawGrab(0, 2);
+        //Beep.strafe(26, 90, 12, 0);
+        //Beep.move(24, 12, 0);
+        //Beep.BeepArm.SwingyArmSetPos(90, 50, 1000);
+        //Beep.BeepArm.SwingyArmSetPos(Beep.BeepArm.SwingyArmMotor.getCurrentPosition(), 20, -1);
+        telemetry.addLine("Arm Swung");
+        telemetry.update();
+        Beep.BeepArm.ViperSlideSetPos(30,20, 1000);
+        telemetry.addLine("Slide Extended");
+        telemetry.update();
+        //Beep.BeepArm.ClawOpen(0, 2);
+        //Beep.BeepArm.ViperSlideSetPos(0, 20, 1000);
+        telemetry.addLine("Slide Retracted");
+        telemetry.update();
+
     }
 }
