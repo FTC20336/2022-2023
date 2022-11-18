@@ -24,10 +24,13 @@ public class AutoUsingDetector extends LinearOpMode {
 
     //Create New Robot based on RobotBase
     RobotBase Beep = new RobotBase();
+
+    // Dont really need to change this.
     private static final int CAMERA_WIDTH = 1280; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 720; // height of wanted camera resolution
 
-    private static double RegionCenterX = 850;
+    // Change these values to move the little square/region where we check what color we see
+    private static double RegionCenterX = 850; // Distance in pixels from the Left
     private static double RegionCenterY = 360; // Distance in pixels from the top
     private static double RegionWidth = 50;
     private static double RegionHeight = 50;
@@ -62,20 +65,21 @@ public class AutoUsingDetector extends LinearOpMode {
                  */
             }
         });
+
         telemetry.addData("Push Camera Stream and tap screen to update image \nAlign the square to the cone \n \n Wait at least 5 Sec before Pressing Start", "");
         telemetry.update();
 
         waitForStart();
 
-
+        // Get the latest frame analyzed result
         ParkingPos = myPipeline.getAnalysis();
 
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
             AUTONOMOUS_C();
         } else if (ParkingPos == BBBDetector_Color.ElementPosition.CENTER) {
-            AUTONOMOUS_C();
+            AUTONOMOUS_B();
         } else if (ParkingPos == BBBDetector_Color.ElementPosition.LEFT) {
-            AUTONOMOUS_C();
+            AUTONOMOUS_A();
         }
 
     }
@@ -87,7 +91,6 @@ public class AutoUsingDetector extends LinearOpMode {
         Beep.BeepArm.ClawGrab(0, 2);
         Beep.strafe(27, -85, 12, 0);
         Beep.move(24, 12, 0);
-        Beep.BeepArm.SwingyArmSetPos(Beep.BeepArm.SwingyArmMotor.getCurrentPosition(), 0, 0);
         Beep.BeepArm.ViperSlideSetPos(Beep.BeepArm.ViperSlideMotor.getCurrentPosition(), 0, 0);
         Beep.BeepArm.ClawOpen(0, 2);
         Beep.BeepArm.ViperSlideSetPos(Beep.BeepArm.ViperSlideMotor.getCurrentPosition(), 0, 0);
@@ -106,20 +109,16 @@ public class AutoUsingDetector extends LinearOpMode {
         telemetry.addLine("Autonomous C - Blue - Right");
         telemetry.update();
 
-        //Beep.BeepArm.ClawGrab(0, 2);
+        Beep.BeepArm.ClawFullClose(750);
         //Beep.strafe(26, 90, 12, 0);
         //Beep.move(24, 12, 0);
-        //Beep.BeepArm.SwingyArmSetPos(90, 50, 1000);
-        //Beep.BeepArm.SwingyArmSetPos(Beep.BeepArm.SwingyArmMotor.getCurrentPosition(), 20, -1);
-        telemetry.addLine("Arm Swung");
-        telemetry.update();
+
         Beep.BeepArm.ViperSlideSetPos(30,20, 1000);
-        telemetry.addLine("Slide Extended");
-        telemetry.update();
         //Beep.BeepArm.ClawOpen(0, 2);
         //Beep.BeepArm.ViperSlideSetPos(0, 20, 1000);
         telemetry.addLine("Slide Retracted");
         telemetry.update();
+        Beep.move(24, 6, 4000);
 
     }
 }

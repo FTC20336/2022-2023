@@ -10,13 +10,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class RobotArm {
 
-    public DcMotorEx SwingyArmMotor;
+
     public DcMotorEx ViperSlideMotor;
     public Servo Claw;
-
-    /*static private double GEAR_3_RATIO = 2.89;
-    static private double GEAR_4_RATIO = 3.61;
-    static private double GEAR_5_RATIO = 5.23;*/
+    static private double CLAW_FULL_OPEN_POS = 0.194;
     static private double SWING_ARM_RATIO = 188;
     static private double VIPER_SLIDE_RATIO = 19.2;
 
@@ -27,7 +24,6 @@ public class RobotArm {
 
     // Local OpMode members
     HardwareMap hwMap = null;
-
     LinearOpMode MyOp = null;
 
 
@@ -44,20 +40,44 @@ public class RobotArm {
         if (timeout >= 0)
             MyOp.sleep(timeout);
     }
-    public void ClawOpen(long timeout, int repeat){
+    public void ClawOpen(long timeout, int repeat)
+    {
         if (repeat == 0)
             repeat = 1;
         Claw.setPosition(Claw.getPosition() - (0.002 * repeat));
         if (timeout >= 0)
             MyOp.sleep(timeout);
     }
-    public void ClawStop( long timeout){
+    public void ClawFullOpen(long timeout)
+    {
+        Claw.setPosition(0);
+        if (timeout >= 0)
+            MyOp.sleep(timeout);
+    }
+    public void ClawFullClose(long timeout)
+    {
+        Claw.setPosition(CLAW_FULL_OPEN_POS);
+        if (timeout >= 0)
+            MyOp.sleep(timeout);
+    }
+
+    public void ClawToPos(double position, long timeout)
+    {
+        if (position > 0 || position < CLAW_FULL_OPEN_POS) {
+            Claw.setPosition(position);
+        }
+        if (timeout >= 0)
+            MyOp.sleep(timeout);
+    }
+
+    public void ClawStop( long timeout)
+            {
         Claw.setPosition(Claw.getPosition());
         if (timeout >= 0)
             MyOp.sleep(timeout);
     }
 
-
+/*
     public void SwingyArmSetPos(double angle, double speed, long timeout){
         SwingyArmMotor.setTargetPosition( (int) (angle *COUNT_PER_DEGREE_ARM) );
         SwingyArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -71,13 +91,13 @@ public class RobotArm {
         }
 
     }
-
+*/
     public void ViperSlideSetPos(double length, double speed, long timeout){
         ViperSlideMotor.setTargetPosition( (int) (length * SLIDE_TURN_PER_INCH) );
         ViperSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         ViperSlideMotor.setVelocity(speed * SLIDE_TURN_PER_INCH);
         if (timeout < 0 ){
-            while (MyOp.opModeIsActive() && SwingyArmMotor.isBusy())
+            while (MyOp.opModeIsActive() && ViperSlideMotor.isBusy())
             {}
         }
         else {
@@ -86,13 +106,7 @@ public class RobotArm {
     }
 
 
-    public void ArmGetPosition(){}
 
-    public void ArmJointGetPosition(){}
-
-    public void ArmResetEncoder(){}
-
-    public void ArmJointResetEncoder(){}
 
     public void init(HardwareMap ahwMap, LinearOpMode MyOpin) {
         // Save reference to Hardware map
@@ -100,20 +114,20 @@ public class RobotArm {
         MyOp = MyOpin;
 
         ViperSlideMotor = hwMap.get(DcMotorEx.class, "ViperSlideMotor");
-        SwingyArmMotor = hwMap.get(DcMotorEx.class, "SwingyArmMotor");
+       // SwingyArmMotor = hwMap.get(DcMotorEx.class, "SwingyArmMotor");
         Claw = hwMap.get(Servo.class, "claw");
 
         // Reverse one of the drive motors.
         ViperSlideMotor.setDirection(DcMotor.Direction.REVERSE);
-        SwingyArmMotor.setDirection(DcMotor.Direction.REVERSE);
+        //SwingyArmMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        SwingyArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+      //  SwingyArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         ViperSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        SwingyArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+       // SwingyArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         ViperSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        SwingyArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+       // SwingyArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         ViperSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }
