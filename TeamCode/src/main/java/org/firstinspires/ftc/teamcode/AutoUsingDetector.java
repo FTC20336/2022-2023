@@ -30,8 +30,8 @@ public class AutoUsingDetector extends LinearOpMode {
     private static final int CAMERA_HEIGHT = 720; // height of wanted camera resolution
 
     // Change these values to move the little square/region where we check what color we see
-    private static double RegionCenterX = 850; // Distance in pixels from the Left
-    private static double RegionCenterY = 360; // Distance in pixels from the top
+    private static double RegionCenterX = 875; // Distance in pixels from the Left
+    private static double RegionCenterY = 340; // Distance in pixels from the top
     private static double RegionWidth = 50;
     private static double RegionHeight = 50;
 
@@ -88,12 +88,17 @@ public class AutoUsingDetector extends LinearOpMode {
         telemetry.addLine("Autonomous A - Yellow - Left");
         telemetry.update();
 
-        Beep.BeepArm.ClawGrab(0, 2);
-        Beep.strafe(27, -85, 12, 0);
-        Beep.move(24, 12, 0);
-        Beep.BeepArm.ViperSlideSetPos(Beep.BeepArm.ViperSlideMotor.getCurrentPosition(), 0, 0);
-        Beep.BeepArm.ClawOpen(0, 2);
-        Beep.BeepArm.ViperSlideSetPos(Beep.BeepArm.ViperSlideMotor.getCurrentPosition(), 0, 0);
+        Beep.BeepArm.ClawFullClose(750);
+        Beep.BeepArm.ViperSlideSetPos(34,20, 1000);
+        Beep.strafe(22, -80, 18, 0);
+        Beep.move(24, 18, 0);
+        Beep.strafe(11, -90, 18, 0);
+        Beep.move(6, 18, 0);
+        Beep.BeepArm.ViperSlideSetPos(30, 6, 750);
+        Beep.BeepArm.ClawFullOpen(750);
+        Beep.move(-4, 24, 0);
+        Beep.strafe(12, 90, 12, 0);
+        Beep.BeepArm.ViperSlideSetPos(0, 12, 0);
     }
 
     public void AUTONOMOUS_B() {
