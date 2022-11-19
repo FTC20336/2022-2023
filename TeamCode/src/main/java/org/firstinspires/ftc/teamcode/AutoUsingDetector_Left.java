@@ -5,21 +5,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.RobotBase;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 
-@Autonomous(name="AutoUsingDetector", group="Tutorials")
+@Autonomous(name="AutoUsingDetector_Left", group="Tutorials")
 
-public class AutoUsingDetector extends LinearOpMode {
+public class AutoUsingDetector_Left extends LinearOpMode {
     private OpenCvCamera webcam;
 
     //Create New Robot based on RobotBase
@@ -75,55 +67,59 @@ public class AutoUsingDetector extends LinearOpMode {
         ParkingPos = myPipeline.getAnalysis();
 
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
-            AUTONOMOUS_C();
+            AUTONOMOUS_A();
         } else if (ParkingPos == BBBDetector_Color.ElementPosition.CENTER) {
             AUTONOMOUS_B();
         } else if (ParkingPos == BBBDetector_Color.ElementPosition.LEFT) {
-            AUTONOMOUS_A();
+            AUTONOMOUS_C();
         }
 
     }
 
-    public void AUTONOMOUS_A() {
-        telemetry.addLine("Autonomous A - Yellow - Left");
-        telemetry.update();
-
+    public void DropCone(){
         Beep.BeepArm.ClawFullClose(750);
-        Beep.BeepArm.ViperSlideSetPos(34,20, 1000);
-        Beep.strafe(22, -80, 18, 0);
-        Beep.move(24, 18, 0);
-        Beep.strafe(11, -90, 18, 0);
-        Beep.move(6, 18, 0);
+        Beep.BeepArm.ViperSlideSetPos(2,20, 1000);
+        Beep.strafe(30, 80, 18, 0);
+        Beep.move(23, 18, 0);
+        // Viper up but don't wait while strafing
+        Beep.BeepArm.ViperSlideSetPos(34,20, 0);
+        Beep.strafe(12.5, 90, 18, 0);
+        Beep.move(4, 18, 0);
         Beep.BeepArm.ViperSlideSetPos(30, 6, 750);
         Beep.BeepArm.ClawFullOpen(750);
         Beep.move(-4, 24, 0);
-        Beep.strafe(12, 90, 12, 0);
-        Beep.BeepArm.ViperSlideSetPos(0, 12, 0);
+    }
+
+
+    public void AUTONOMOUS_A() {
+        telemetry.addLine("Autonomous A - Blue - Right");
+        telemetry.update();
+        DropCone();
+
+        Beep.strafe(14, -90, 12, 0);
+        Beep.BeepArm.ViperSlideSetPos(0, 20, 4000);
     }
 
     public void AUTONOMOUS_B() {
         telemetry.addLine("Autonomous B - Green - Center");
         telemetry.update();
 
-        Beep.strafe(27, -85, 12, 0);
-        Beep.move(48, 12, 0);
-        Beep.strafe(24, 90, 12, 0);
+        DropCone();
+        Beep.strafe(16, -90, 12, 0);
+        Beep.move(21, 18, 0);
+        Beep.strafe(24, -90, 12, 0);
+        Beep.BeepArm.ViperSlideSetPos(0, 2000, 4000);
     }
 
     public void AUTONOMOUS_C() {
-        telemetry.addLine("Autonomous C - Blue - Right");
+        telemetry.addLine("Autonomous C - Yellow - Left");
         telemetry.update();
 
-        Beep.BeepArm.ClawFullClose(750);
-        //Beep.strafe(26, 90, 12, 0);
-        //Beep.move(24, 12, 0);
-
-        Beep.BeepArm.ViperSlideSetPos(30,20, 1000);
-        //Beep.BeepArm.ClawOpen(0, 2);
-        //Beep.BeepArm.ViperSlideSetPos(0, 20, 1000);
-        telemetry.addLine("Slide Retracted");
-        telemetry.update();
-        Beep.move(24, 6, 4000);
+        DropCone();
+        Beep.strafe(16, -90, 12, 0);
+        Beep.move(21, 18, 0);
+        Beep.strafe(46, -90, 12, 0);
+        Beep.BeepArm.ViperSlideSetPos(0, 20, 4000);
 
     }
 }
