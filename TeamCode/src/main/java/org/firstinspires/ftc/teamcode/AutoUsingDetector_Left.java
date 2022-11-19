@@ -79,11 +79,11 @@ public class AutoUsingDetector_Left extends LinearOpMode {
     public void DropCone(){
         Beep.BeepArm.ClawFullClose(750);
         Beep.BeepArm.ViperSlideSetPos(2,20, 1000);
-        Beep.strafe(30, 80, 18, 0);
+        Beep.strafe(28, 80, 18, 0);
         Beep.move(23, 18, 0);
         // Viper up but don't wait while strafing
         Beep.BeepArm.ViperSlideSetPos(34,20, 0);
-        Beep.strafe(12.5, 90, 18, 0);
+        Beep.strafe(15, 90, 18, 0);
         Beep.move(4, 18, 0);
         Beep.BeepArm.ViperSlideSetPos(30, 6, 750);
         Beep.BeepArm.ClawFullOpen(750);
@@ -105,9 +105,9 @@ public class AutoUsingDetector_Left extends LinearOpMode {
         telemetry.update();
 
         DropCone();
-        Beep.strafe(16, -90, 12, 0);
+        Beep.strafe(14, -90, 12, 0);
         Beep.move(21, 18, 0);
-        Beep.strafe(24, -90, 12, 0);
+        Beep.strafe(25, -90, 12, 0);
         Beep.BeepArm.ViperSlideSetPos(0, 2000, 4000);
     }
 
@@ -116,7 +116,7 @@ public class AutoUsingDetector_Left extends LinearOpMode {
         telemetry.update();
 
         DropCone();
-        Beep.strafe(16, -90, 12, 0);
+        Beep.strafe(14, -90, 12, 0);
         Beep.move(21, 18, 0);
         Beep.strafe(46, -90, 12, 0);
         Beep.BeepArm.ViperSlideSetPos(0, 20, 4000);
