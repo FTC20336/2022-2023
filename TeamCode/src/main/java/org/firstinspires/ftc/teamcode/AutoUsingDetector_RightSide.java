@@ -97,17 +97,15 @@ public class AutoUsingDetector_RightSide extends LinearOpMode {
         Beep.move(24, 24, 0);*/
         DropCone();
         Beep.strafe(11.5, 90, 18, 0);
-        Beep.move(16, 28, 0);
+        Beep.move(28, 28, 0);
+        Beep.rotate(-90, 90, 0);
+        Beep.move(12, 48, 0);
         for (int i = 0; i <= iters; i++) {
-            Beep.move(12, 28, 0);
-            Beep.rotate(-90, 90, 0);
-            Beep.move(48, 48, 0);
+            Beep.move(36, 48, 0);
             Beep.BeepArm.ClawFullClose(0);
             Beep.BeepArm.ViperSlideSetPos(2, 20, 0);
-            Beep.strafe(4, 180, 4, 0);
-            Beep.rotate(180, 180, 0);
-            Beep.move(44, 44, 0);
-            Beep.strafe(12, -90, 12, 0);
+            Beep.strafe(36, 180, 4, 0);
+            Beep.rotate(90, 180, 0);
             Beep.BeepArm.ViperSlideSetPos(34, 20, 0);
             Beep.BeepArm.ClawFullOpen(0);
             Beep.rotate(-90, 90, 0);
@@ -121,6 +119,7 @@ public class AutoUsingDetector_RightSide extends LinearOpMode {
         telemetry.update();
         DropCone();
 
+        Beep.strafe(12, 180, 12, 0)
         Beep.BeepArm.ViperSlideSetPos(0, 30, 4000);
     }
 
@@ -130,8 +129,7 @@ public class AutoUsingDetector_RightSide extends LinearOpMode {
 
         DropCone();
 
-        Beep.move(23, 90, 0);
-        Beep.strafe(24, 90, 12, 0);
+        Beep.move(12, 90, 0);
         Beep.BeepArm.ViperSlideSetPos(0, 30, 4000);
     }
 
@@ -141,8 +139,7 @@ public class AutoUsingDetector_RightSide extends LinearOpMode {
 
         DropCone();
 
-        Beep.move(23, 18, 0);
-        Beep.strafe(48, 90, 12, 0);
+        Beep.move(35, 18, 0);
         Beep.BeepArm.ViperSlideSetPos(0, 30, 4000);
 
     }
