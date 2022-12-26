@@ -119,7 +119,7 @@ public class AutoUsingDetector_RightSide extends LinearOpMode {
         telemetry.update();
         DropCone();
 
-        Beep.strafe(12, 180, 12, 0)
+        Beep.strafe(12, 180, 12, 0);
         Beep.BeepArm.ViperSlideSetPos(0, 30, 4000);
     }
 
