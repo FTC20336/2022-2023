@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -12,8 +13,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.RobotBase;
 
+@Config
 @TeleOp(name = "GoBildaMecanumWheelsOP_12292022_JAVA")
 public class GoBildaMecanumWheelsOP_122922_JAVA extends LinearOpMode {
 
@@ -34,7 +38,14 @@ public class GoBildaMecanumWheelsOP_122922_JAVA extends LinearOpMode {
     int SlideMaxPos;
     int PwrCurve;
 
-    RobotBase Beep = new RobotBase();
+    public static double kp = .1;
+    public static double ki = 0;
+    public static double kd = 0;
+
+    static private double COUNT_PER_360_ROTATE = 3990;
+
+    LinearOpMode MyOp = null;
+
 
     /**
      * Describe this function...
@@ -44,6 +55,75 @@ public class GoBildaMecanumWheelsOP_122922_JAVA extends LinearOpMode {
         // plug one of the "new IMU.Parameters" blocks into the parameters socket.
         // Creates a Parameters object for use with an IMU in a REV Robotics Control Hub or Expansion Hub, specifying the hub's orientation on the robot via the direction that the REV Robotics logo is facing and the direction that the USB ports are facing.
         imu_IMU.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.LEFT)));
+    }
+
+    public void rotate2(double angle, double speed, long timeout) {
+        RightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LeftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LeftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        angle *= 2;
+
+        RightBack.setTargetPosition((int) ((angle / 360) * COUNT_PER_360_ROTATE));
+        RightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        LeftBack.setTargetPosition((int) ((-angle / 360) * COUNT_PER_360_ROTATE));
+        LeftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        RightFront.setTargetPosition((int) ((angle / 360) * COUNT_PER_360_ROTATE));
+        RightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        LeftFront.setTargetPosition((int) ((-angle / 360) * COUNT_PER_360_ROTATE));
+        LeftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        YawPitchRollAngles initHeading ;
+
+        initHeading = imu_IMU.getRobotYawPitchRollAngles();
+        double yaw = initHeading.getYaw(AngleUnit.DEGREES);
+        double dt = initHeading.getAcquisitionTime();
+        double prevTime = dt;
+
+
+
+        double previouserror = 0;
+        double integral = 0;
+        double error = angle - yaw;
+        double propertional;
+        double derivative;
+        double output;
+
+        while (error > 0.5) {
+            initHeading = imu_IMU.getRobotYawPitchRollAngles();
+            yaw = initHeading.getYaw(AngleUnit.DEGREES);
+            dt = initHeading.getAcquisitionTime() - prevTime;
+
+            error = angle - yaw;
+            propertional = error;
+            integral += error * dt;
+            derivative = (error - previouserror) / dt;
+
+            output = kp * propertional + ki * integral + kd * derivative;
+
+            RightBack.setPower(output * speed);
+            LeftBack.setPower(output * speed);
+            RightFront.setPower(output * speed);
+            LeftFront.setPower(output * speed);
+
+            previouserror = error;
+        }
+
+        RightBack.setPower(0);
+        LeftBack.setPower(0);
+        RightFront.setPower(0);
+        LeftFront.setPower(0);
+
+        while (MyOp.opModeIsActive() && ( LeftBack.isBusy() || RightBack.isBusy() || LeftFront.isBusy() || RightFront.isBusy()))
+        {}
+
+        MyOp.sleep(Math.abs(timeout));
+
+
     }
 
     /**
@@ -182,7 +262,7 @@ public class GoBildaMecanumWheelsOP_122922_JAVA extends LinearOpMode {
                     GoToPreset(ViperSlidePresets, "Low");
                 }
                 if (gamepad1.dpad_left) {
-                    Beep.rotate2(180, 1, 0);
+                    rotate2(180, 1, 0);
                 }
                 telemetry.addData("Robot Orientation", imu_IMU.getRobotYawPitchRollAngles());
                 telemetry.addData("Ticks", Ticks);
