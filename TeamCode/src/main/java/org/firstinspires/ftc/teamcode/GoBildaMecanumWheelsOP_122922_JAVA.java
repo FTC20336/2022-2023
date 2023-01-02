@@ -111,6 +111,12 @@ public class GoBildaMecanumWheelsOP_122922_JAVA extends LinearOpMode {
             LeftFront.setPower(output * speed);
 
             previouserror = error;
+
+            telemetry.addData("Error", error);
+            telemetry.addData("Heading", imu_IMU.getRobotYawPitchRollAngles());
+            telemetry.addData("Output", output);
+
+
         }
 
         RightBack.setPower(0);
