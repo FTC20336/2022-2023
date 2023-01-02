@@ -8,12 +8,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.SampleMecanumDrive;
 
-@Autonomous(name="AutoUsingDetector_Right", group="Tutorials")
+@Autonomous(name="roadrunnertest", group="Tutorials")
 
 public class roadrunnertest extends LinearOpMode {
     @Override
     public void runOpMode() {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        double startDir = Math.toRadians(90);
 
         Pose2d startPose = new Pose2d(-48, -64, Math.toRadians(90));
 
@@ -45,6 +47,30 @@ public class roadrunnertest extends LinearOpMode {
                 .splineTo(new Vector2d(x2, y2), heading)
                 .build();
          */
+
+        Trajectory trajectory =  drive.trajectoryBuilder(new Pose2d(-36, -64, Math.toRadians(90)))
+                .splineToConstantHeading(new Vector2d(-13, -54), startDir)
+                .lineTo(new Vector2d(-13, -42))
+                .splineToConstantHeading(new Vector2d(0, -32), Math.toRadians(90))
+                //.setTangent(48)
+                .splineToConstantHeading(new Vector2d(-12, -32), 48)
+                .splineTo(new Vector2d(-12, -12), startDir)
+                //.setTangent(22)
+                .splineToLinearHeading(new Pose2d(-56, -12, Math.toRadians(180)), 22)
+                .lineTo(new Vector2d(-60, -12))
+                .lineToSplineHeading(new Pose2d(-24, -8, Math.toRadians(90)))
+                //.waitSeconds(1)
+                .lineToSplineHeading(new Pose2d(-60, -12, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(-24, -8, Math.toRadians(90)))
+                //.waitSeconds(1)
+                .lineToSplineHeading(new Pose2d(-60, -12, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(-24, -8, Math.toRadians(90)))
+                //.waitSeconds(1)
+                .lineToSplineHeading(new Pose2d(-60, -12, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(-24, -8, Math.toRadians(90)))
+                //.waitSeconds(1)
+                .lineToSplineHeading(new Pose2d(-60, -12, Math.toRadians(180)))
+                .build();
 
         waitForStart();
 
