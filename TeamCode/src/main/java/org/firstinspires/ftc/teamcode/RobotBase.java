@@ -1,14 +1,25 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.drawable.GradientDrawable;
+
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
+@Config
 public class RobotBase {
 
   //May have to make these public
+  private IMU imu_IMU;
   public DcMotorEx LeftFront;
   public DcMotorEx LeftBack;
   public DcMotorEx RightFront;
@@ -29,6 +40,10 @@ public class RobotBase {
   // How Many Encoder Tick per second for 1 turn in 1 second with all wheel turning
   static private double COUNT_PER_360_ROTATE_SPEED = 11.5;
 
+  public static double kp = .1;
+  public static double ki = 0;
+  public static double kd = 0;
+
   // Local OpMode members
   HardwareMap hwMap = null;
   LinearOpMode MyOp = null;
@@ -38,6 +53,12 @@ public class RobotBase {
 
   }
 
+  private void SetIMU() {
+    // Initializes the IMU with non-default settings. To use this block,
+    // plug one of the "new IMU.Parameters" blocks into the parameters socket.
+    // Creates a Parameters object for use with an IMU in a REV Robotics Control Hub or Expansion Hub, specifying the hub's orientation on the robot via the direction that the REV Robotics logo is facing and the direction that the USB ports are facing.
+    imu_IMU.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.LEFT)));
+  }
 
   // Distance in inches
   // Speed in inches/sec
@@ -96,6 +117,75 @@ public class RobotBase {
     LeftFront.setTargetPosition((int) ((-angle / 360) * COUNT_PER_360_ROTATE));
     LeftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     LeftFront.setVelocity(speed * COUNT_PER_360_ROTATE_SPEED);
+
+    while (MyOp.opModeIsActive() && ( LeftBack.isBusy() || RightBack.isBusy() || LeftFront.isBusy() || RightFront.isBusy()))
+    {}
+
+    MyOp.sleep(Math.abs(timeout));
+
+
+  }
+
+  public void rotate2(double angle, double speed, long timeout) {
+    RightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    LeftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    LeftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    RightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+    angle *= 2;
+
+    RightBack.setTargetPosition((int) ((angle / 360) * COUNT_PER_360_ROTATE));
+    RightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    LeftBack.setTargetPosition((int) ((-angle / 360) * COUNT_PER_360_ROTATE));
+    LeftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    RightFront.setTargetPosition((int) ((angle / 360) * COUNT_PER_360_ROTATE));
+    RightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    LeftFront.setTargetPosition((int) ((-angle / 360) * COUNT_PER_360_ROTATE));
+    LeftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    YawPitchRollAngles initHeading ;
+
+    initHeading = imu_IMU.getRobotYawPitchRollAngles();
+    double yaw = initHeading.getYaw(AngleUnit.DEGREES);
+    double dt = initHeading.getAcquisitionTime();
+    double prevTime = dt;
+
+
+
+    double previouserror = 0;
+    double integral = 0;
+    double error = angle - yaw;
+    double propertional;
+    double derivative;
+    double output;
+
+    while (error > 0.5) {
+      initHeading = imu_IMU.getRobotYawPitchRollAngles();
+      yaw = initHeading.getYaw(AngleUnit.DEGREES);
+      dt = initHeading.getAcquisitionTime() - prevTime;
+
+      error = angle - yaw;
+      propertional = error;
+      integral += error * dt;
+      derivative = (error - previouserror) / dt;
+
+      output = kp * propertional + ki * integral + kd * derivative;
+
+      RightBack.setPower(output * speed);
+      LeftBack.setPower(output * speed);
+      RightFront.setPower(output * speed);
+      LeftFront.setPower(output * speed);
+
+      previouserror = error;
+    }
+
+    RightBack.setPower(0);
+    LeftBack.setPower(0);
+    RightFront.setPower(0);
+    LeftFront.setPower(0);
 
     while (MyOp.opModeIsActive() && ( LeftBack.isBusy() || RightBack.isBusy() || LeftFront.isBusy() || RightFront.isBusy()))
     {}
@@ -214,6 +304,8 @@ public class RobotBase {
     RightBack = hwMap.get(DcMotorEx.class, "RightBack");
     LeftFront = hwMap.get(DcMotorEx.class, "LeftFront");
     RightFront = hwMap.get(DcMotorEx.class, "RightFront");
+    imu_IMU = hwMap.get(IMU.class, "imu");
+    SetIMU();
 
 
     // Reverse one of the drive motors.
