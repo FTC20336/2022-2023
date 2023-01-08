@@ -13,6 +13,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.RobotBase;
@@ -24,10 +28,10 @@ public class GoBildaMecanumWheelsOP_122922_JAVA extends LinearOpMode {
     private IMU imu_IMU;
     private DcMotor ViperSlideMotor;
     private DigitalChannel green;
-    private DcMotor LeftFront;
-    private DcMotor LeftBack;
-    private DcMotor RightFront;
-    private DcMotor RightBack;
+    private DcMotorEx LeftFront;
+    private DcMotorEx LeftBack;
+    private DcMotorEx RightFront;
+    private DcMotorEx RightBack;
     private Servo claw;
 
     int SlideSpeed;
@@ -41,8 +45,18 @@ public class GoBildaMecanumWheelsOP_122922_JAVA extends LinearOpMode {
     public static double kp = .1;
     public static double ki = 0;
     public static double kd = 0;
+    public static double angle = 180;
+
+    static private double PI = 3.141592;
+    static private double CIRCUMFERENCE = 96 / 25.4 * PI;
+    /*static private double GEAR_3_RATIO = 2.89;
+    static private double GEAR_4_RATIO = 3.61;
+    static private double GEAR_5_RATIO = 5.23;*/
+    static private double MOTOR_GEAR_RATIO = 19.2;
+    static private double COUNTS_PER_IN_DRIVE = 28 * MOTOR_GEAR_RATIO / CIRCUMFERENCE;
 
     static private double COUNT_PER_360_ROTATE = 3990;
+    static private double COUNT_PER_360_ROTATE_SPEED = 11.5;
 
     LinearOpMode MyOp = null;
 
@@ -57,78 +71,59 @@ public class GoBildaMecanumWheelsOP_122922_JAVA extends LinearOpMode {
         imu_IMU.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.LEFT)));
     }
 
-    public void rotate2(double angle, double speed, long timeout) {
-        RightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LeftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LeftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        angle *= 2;
-
+    public void rotate(double angle, double speed, long timeout) {
         RightBack.setTargetPosition((int) ((angle / 360) * COUNT_PER_360_ROTATE));
         RightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RightBack.setVelocity(speed * COUNT_PER_360_ROTATE_SPEED);
 
         LeftBack.setTargetPosition((int) ((-angle / 360) * COUNT_PER_360_ROTATE));
         LeftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LeftBack.setVelocity(speed * COUNT_PER_360_ROTATE_SPEED);
 
         RightFront.setTargetPosition((int) ((angle / 360) * COUNT_PER_360_ROTATE));
         RightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RightFront.setVelocity(speed * COUNT_PER_360_ROTATE_SPEED);
 
         LeftFront.setTargetPosition((int) ((-angle / 360) * COUNT_PER_360_ROTATE));
         LeftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        YawPitchRollAngles initHeading ;
-
-        initHeading = imu_IMU.getRobotYawPitchRollAngles();
-        double yaw = initHeading.getYaw(AngleUnit.DEGREES);
-        double dt = initHeading.getAcquisitionTime();
-        double prevTime = dt;
-
-
-
-        double previouserror = 0;
-        double integral = 0;
-        double error = angle - yaw;
-        double propertional;
-        double derivative;
-        double output;
-
-        while (error > 0.5) {
-            initHeading = imu_IMU.getRobotYawPitchRollAngles();
-            yaw = initHeading.getYaw(AngleUnit.DEGREES);
-            dt = initHeading.getAcquisitionTime() - prevTime;
-
-            error = angle - yaw;
-            propertional = error;
-            integral += error * dt;
-            derivative = (error - previouserror) / dt;
-
-            output = kp * propertional + ki * integral + kd * derivative;
-
-            RightBack.setPower(output * speed);
-            LeftBack.setPower(output * speed);
-            RightFront.setPower(output * speed);
-            LeftFront.setPower(output * speed);
-
-            previouserror = error;
-
-            telemetry.addData("Error", error);
-            telemetry.addData("Heading", imu_IMU.getRobotYawPitchRollAngles());
-            telemetry.addData("Output", output);
-
-
-        }
-
-        RightBack.setPower(0);
-        LeftBack.setPower(0);
-        RightFront.setPower(0);
-        LeftFront.setPower(0);
+        LeftFront.setVelocity(speed * COUNT_PER_360_ROTATE_SPEED);
 
         while (MyOp.opModeIsActive() && ( LeftBack.isBusy() || RightBack.isBusy() || LeftFront.isBusy() || RightFront.isBusy()))
         {}
 
         MyOp.sleep(Math.abs(timeout));
 
+
+    }
+
+    public void move(double distance, double speed, long timeout) {
+        RightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LeftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LeftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        RightBack.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+        RightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RightBack.setVelocity(COUNTS_PER_IN_DRIVE * speed); // Set Velocity is in Ticks per Second
+
+        LeftFront.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+        LeftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LeftFront.setVelocity(COUNTS_PER_IN_DRIVE * speed);
+
+        RightFront.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+        RightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RightFront.setVelocity(COUNTS_PER_IN_DRIVE * speed);
+
+
+        LeftBack.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+        LeftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LeftBack.setVelocity(COUNTS_PER_IN_DRIVE * speed);
+
+
+        while (MyOp.opModeIsActive() && ( LeftBack.isBusy() || RightBack.isBusy() || LeftFront.isBusy() || RightFront.isBusy()))
+        {}
+
+        MyOp.sleep(Math.abs(timeout));
 
     }
 
@@ -169,10 +164,10 @@ public class GoBildaMecanumWheelsOP_122922_JAVA extends LinearOpMode {
         imu_IMU = hardwareMap.get(IMU.class, "imu");
         ViperSlideMotor = hardwareMap.get(DcMotor.class, "ViperSlideMotor");
         green = hardwareMap.get(DigitalChannel.class, "green");
-        LeftFront = hardwareMap.get(DcMotor.class, "LeftFront");
-        LeftBack = hardwareMap.get(DcMotor.class, "LeftBack");
-        RightFront = hardwareMap.get(DcMotor.class, "RightFront");
-        RightBack = hardwareMap.get(DcMotor.class, "RightBack");
+        LeftFront = hardwareMap.get(DcMotorEx.class, "LeftFront");
+        LeftBack = hardwareMap.get(DcMotorEx.class, "LeftBack");
+        RightFront = hardwareMap.get(DcMotorEx.class, "RightFront");
+        RightBack = hardwareMap.get(DcMotorEx.class, "RightBack");
         claw = hardwareMap.get(Servo.class, "claw");
 
         // Put initialization blocks here.
@@ -268,7 +263,8 @@ public class GoBildaMecanumWheelsOP_122922_JAVA extends LinearOpMode {
                     GoToPreset(ViperSlidePresets, "Low");
                 }
                 if (gamepad1.dpad_left) {
-                    rotate2(180, 1, 0);
+                    rotate(180, 180, 0);
+                    move(24, 24, 0);
                 }
                 telemetry.addData("Robot Orientation", imu_IMU.getRobotYawPitchRollAngles());
                 telemetry.addData("Ticks", Ticks);

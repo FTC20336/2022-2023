@@ -8,6 +8,12 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.List;
+
+import java.util.*;
+
 
 @Config
  public class BBBDetector_Contour extends OpenCvPipeline{
@@ -34,6 +40,9 @@ import org.openftc.easyopencv.OpenCvPipeline;
     public Scalar lowHSV = new Scalar(h1, sat1, v1); // lower bound HSV for yellow
     public Scalar highHSV = new Scalar(h2, sat2, v2); // higher bound HSV for yellow
     Mat thresh = new Mat();
+
+    double[] lowThresh = {h1, sat1, v1};
+    double[] highThresh = {h2, sat2, v2};
 
     /**
      *
@@ -65,9 +74,16 @@ import org.openftc.easyopencv.OpenCvPipeline;
         }
 
 
+        lowThresh[0] = h1;
+        lowThresh[1] = sat1;
+        lowThresh[2] = v1;
 
-        lowHSV.set([{h1, sat1, v1}]); // lower bound HSV for yellow
-        highHSV.set({h2, sat2, v2});
+        highThresh[0] = h2;
+        highThresh[1] = sat2;
+        highThresh[2] = v2;
+
+        lowHSV.set(lowThresh);
+        highHSV.set(highThresh);
 
         // We'll get a black and white image. The white regions represent the regular stones.
         // inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
