@@ -8,9 +8,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import java.sql.Array;
-import java.util.ArrayList;
-import java.util.List;
+import org.opencv.core.*;
 
 import java.util.*;
 
@@ -25,9 +23,9 @@ import java.util.*;
     // We create a HSV range for yellow to detect regular stones
     // NOTE: In OpenCV's implementation,
     // Hue values are half the real value
-    public static double h1 = 22;
-    public static double h2 = 45;
-    public static double sat1 = 93;
+    public static double h1 = 15;
+    public static double h2 = 30;
+    public static double sat1 = 100;
     public static double sat2 = 255;
     public static double v1 = 0;
     public static double v2 = 255;
@@ -85,10 +83,12 @@ import java.util.*;
         lowHSV.set(lowThresh);
         highHSV.set(highThresh);
 
+
+
         // We'll get a black and white image. The white regions represent the regular stones.
         // inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
         Core.inRange(mat, lowHSV, highHSV, thresh);
-/*
+
         // Use Canny Edge Detection to find edges
         // you might have to tune the thresholds for hysteresis
         Mat edges = new Mat();
@@ -134,7 +134,7 @@ import java.util.*;
             // since our team's camera can only detect two at a time
             // we will need to scan the next 2 stones
         else location = SkystoneLocation.NONE;
-*/
+
         return thresh; // return the mat with rectangles drawn
     }
 
