@@ -1,33 +1,39 @@
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
+import com.acmerobotics.dashboard.config.Config;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfInt;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-@Disabled
+@Config
  public class BBBDetector_Contour extends OpenCvPipeline{
     enum SkystoneLocation {
         LEFT,
         RIGHT,
         NONE
     }
+    // We create a HSV range for yellow to detect regular stones
+    // NOTE: In OpenCV's implementation,
+    // Hue values are half the real value
+    public static double h1 = 22;
+    public static double h2 = 45;
+    public static double sat1 = 93;
+    public static double sat2 = 255;
+    public static double v1 = 0;
+    public static double v2 = 255;
 
     private int width; // width of the image
     SkystoneLocation location;
+
+    Mat mat = new Mat();
+
+    public Scalar lowHSV = new Scalar(h1, sat1, v1); // lower bound HSV for yellow
+    public Scalar highHSV = new Scalar(h2, sat2, v2); // higher bound HSV for yellow
+    Mat thresh = new Mat();
 
     /**
      *
@@ -48,8 +54,9 @@ import java.util.List;
         // If both are regular stones, it returns NONE to tell the robot to keep looking
 
         // Make a working copy of the input matrix in HSV
-        Mat mat = new Mat();
+
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
+
 
         // if something is wrong, we assume there's no skystone
         if (mat.empty()) {
@@ -57,17 +64,15 @@ import java.util.List;
             return input;
         }
 
-        // We create a HSV range for yellow to detect regular stones
-        // NOTE: In OpenCV's implementation,
-        // Hue values are half the real value
-        Scalar lowHSV = new Scalar(20, 100, 100); // lower bound HSV for yellow
-        Scalar highHSV = new Scalar(30, 255, 255); // higher bound HSV for yellow
-        Mat thresh = new Mat();
+
+
+        lowHSV.set([{h1, sat1, v1}]); // lower bound HSV for yellow
+        highHSV.set({h2, sat2, v2});
 
         // We'll get a black and white image. The white regions represent the regular stones.
         // inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
         Core.inRange(mat, lowHSV, highHSV, thresh);
-
+/*
         // Use Canny Edge Detection to find edges
         // you might have to tune the thresholds for hysteresis
         Mat edges = new Mat();
@@ -113,8 +118,8 @@ import java.util.List;
             // since our team's camera can only detect two at a time
             // we will need to scan the next 2 stones
         else location = SkystoneLocation.NONE;
-
-        return mat; // return the mat with rectangles drawn
+*/
+        return thresh; // return the mat with rectangles drawn
     }
 
  }
