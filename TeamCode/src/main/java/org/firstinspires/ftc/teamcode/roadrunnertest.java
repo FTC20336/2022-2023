@@ -8,6 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.SampleMecanumDrive;
 
+import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequenceBuilder;
+
 @Autonomous(name="roadrunnertest", group="Tutorials")
 
 public class roadrunnertest extends LinearOpMode {
@@ -76,7 +79,7 @@ public class roadrunnertest extends LinearOpMode {
                 .build();
          */
 
-        Trajectory traj = drive.trajectoryBuilder(new Pose2d(-36, -64, Math.toRadians(90)))
+        Trajectory traj = drive.trajectoryBuilder(new Pose2d(-36, -65, Math.toRadians(90)))
                 //.lineToSplineHeading(new Pose2d(-36, -30, Math.toRadians(180)))
                 .splineToLinearHeading(new Pose2d(-30, -30, Math.toRadians(180)), Math.toRadians(180))
                 .build();
@@ -85,11 +88,22 @@ public class roadrunnertest extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(-36, -64, Math.toRadians(180)), Math.toRadians(90))
                 .build();
 
+        TrajectorySequence trajectory  = drive.trajectorySequenceBuilder(new Pose2d(-36, -65, Math.toRadians(90)))
+                .setTangent(Math.toRadians(10))
+
+                .splineToConstantHeading(new Vector2d(-12, -56), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-12, -40), Math.toRadians(90))
+                //.forward(12)
+                //.setTangent(90)
+                .splineToConstantHeading(new Vector2d(0, -32), Math.toRadians(90))
+                .strafeLeft(12)
+                .build();
+
 
         waitForStart();
 
         if (isStopRequested()) return;
-
+/*
         for (double i = 0; i < 2; i++){
             drive.setPoseEstimate(startPose);
             drive.followTrajectory(traj);
@@ -97,6 +111,9 @@ public class roadrunnertest extends LinearOpMode {
             drive.setPoseEstimate(startPose2);
             drive.followTrajectory(traj2);
         }
+        s
+ */
+        drive.followTrajectorySequence(trajectory);
     }
 
 }

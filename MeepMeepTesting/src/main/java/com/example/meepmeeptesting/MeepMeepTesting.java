@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
@@ -8,21 +9,26 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepTesting {
     public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(600);
+        MeepMeep meepMeep = new MeepMeep(800);
 
         double startDir = Math.toRadians(90);
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setDimensions(16, 16)
+                .setDimensions(16, 15)
                 .setConstraints(52.48180821614297, 52.48180821614297, 4.434444427490234, Math.toRadians(184.02607784577722), 13.52)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-36, -64, Math.toRadians(90)))
-                                /*
-                                .strafeRight(24)
-                                .forward(12)
+                        drive.trajectorySequenceBuilder(new Pose2d(-36, -65, Math.toRadians(90)))
+
+                                .setTangent(Math.toRadians(10))
+
+                                .splineToConstantHeading(new Vector2d(-12, -56), Math.toRadians(90))
+                                .splineToConstantHeading(new Vector2d(-12, -40), Math.toRadians(90))
+                                //.forward(12)
+                                //.setTangent(90)
                                 .splineToConstantHeading(new Vector2d(0, -32), Math.toRadians(90))
                                 .strafeLeft(12)
+                                /*
                                 .forward(20)
                                 .lineToLinearHeading(new Pose2d(-56, -12, Math.toRadians(180)))
                                 .forward(4)
@@ -66,13 +72,15 @@ public class MeepMeepTesting {
                                 .lineToSplineHeading(new Pose2d(-24, -8, Math.toRadians(90)))
                                 .lineToSplineHeading(new Pose2d(-60, -12, Math.toRadians(180)))
 
+
+                                .lineToSplineHeading(new Pose2d(-36, -30, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(-36, -64, Math.toRadians(90)))
+                                .lineToSplineHeading(new Pose2d(-36, -30, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(-36, -64, Math.toRadians(90)))
+                                .lineToSplineHeading(new Pose2d(-36, -30, Math.toRadians(180)))
+                                .lineToSplineHeading(new Pose2d(-36, -64, Math.toRadians(90)))
+
                                  */
-                                .lineToSplineHeading(new Pose2d(-36, -30, Math.toRadians(180)))
-                                .lineToSplineHeading(new Pose2d(-36, -64, Math.toRadians(90)))
-                                .lineToSplineHeading(new Pose2d(-36, -30, Math.toRadians(180)))
-                                .lineToSplineHeading(new Pose2d(-36, -64, Math.toRadians(90)))
-                                .lineToSplineHeading(new Pose2d(-36, -30, Math.toRadians(180)))
-                                .lineToSplineHeading(new Pose2d(-36, -64, Math.toRadians(90)))
                                 .build()
                 );
 
