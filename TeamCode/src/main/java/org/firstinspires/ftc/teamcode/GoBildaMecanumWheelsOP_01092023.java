@@ -1,23 +1,23 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-
-
 import java.util.List;
 
-@TeleOp(name = "GoBildaMecanumWheelsOP_01092023 (Blocks to Java)")
+@Config
+@TeleOp(name = "GoBildaMecanumWheelsOP_01092023 TEST DONT USE")
 public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
 
     private DcMotor LeftBack;
@@ -37,6 +37,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
     int PwrCurve;
     double globalAngle;
     double lastAngle;
+    public static double Kp=.011;
 
     /**
      * Describe this function...
@@ -56,34 +57,38 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
         LeftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //  LeftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-       // LeftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-       // RightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-       // RightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        LeftBack.setTargetPosition((int) (Distance * 45.27639));
-        LeftFront.setTargetPosition((int) (Distance * 45.27639));
-        RightBack.setTargetPosition((int) (Distance * 45.27639));
-        RightFront.setTargetPosition((int) (Distance * 45.27639));
+        LeftBack.setTargetPosition((int) (Distance * 45.27639 * extradist));
+        LeftFront.setTargetPosition((int) (Distance * 45.27639* extradist));
+        RightBack.setTargetPosition((int) (Distance * 45.27639* extradist));
+        RightFront.setTargetPosition((int) (Distance * 45.27639* extradist));
 
         LeftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         LeftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         RightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         RightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        ( LeftBack.setPower(Speed);
-        ( LeftFront.setPower( Speed);
-        ( RightBack.setPower( Speed);
-        (RightFront.setPower( Speed);
+
+        LeftBack.setPower( Speed);
+        LeftFront.setPower( Speed);
+        RightBack.setPower( Speed);
+        RightFront.setPower( Speed);
 
         if (NoStop) {
-            while ((opModeIsActive() && LeftBack.getCurrentPosition() < ((int) (Distance * 45.27639 * .99)))) {
+            while ( Math.abs(gamepad1.right_stick_x) < 0.2 && Math.abs(LeftBack.getCurrentPosition()) < Math.abs( (int) (Distance * 45.27639 * .99)) ) {
+                telemetry.addData("Current Position: ", LeftBack.getCurrentPosition() );
+                telemetry.addData("Target Position: ", (int) (Distance * 45.27639 * .99) );
+                telemetry.addData("Extradist: ", extradist );
+                telemetry.addData("NoStop: ", NoStop );
                 telemetry.addLine("Waiting to reach encoder Pos during move");
                 telemetry.update();
             }
         }
         else{
-            while ((opModeIsActive() && ( LeftBack.isBusy() || RightBack.isBusy() || LeftFront.isBusy() || RightFront.isBusy())) ) {
+            while (Math.abs(gamepad1.right_stick_x) < 0.2 && (opModeIsActive() && ( LeftBack.isBusy() || RightBack.isBusy() || LeftFront.isBusy() || RightFront.isBusy())) ) {
                 telemetry.addLine("Waiting For motor during move");
+                telemetry.addData("Extradist: ", extradist );
+                telemetry.addData("NoStop: ", NoStop );
+                telemetry.addLine("Waiting for motor to stop");
                 telemetry.update();
             }
         }
@@ -93,6 +98,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
         LeftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
     }
 
     /**
@@ -146,7 +152,6 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
         RightFront = hardwareMap.get(DcMotor.class, "RightFront");
         imu_IMU = hardwareMap.get(IMU.class, "imu");
         ViperSlideMotor = hardwareMap.get(DcMotor.class, "ViperSlideMotor");
-        green = hardwareMap.get(DigitalChannel.class, "green");
         claw = hardwareMap.get(Servo.class, "claw");
 
         // Put initialization blocks here.
@@ -156,7 +161,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
         SetIMU();
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                green.setState(false);
+
                 // Put loop blocks here.
                 yVel = -((Math.exp(Math.abs(PwrCurve * gamepad1.left_stick_y)) - 1) / (Math.exp(PwrCurve) - 1));
                 xVel = (Math.exp(Math.abs(PwrCurve * gamepad1.left_stick_x)) - 1) / (Math.exp(PwrCurve) - 1);
@@ -197,7 +202,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
                 if (ViperSlideMotor.getCurrentPosition() < 0) {
                     ViperSlideMotor.setTargetPosition(0);
                     MoveViperSlide(false);
-                } else if (ViperSlideMotor.getCurrentPosition() > SlideMaxPos) {
+                } else if (ViperSlideMotor.getCurrentPosition() > (SlideMaxPos-10)) {
                     ViperSlideMotor.setTargetPosition(SlideMaxPos);
                     MoveViperSlide(false);
                 } else {
@@ -205,7 +210,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
                         ViperSlideMotor.setTargetPosition(ViperSlideMotor.getCurrentPosition() + SlideSpeed);
                         MoveViperSlide(true);
                     }
-                    if (gamepad1.b || gamepad2.b) {
+                    if (gamepad1.b || gamepad2.b  ) {
                         ViperSlideMotor.setTargetPosition(ViperSlideMotor.getCurrentPosition() - SlideSpeed);
                         MoveViperSlide(true);
                     }
@@ -243,22 +248,25 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
                     imu_IMU.resetYaw();
                 }
                 if (gamepad1.dpad_left) {
-                    TurnLeft180new(1,0,false);
+                    TurnLeft180new(.75,180,true);
                 }
                 if (gamepad1.dpad_right) {
-                    TurnLeft180new(-1, 0, false);
+                    TurnLeft180new(-0.75, 180, true);
+                }
+                if (gamepad2.dpad_left) {
+                    TurnLeft180new(.75,0,false);
+                }
+                if (gamepad2.dpad_right) {
+                    TurnLeft180new(-0.75, 0, false);
                 }
                 telemetry.addData("Robot Orientation", imu_IMU.getRobotYawPitchRollAngles());
                 telemetry.addData("Ticks", Ticks);
                 telemetry.addData("Servo Pos", claw.getPosition());
-                telemetry.addData("Pwr Curve", PwrCurve);
-                telemetry.addData("YPos", gamepad1.left_stick_y);
                 telemetry.addData("YVel", yVel);
                 telemetry.addData("XVel", xVel);
                 telemetry.addData("Rotation", rx);
                 telemetry.addData("Slide Position", ViperSlideMotor.getCurrentPosition());
                 telemetry.addData("SlideSpeed", ((DcMotorEx) ViperSlideMotor).getVelocity());
-                telemetry.addData("imu get calibration status", 123);
                 telemetry.update();
             }
         }
@@ -328,8 +336,8 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
 
 
         if (x < 1) {
-            Move(-15, 0.9, false);
             GoToPreset(ViperSlidePresets, "Bottom");
+            Move(-15, 0.9, false);
         } else {
             GoToPreset(ViperSlidePresets, "Low");
             Move(-7, 0.9, false);
@@ -367,11 +375,13 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
         RightBack.setPower(0);
 
         if (x < 1) {
-            Move(6.5, 0.8, false);
             GoToPreset(ViperSlidePresets, "Bottom");
+            Move(6.5, 0.8, false);
+
         } else {
-            Move(15, 0.8, false);
             GoToPreset(ViperSlidePresets, "High");
+            Move(15, 0.8, false);
+
         }
     }
     /**
@@ -381,33 +391,28 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
      * UseProvidedAngle: turn 'turnangle' degrees  if True.. if not go to 0 and 180 base of imu.. careful if this is not set properly
      */
 
-    private void TurnLeft180new(int x , double turnangle, boolean UseProvidedAngle) {
-        double Kp;
+    private void TurnLeft180new(double x , double turnangle, boolean UseProvidedAngle) {
+
         double error;
         double Turnpower;
         double TurnPrecision = 1;
-        //double turnangle;
-        double lasttime;
-        double deltatime;
-        double integral;
 
-
-
-        if (x < 1) {
-            Move(-15, 0.9, true);
+        if (x < 0) {
             GoToPreset(ViperSlidePresets, "Bottom");
+            Move(-15, 0.9, true);
            if (!UseProvidedAngle){
-            turnangle = 180 - imu_IMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)  ; //0 is the target heading
-            if (turnangle > 180){
-                turnangle = turnangle -360; // Turn Right.. it's a bit quicker
-            }
+                turnangle = 180 - imu_IMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)  ; //0 is the target heading
+                if (turnangle > 180){
+                    turnangle = turnangle -360; // Turn Right.. it's a bit quicker
+                }
            }
+         //Have a Cone.. and going back to turn and drop it
         } else {
             GoToPreset(ViperSlidePresets, "Low");
-            Move(-7, 0.9, true);
+            Move(-7, 0.85, true);
             GoToPreset(ViperSlidePresets, "High");
             if (!UseProvidedAngle) {
-                turnangle = -imu_IMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES); // Will turn Left or right.. will take shortess way
+                turnangle = -imu_IMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES); // Will turn Left or right.. will take shortness way
             }
         }
         Kp = 0.011;
@@ -415,32 +420,35 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
         resetAngle();
         error = turnangle - getAngle();
 
-
         while ( (Math.abs(error) > TurnPrecision) && opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
 
             Turnpower = Kp * error ;
             Turnpower = Math.min(Math.max(Turnpower, -Math.abs(x)), Math.abs(x));
 
-            LeftBack.setPower(Turnpower );
-            LeftFront.setPower(Turnpower );
-            RightFront.setPower(-Turnpower );
-            RightBack.setPower( -Turnpower );
+            LeftBack.setPower(-Turnpower );
+            LeftFront.setPower(-Turnpower );
+            RightFront.setPower(Turnpower );
+            RightBack.setPower( Turnpower );
 
-            telemetry.addData("YAW", globalAngle);
+            telemetry.addData("TurnAngle", turnangle);
+            telemetry.addData("Globalangle", globalAngle);
             telemetry.addData("Error", error);
             telemetry.addData("TurnPower", Turnpower);
             telemetry.update();
+            error = turnangle - getAngle();
         }
-        LeftBack.setPower(0);
-        LeftBack.setPower(0);
-        LeftBack.setPower(0);
-        LeftBack.setPower(0);
-        if (x < 1) {
-            Move(6.5, 0.8, false);
+       // LeftBack.setPower(0);
+       // LeftFront.setPower(0);
+       // RightFront.setPower(0);
+       // RightBack.setPower(0);
+
+        if (x < 0) {
             GoToPreset(ViperSlidePresets, "Bottom");
+            Move(6.5, 0.85, false);
+
         } else {
-            Move(15, 0.8, false);
             GoToPreset(ViperSlidePresets, "High");
+            Move(15, 0.85, false);
         }
     }
 

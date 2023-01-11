@@ -19,7 +19,7 @@ public class roadrunnertest extends LinearOpMode {
 
         Pose2d startPose = new Pose2d(-36, -64, Math.toRadians(90));
 
-        Pose2d startPose2 = new Pose2d(-36, -30, Math.toRadians(180));
+        Pose2d startPose2 = new Pose2d(-30, -30, Math.toRadians(180));
         drive.setPoseEstimate(startPose);
 
         // distances are in Inches
@@ -77,11 +77,12 @@ public class roadrunnertest extends LinearOpMode {
          */
 
         Trajectory traj = drive.trajectoryBuilder(new Pose2d(-36, -64, Math.toRadians(90)))
-                .lineToSplineHeading(new Pose2d(-36, -30, Math.toRadians(180)))
+                //.lineToSplineHeading(new Pose2d(-36, -30, Math.toRadians(180)))
+                .splineToLinearHeading(new Pose2d(-30, -30, Math.toRadians(180)), Math.toRadians(180))
                 .build();
 
-        Trajectory traj2 = drive.trajectoryBuilder(new Pose2d(-36, -30, Math.toRadians(180)))
-                .lineToSplineHeading(new Pose2d(-36, -64, Math.toRadians(90)))
+        Trajectory traj2 = drive.trajectoryBuilder(new Pose2d(-30, -30, Math.toRadians(180)))
+                .splineToLinearHeading(new Pose2d(-36, -64, Math.toRadians(180)), Math.toRadians(90))
                 .build();
 
 
@@ -89,7 +90,7 @@ public class roadrunnertest extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        for (double i = 0; i < 3; i++){
+        for (double i = 0; i < 2; i++){
             drive.setPoseEstimate(startPose);
             drive.followTrajectory(traj);
 
