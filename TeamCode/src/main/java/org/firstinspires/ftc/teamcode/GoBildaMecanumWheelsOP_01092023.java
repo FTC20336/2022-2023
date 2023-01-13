@@ -39,6 +39,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
     double lastAngle;
     public static double Kp=.011;
 
+
     /**
      * Describe this function...
      * Speed is 0 to 1.. 0 to 100% full Speed
@@ -244,7 +245,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
                 if (gamepad2.start) {
                     GoToPreset(ViperSlidePresets, "Low");
                 }
-                if (gamepad2.dpad_left) {
+                if (gamepad2.right_stick_button) {
                     imu_IMU.resetYaw();
                 }
                 if (gamepad1.dpad_left) {
@@ -254,12 +255,12 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
                     TurnLeft180new(-0.75, 180, true);
                 }
                 if (gamepad2.dpad_left) {
-                    TurnLeft180new(.75,0,false);
+                    AlignHeading(0, .9);
                 }
                 if (gamepad2.dpad_right) {
-                    TurnLeft180new(-0.75, 0, false);
+                    AlignHeading(180, .9);
                 }
-                telemetry.addData("Robot Orientation", imu_IMU.getRobotYawPitchRollAngles());
+                telemetry.addData("Robot Heading", String.format("%3f" ,imu_IMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)));
                 telemetry.addData("Ticks", Ticks);
                 telemetry.addData("Servo Pos", claw.getPosition());
                 telemetry.addData("YVel", yVel);
@@ -391,7 +392,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
      * UseProvidedAngle: turn 'turnangle' degrees  if True.. if not go to 0 and 180 base of imu.. careful if this is not set properly
      */
 
-    private void TurnLeft180new(double x , double turnangle, boolean UseProvidedAngle) {
+    private void TurnLeft180new( double x , double turnangle, boolean UseProvidedAngle) {
 
         double error;
         double Turnpower;
@@ -399,7 +400,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
 
         if (x < 0) {
             GoToPreset(ViperSlidePresets, "Bottom");
-            Move(-15, 0.9, true);
+            Move(-12, 0.85, true);
            if (!UseProvidedAngle){
                 turnangle = 180 - imu_IMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)  ; //0 is the target heading
                 if (turnangle > 180){
@@ -451,6 +452,51 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
             Move(15, 0.85, false);
         }
     }
+
+
+    private void AlignHeading(double  headingtarget, double x) {
+
+        double error;
+        double turnangle;
+        double Turnpower;
+        double TurnPrecision = 1;
+
+
+        turnangle = headingtarget - imu_IMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)  ;
+        if (turnangle > 180) {
+            turnangle = turnangle - 360; // Turn Right.. it's a bit quicker
+        }
+        if (turnangle < -180) {
+            turnangle = turnangle + 360; // Turn Right.. it's a bit quicker
+        }
+
+        resetAngle();
+        error = turnangle - getAngle();
+
+        while ( (Math.abs(error) > TurnPrecision) && opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
+
+            Turnpower = Kp * error ;
+            Turnpower = Math.min(Math.max(Turnpower, -Math.abs(x)), Math.abs(x));
+
+            LeftBack.setPower(-Turnpower );
+            LeftFront.setPower(-Turnpower );
+            RightFront.setPower(Turnpower );
+            RightBack.setPower( Turnpower );
+
+            telemetry.addData("TurnAngle", turnangle);
+            telemetry.addData("IMU Heading", imu_IMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+            telemetry.addData("Globalangle", globalAngle);
+            telemetry.addData("Error", error);
+            telemetry.addData("TurnPower", Turnpower);
+            telemetry.update();
+            error = turnangle - getAngle();
+        }
+        LeftBack.setPower(0);
+        LeftFront.setPower(0);
+        RightFront.setPower(0);
+        RightBack.setPower(0);
+    }
+
 
     /**
      * Resets the cumulative angle tracking to zero.
