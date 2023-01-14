@@ -20,9 +20,9 @@ public class roadrunnertest extends LinearOpMode {
 
         double startDir = Math.toRadians(90);
 
-        Pose2d startPose = new Pose2d(-36, -64, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-36, -65, Math.toRadians(90));
 
-        Pose2d startPose2 = new Pose2d(-30, -30, Math.toRadians(180));
+        Pose2d startPose2 = new Pose2d(-0, -28, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
         // distances are in Inches
@@ -79,41 +79,36 @@ public class roadrunnertest extends LinearOpMode {
                 .build();
          */
 
-        Trajectory traj = drive.trajectoryBuilder(new Pose2d(-36, -65, Math.toRadians(90)))
-                //.lineToSplineHeading(new Pose2d(-36, -30, Math.toRadians(180)))
-                .splineToLinearHeading(new Pose2d(-30, -30, Math.toRadians(180)), Math.toRadians(180))
-                .build();
 
-        Trajectory traj2 = drive.trajectoryBuilder(new Pose2d(-30, -30, Math.toRadians(180)))
-                .splineToLinearHeading(new Pose2d(-36, -64, Math.toRadians(180)), Math.toRadians(90))
-                .build();
-
-        TrajectorySequence trajectory  = drive.trajectorySequenceBuilder(new Pose2d(-36, -65, Math.toRadians(90)))
+        TrajectorySequence traj1  = drive.trajectorySequenceBuilder(startPose)
                 .setTangent(Math.toRadians(10))
+                .splineToConstantHeading(new Vector2d(-12, -52), Math.toRadians(90))
+                .lineToConstantHeading( new Vector2d(-12, -40))
+                .splineToConstantHeading(new Vector2d(3, -33), Math.toRadians(90))
+                .lineToConstantHeading(new Vector2d(3, -28))
+                .build();
 
-                .splineToConstantHeading(new Vector2d(-12, -56), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-12, -40), Math.toRadians(90))
-                //.forward(12)
-                //.setTangent(90)
+        TrajectorySequence traj2  = drive.trajectorySequenceBuilder( traj1.end() )
                 .splineToConstantHeading(new Vector2d(0, -32), Math.toRadians(90))
-                .strafeLeft(12)
+                .splineToConstantHeading(new Vector2d(-12, -40), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-12, -52), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-36, -65), Math.toRadians(90))
+                .setTangent(Math.toRadians(190))
                 .build();
 
 
         waitForStart();
 
         if (isStopRequested()) return;
-/*
-        for (double i = 0; i < 2; i++){
-            drive.setPoseEstimate(startPose);
-            drive.followTrajectory(traj);
 
-            drive.setPoseEstimate(startPose2);
-            drive.followTrajectory(traj2);
-        }
-        s
- */
-        drive.followTrajectorySequence(trajectory);
+
+      //  for (double i = 0; i < 2; i++){
+
+            drive.followTrajectorySequence(traj1);
+            sleep(500);
+          //  drive.followTrajectorySequence(traj2);
+          //  sleep(500);
+      //  }
     }
 
 }

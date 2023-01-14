@@ -260,7 +260,8 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
                 if (gamepad2.dpad_right) {
                     AlignHeading(180, .9);
                 }
-                telemetry.addData("Robot Heading", String.format("%3f" ,imu_IMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)));
+                telemetry.addLine("Version 11323-1914");
+                telemetry.addData("Robot Heading", String.format("%.3f" ,imu_IMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)));
                 telemetry.addData("Ticks", Ticks);
                 telemetry.addData("Servo Pos", claw.getPosition());
                 telemetry.addData("YVel", yVel);
