@@ -117,7 +117,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
      */
     private void GoToPreset(List PresetList, String Height) {
         if (Height.equals("High")) {
-            ViperSlideMotor.setTargetPosition(ViperSlideInchesToTicks(33));
+            ViperSlideMotor.setTargetPosition(ViperSlideInchesToTicks(34));
         } else if (Height.equals("Med")) {
             ViperSlideMotor.setTargetPosition(ViperSlideInchesToTicks(24));
         } else if (Height.equals("Low")) {
@@ -203,7 +203,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
                 if (ViperSlideMotor.getCurrentPosition() < 0) {
                     ViperSlideMotor.setTargetPosition(0);
                     MoveViperSlide(false);
-                } else if (ViperSlideMotor.getCurrentPosition() > (SlideMaxPos-10)) {
+                } else if (ViperSlideMotor.getCurrentPosition() > (SlideMaxPos)) {
                     ViperSlideMotor.setTargetPosition(SlideMaxPos);
                     MoveViperSlide(false);
                 } else {
@@ -399,8 +399,8 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
         double TurnPrecision = 1;
 
         if (x < 0) {
-            GoToPreset(ViperSlidePresets, "Bottom");
             Move(-12, 0.85, true);
+            GoToPreset(ViperSlidePresets, "Bottom");
            if (!UseProvidedAngle){
                 turnangle = 180 - imu_IMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)  ; //0 is the target heading
                 if (turnangle > 180){
@@ -449,7 +449,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
 
         } else {
             GoToPreset(ViperSlidePresets, "High");
-            Move(15, 0.85, false);
+            Move(13, 0.8, false);
         }
     }
 

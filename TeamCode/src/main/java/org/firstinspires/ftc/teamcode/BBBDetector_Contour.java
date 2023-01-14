@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -12,7 +13,7 @@ import org.opencv.core.*;
 
 import java.util.*;
 
-
+@Disabled
 @Config
  public class BBBDetector_Contour extends OpenCvPipeline{
     enum SkystoneLocation {
