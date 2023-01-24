@@ -83,7 +83,7 @@ public class AutoUsingDetector_Left extends LinearOpMode {
         Beep.move(24, 18, 0);
         // Viper up but don't wait while strafing
         Beep.BeepArm.ViperSlideSetPos(34,20, 0);
-        Beep.strafe(12.75, 90, 18, 0);
+        Beep.strafe(12, 90, 18, 0);
         Beep.move(4.5, 8, 0);
         Beep.BeepArm.ViperSlideSetPos(30, 6, 750);
         Beep.BeepArm.ClawFullOpen(750);

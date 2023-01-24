@@ -6,6 +6,8 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequenceBuilder;
+
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.SampleMecanumDrive;
 
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequence;
@@ -20,7 +22,7 @@ public class roadrunnertest extends LinearOpMode {
 
         double startDir = Math.toRadians(90);
 
-        Pose2d startPose = new Pose2d(-36, -65, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-40, -65, Math.toRadians(90));
 
         Pose2d startPose2 = new Pose2d(-0, -28, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
@@ -84,16 +86,11 @@ public class roadrunnertest extends LinearOpMode {
                 .setTangent(Math.toRadians(10))
                 .splineToConstantHeading(new Vector2d(-12, -52), Math.toRadians(90))
                 .lineToConstantHeading( new Vector2d(-12, -40))
-                .splineToConstantHeading(new Vector2d(3, -33), Math.toRadians(90))
-                .lineToConstantHeading(new Vector2d(3, -28))
                 .build();
 
         TrajectorySequence traj2  = drive.trajectorySequenceBuilder( traj1.end() )
                 .splineToConstantHeading(new Vector2d(0, -32), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-12, -40), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-12, -52), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-36, -65), Math.toRadians(90))
-                .setTangent(Math.toRadians(190))
+                .lineToConstantHeading(new Vector2d(0, -30))
                 .build();
 
 
@@ -104,8 +101,9 @@ public class roadrunnertest extends LinearOpMode {
 
       //  for (double i = 0; i < 2; i++){
 
-            drive.followTrajectorySequence(traj1);
-            sleep(500);
+        drive.followTrajectorySequence(traj1);
+        sleep(500);
+        drive.followTrajectorySequence(traj2);
           //  drive.followTrajectorySequence(traj2);
           //  sleep(500);
       //  }

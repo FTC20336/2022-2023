@@ -19,10 +19,12 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 @Config
 public class DriveConstants {
 
+    public static double pi = 3.14159265359;
+
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    public static final double TICKS_PER_REV = 537.6;
+    public static final double TICKS_PER_REV = 537.7;
     public static final double MAX_RPM = 312;
 
     /*
@@ -33,7 +35,7 @@ public class DriveConstants {
      * If using the built-in motor velocity PID, update MOTOR_VELO_PID with the tuned coefficients
      * from DriveVelocityPIDTuner.
      */
-    public static final boolean RUN_USING_ENCODER = false;
+    public static final boolean RUN_USING_ENCODER = true;
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0,
             getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV));
 
@@ -47,7 +49,7 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS = 1.88976; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 13.52; // in
+    public static double TRACK_WIDTH = 13.61; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -87,10 +89,12 @@ public class DriveConstants {
      * You are free to raise this on your own if you would like. It is best determined through experimentation.
 
      */
-    public static double MAX_VEL = 30.0; // 52.48180821614297;
+    public static double MAX_VEL =  ((MAX_RPM / 60.0) * GEAR_RATIO * WHEEL_RADIUS * 2 * pi) * 0.75; // 52.48180821614297;
     public static double MAX_ACCEL = 30.0; // 52.48180821614297;
-    public static double MAX_ANG_VEL = 3.0; // 4.434444427490234;
-    public static double MAX_ANG_ACCEL = Math.toRadians(150);; // Math.toRadians(184.02607784577722);
+    public static double MAX_ANG_VEL = (4.2377777099609375) * 0.80; // 4.434444427490234;
+    public static double MAX_ANG_ACCEL = Math.toRadians(180);; // Math.toRadians(184.02607784577722);
+
+
 
 
     public static double encoderTicksToInches(double ticks) {
