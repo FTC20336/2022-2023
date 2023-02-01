@@ -2,13 +2,20 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.*;
 
 import org.apache.commons.math3.geometry.euclidean.twod.Line;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryImpl;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.opencv.core.*;
 
@@ -31,6 +38,7 @@ import java.util.*;
     public static double sat2 = 255;
     public static double v1 = 0;
     public static double v2 = 255;
+    public org.firstinspires.ftc.robotcore.external.Telemetry telemetry;
 
     private int width; // width of the image
     SkystoneLocation location;
@@ -118,7 +126,7 @@ import java.util.*;
         boolean left = false; // true if regular stone found on the left side
         boolean right = false; // "" "" on the right side
         Mat lines = new Mat();
-        Imgproc.HoughLinesP(thresh, lines, 1, Math.PI/180, 50, 50, 10);
+        Imgproc.HoughLinesP(edges, lines, 1, Math.PI/180, 50, 50, 10);
         /*
         for (int i = 0; i != boundRect.length; i++) {
             if (boundRect[i].x < left_x)
@@ -147,7 +155,7 @@ import java.util.*;
 
          */
 
-        List points = new ArrayList<>();
+        /*List points = new ArrayList<>();
 
         for(int i = 0; i < lines.rows(); i++) {
             double [] l = lines.get(i, 0);
@@ -160,10 +168,17 @@ import java.util.*;
             points.add(lineCoords);
 
 
-            //Imgproc.line(mat, new Point(l[0], l[1]), new Point(l[2], l[3]), new Scalar(0, 0, 255), 3, Imgproc.LINE_AA, 0);
+            Imgproc.line(mat, new Point(l[0], l[1]), new Point(l[2], l[3]), new Scalar(255, 0, 0), 3, Imgproc.LINE_AA, 0);
         }
 
-        List l1 = (List) points.get(0);
+         */
+        Imgproc.drawContours(mat, contours, -1, new Scalar(255, 0, 0), 3);
+
+
+
+
+
+        /*List l1 = (List) points.get(0);
         double l1p0 = (double) l1.get(0);
         double l1p1 = (double) l1.get(1);
         double l1p2 = (double) l1.get(2);
@@ -179,7 +194,7 @@ import java.util.*;
         double l2p3 = (double) l2.get(3);
 
 
-        Imgproc.line(mat, new Point(l2p0, l2p1), new Point(l2p2, l2p3), new Scalar(0, 0, 255), 3, Imgproc.LINE_AA, 0);
+        Imgproc.line(mat, new Point(l2p0, l2p1), new Point(l2p2, l2p3), new Scalar(0, 0, 255), 3, Imgproc.LINE_AA, 0);*/
 
 
 
