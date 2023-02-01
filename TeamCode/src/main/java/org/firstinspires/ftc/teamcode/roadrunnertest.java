@@ -86,7 +86,15 @@ public class roadrunnertest extends LinearOpMode {
                 .setTangent(Math.toRadians(10))
                 .splineToConstantHeading(new Vector2d(-12, -52), Math.toRadians(90))
                 .lineToConstantHeading( new Vector2d(-12, -40))
+                .splineToConstantHeading(new Vector2d(0, -32), Math.toRadians(90))
+                .lineToConstantHeading(new Vector2d(0, -30))
+                .lineToConstantHeading(new Vector2d(0, -36))
+                .lineToConstantHeading(new Vector2d(-12, -36))
+                .lineToLinearHeading(new Pose2d(-12, -12, Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(-60, -12))
+                .lineToSplineHeading(new Pose2d(-24, -7.5, Math.toRadians(90)))
                 .build();
+
 
         TrajectorySequence traj2  = drive.trajectorySequenceBuilder( traj1.end() )
                 .splineToConstantHeading(new Vector2d(0, -32), Math.toRadians(90))
@@ -103,7 +111,7 @@ public class roadrunnertest extends LinearOpMode {
 
         drive.followTrajectorySequence(traj1);
         sleep(500);
-        drive.followTrajectorySequence(traj2);
+        //drive.followTrajectorySequence(traj2);
           //  drive.followTrajectorySequence(traj2);
           //  sleep(500);
       //  }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
+import org.apache.commons.math3.geometry.euclidean.twod.Line;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
@@ -13,7 +14,7 @@ import org.opencv.core.*;
 
 import java.util.*;
 
-@Disabled
+//@Disabled
 @Config
  public class BBBDetector_Contour extends OpenCvPipeline{
     enum SkystoneLocation {
@@ -116,6 +117,9 @@ import java.util.*;
         double right_x = 0.75 * width;
         boolean left = false; // true if regular stone found on the left side
         boolean right = false; // "" "" on the right side
+        Mat lines = new Mat();
+        Imgproc.HoughLinesP(thresh, lines, 1, Math.PI/180, 50, 50, 10);
+        /*
         for (int i = 0; i != boundRect.length; i++) {
             if (boundRect[i].x < left_x)
                 left = true;
@@ -124,8 +128,60 @@ import java.util.*;
 
             // draw red bounding rectangles on mat
             // the mat has been converted to HSV so we need to use HSV as well
-            Imgproc.rectangle(mat, boundRect[i], new Scalar(0.5, 100, 100), 6);
+            Imgproc.rectangle(thresh, boundRect[i], new Scalar(126, 100, 100), 6);
+
         }
+         */
+
+        /*
+        for(int i = 0; i < lines.rows(); i++) {
+            double rho = lines.get(i, 0) [0], theta = lines.get(i, 0) [1];
+
+            double a = Math.cos(theta), b = Math.sin(theta);
+            double x0 = a * rho, y0 = b * rho;
+
+            Point pt1 = new Point(Math.round(x0 + 1000 * (-b)), Math.round(y0 + 1000 * (a)));
+            Point pt2 = new Point(Math.round(x0 - 1000 * (-b)), Math.round(y0 - 1000 * (a)));
+            Imgproc.line(thresh, pt1, pt2, new Scalar(0, 0, 255), 3, Imgproc.LINE_AA, 0);
+        }
+
+         */
+
+        List points = new ArrayList<>();
+
+        for(int i = 0; i < lines.rows(); i++) {
+            double [] l = lines.get(i, 0);
+            List lineCoords = new ArrayList<>();
+            lineCoords.add(l[0]);
+            lineCoords.add(l[1]);
+            lineCoords.add(l[2]);
+            lineCoords.add(l[3]);
+
+            points.add(lineCoords);
+
+
+            //Imgproc.line(mat, new Point(l[0], l[1]), new Point(l[2], l[3]), new Scalar(0, 0, 255), 3, Imgproc.LINE_AA, 0);
+        }
+
+        List l1 = (List) points.get(0);
+        double l1p0 = (double) l1.get(0);
+        double l1p1 = (double) l1.get(1);
+        double l1p2 = (double) l1.get(2);
+        double l1p3 = (double) l1.get(3);
+
+
+        Imgproc.line(mat, new Point(l1p0, l1p1), new Point(l1p2, l1p3), new Scalar(0, 0, 255), 3, Imgproc.LINE_AA, 0);
+
+        List l2 = (List) points.get(points.size() - 1);
+        double l2p0 = (double) l2.get(0);
+        double l2p1 = (double) l2.get(1);
+        double l2p2 = (double) l2.get(2);
+        double l2p3 = (double) l2.get(3);
+
+
+        Imgproc.line(mat, new Point(l2p0, l2p1), new Point(l2p2, l2p3), new Scalar(0, 0, 255), 3, Imgproc.LINE_AA, 0);
+
+
 
         // if there is no yellow regions on a side
         // that side should be a Skystone
@@ -136,7 +192,7 @@ import java.util.*;
             // we will need to scan the next 2 stones
         else location = SkystoneLocation.NONE;
 
-        return thresh; // return the mat with rectangles drawn
+        return mat; // return the mat with rectangles drawn
     }
 
  }

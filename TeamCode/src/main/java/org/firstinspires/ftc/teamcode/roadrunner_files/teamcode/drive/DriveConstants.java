@@ -20,7 +20,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 public class DriveConstants {
 
     public static double pi = 3.14159265359;
-    public static double SPEED_COEF = 0.5;
+    public static double SPEED_COEF = 0.35;
 
     /*
      * These are motor constants that should be listed online for your motors.
