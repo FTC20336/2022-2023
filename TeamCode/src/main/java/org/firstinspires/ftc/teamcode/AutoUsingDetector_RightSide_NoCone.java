@@ -9,9 +9,9 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@Autonomous(name="AutoUsingDetector_Right", group="Tutorials")
+@Autonomous(name="AutoUsingDetector_Right_NoCone", group="Tutorials")
 
-public class AutoUsingDetector_RightSide extends LinearOpMode {
+public class AutoUsingDetector_RightSide_NoCone extends LinearOpMode {
     private OpenCvCamera webcam;
 
     //Create New Robot based on RobotBase
@@ -94,9 +94,14 @@ public class AutoUsingDetector_RightSide extends LinearOpMode {
     public void AUTONOMOUS_A() {
         telemetry.addLine("Autonomous A - Yellow - Left");
         telemetry.update();
-        DropCone();
+        //DropCone();
 
-        Beep.strafe(12, 90, 12, 0);
+        Beep.BeepArm.ClawFullClose(750);
+        Beep.BeepArm.ViperSlideSetPos(2,20, 20000);
+        Beep.strafe(22, -80, 18, 0);
+        Beep.move(24, 18, 0);
+
+        //Beep.strafe(12, 90, 12, 0);
         Beep.BeepArm.ViperSlideSetPos(0, 20, 4000);
     }
 
@@ -104,11 +109,16 @@ public class AutoUsingDetector_RightSide extends LinearOpMode {
         telemetry.addLine("Autonomous B - Green - Center");
         telemetry.update();
 
-        DropCone();
+        //DropCone();
 
-        Beep.strafe(11.5, 90, 12, 0);
-        Beep.move(21.5, 18, 0);
-        Beep.strafe(24, 90, 12, 0);
+        Beep.BeepArm.ClawFullClose(750);
+        Beep.BeepArm.ViperSlideSetPos(0.5,20, 1000);
+        Beep.strafe(4, 80, 18, 0);
+        Beep.move(24, 18, 0);
+
+        //Beep.strafe(11.5, 90, 12, 0);
+        //Beep.move(21.5, 18, 0);
+        //Beep.strafe(24, 90, 12, 0);
         Beep.BeepArm.ViperSlideSetPos(0, 20, 4000);
     }
 
@@ -116,11 +126,16 @@ public class AutoUsingDetector_RightSide extends LinearOpMode {
         telemetry.addLine("Autonomous C - Blue - Right");
         telemetry.update();
 
-        DropCone();
+        //DropCone();
 
-        Beep.strafe(11.5, 90, 12, 0);
-        Beep.move(21.5, 18, 0);
-        Beep.strafe(48, 90, 12, 0);
+        Beep.BeepArm.ClawFullClose(750);
+        Beep.BeepArm.ViperSlideSetPos(2,20, 1000);
+        Beep.strafe(30, 80, 18, 0);
+        Beep.move(24, 18, 0);
+
+        //Beep.strafe(11.5, 90, 12, 0);
+        //Beep.move(21.5, 18, 0);
+        //Beep.strafe(48, 90, 12, 0);
         Beep.BeepArm.ViperSlideSetPos(0, 20, 4000);
 
     }

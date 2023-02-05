@@ -83,13 +83,12 @@ public class AutoUsingDetector_Left extends LinearOpMode {
         Beep.move(24, 18, 0);
         // Viper up but don't wait while strafing
         Beep.BeepArm.ViperSlideSetPos(34,20, 0);
-        Beep.strafe(12, 90, 18, 0);
-        Beep.move(4.5, 8, 0);
+        Beep.strafe(13.5, 90, 18, 0);
+        Beep.move(3.5, 8, 0);
         Beep.BeepArm.ViperSlideSetPos(30, 6, 750);
         Beep.BeepArm.ClawFullOpen(750);
-        Beep.move(-4, 24, 0);
+        Beep.move(-3.5, 24, 0);
     }
-
 
     public void AUTONOMOUS_A() {
         telemetry.addLine("Autonomous A - Blue - Right");
@@ -105,8 +104,8 @@ public class AutoUsingDetector_Left extends LinearOpMode {
         telemetry.update();
 
         DropCone();
-        Beep.strafe(16, -90, 12, 0);
-        Beep.move(21, 18, 0);
+        Beep.strafe(14, -90, 12, 0);
+        Beep.move(20, 18, 0);
         Beep.strafe(23, -90, 12, 0);
         Beep.BeepArm.ViperSlideSetPos(0, 2000, 4000);
     }
@@ -116,8 +115,8 @@ public class AutoUsingDetector_Left extends LinearOpMode {
         telemetry.update();
 
         DropCone();
-        Beep.strafe(16, -90, 12, 0);
-        Beep.move(21, 18, 0);
+        Beep.strafe(14, -90, 12, 0);
+        Beep.move(20, 18, 0);
         Beep.strafe(46, -90, 12, 0);
         Beep.BeepArm.ViperSlideSetPos(0, 20, 4000);
 

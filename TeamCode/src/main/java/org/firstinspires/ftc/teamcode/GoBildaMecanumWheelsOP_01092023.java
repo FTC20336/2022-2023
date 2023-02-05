@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import java.util.List;
 
 @Config
-@TeleOp(name = "GoBildaMecanumWheelsOP_01092023 TEST DONT USE")
+@TeleOp(name = "GoBildaMecanumWheelsOP_01092023 USE ME")
 public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
 
     private DcMotor LeftBack;
@@ -400,7 +400,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
         double TurnPrecision = 1;
 
         if (x < 0) {
-            Move(-12, 0.85, true);
+            Move(-12, .7, true);
             GoToPreset(ViperSlidePresets, "Bottom");
            if (!UseProvidedAngle){
                 turnangle = 180 - imu_IMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)  ; //0 is the target heading
@@ -411,7 +411,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
          //Have a Cone.. and going back to turn and drop it
         } else {
             GoToPreset(ViperSlidePresets, "Low");
-            Move(-7, 0.85, true);
+            Move(-7, .7, true);
             GoToPreset(ViperSlidePresets, "High");
             if (!UseProvidedAngle) {
                 turnangle = -imu_IMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES); // Will turn Left or right.. will take shortness way
@@ -446,11 +446,11 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
 
         if (x < 0) {
             GoToPreset(ViperSlidePresets, "Bottom");
-            Move(6.5, 0.85, false);
+            Move(6.5, .6, false);
 
         } else {
             GoToPreset(ViperSlidePresets, "High");
-            Move(13, 0.8, false);
+            Move(12, .45, false);
         }
     }
 
