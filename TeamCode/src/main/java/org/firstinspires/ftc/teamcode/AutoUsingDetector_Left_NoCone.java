@@ -9,9 +9,9 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@Autonomous(name="AutoUsingDetector_Right", group="Tutorials")
+@Autonomous(name="AutoUsingDetector_Left_NoCone", group="Tutorials")
 
-public class AutoUsingDetector_RightSide extends LinearOpMode {
+public class AutoUsingDetector_Left_NoCone extends LinearOpMode {
     private OpenCvCamera webcam;
 
     //Create New Robot based on RobotBase
@@ -63,15 +63,15 @@ public class AutoUsingDetector_RightSide extends LinearOpMode {
 
         waitForStart();
 
-        // Get the latest frame analyzed result
+        // Get the latest frame analyzed resultk
         ParkingPos = myPipeline.getAnalysis();
 
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
-            AUTONOMOUS_C();
+            AUTONOMOUS_A();
         } else if (ParkingPos == BBBDetector_Color.ElementPosition.CENTER) {
             AUTONOMOUS_B();
         } else if (ParkingPos == BBBDetector_Color.ElementPosition.LEFT) {
-            AUTONOMOUS_A();
+            AUTONOMOUS_C();
         }
 
     }
@@ -79,24 +79,28 @@ public class AutoUsingDetector_RightSide extends LinearOpMode {
     public void DropCone(){
         Beep.BeepArm.ClawFullClose(750);
         Beep.BeepArm.ViperSlideSetPos(2,20, 1000);
-        Beep.strafe(22, -80, 18, 0);
+        Beep.strafe(28, 80, 18, 0);
         Beep.move(24, 18, 0);
         // Viper up but don't wait while strafing
         Beep.BeepArm.ViperSlideSetPos(34,20, 0);
-        Beep.strafe(10.5, -90, 18, 0);
-        Beep.move(6, 8, 0);
+        Beep.strafe(13, 90, 18, 0);
+        Beep.move(5, 8, 0);
         Beep.BeepArm.ViperSlideSetPos(30, 6, 750);
         Beep.BeepArm.ClawFullOpen(750);
-        Beep.move(-4, 24, 0);
+        Beep.move(-5, 24, 0);
     }
 
-
     public void AUTONOMOUS_A() {
-        telemetry.addLine("Autonomous A - Yellow - Left");
+        telemetry.addLine("Autonomous A - Blue - Right");
         telemetry.update();
-        DropCone();
+        //DropCone();
 
-        Beep.strafe(12, 90, 12, 0);
+        Beep.BeepArm.ClawFullClose(750);
+        Beep.BeepArm.ViperSlideSetPos(2,20, 20000);
+        Beep.strafe(28, 80, 18, 0);
+        Beep.move(24, 18, 0);
+
+        //Beep.strafe(14, -90, 12, 0);
         Beep.BeepArm.ViperSlideSetPos(0, 20, 4000);
     }
 
@@ -104,23 +108,33 @@ public class AutoUsingDetector_RightSide extends LinearOpMode {
         telemetry.addLine("Autonomous B - Green - Center");
         telemetry.update();
 
-        DropCone();
+        //DropCone();
 
-        Beep.strafe(11.5, 90, 12, 0);
-        Beep.move(21.5, 18, 0);
-        Beep.strafe(24, 90, 12, 0);
-        Beep.BeepArm.ViperSlideSetPos(0, 20, 4000);
+        Beep.BeepArm.ClawFullClose(750);
+        Beep.BeepArm.ViperSlideSetPos(0.5,20, 1000);
+        Beep.strafe(4, 80, 18, 0);
+        Beep.move(30, 18, 0);
+
+        //Beep.strafe(14, -90, 12, 0);
+        //Beep.move(20, 18, 0);
+        //Beep.strafe(23, -90, 12, 0);
+        Beep.BeepArm.ViperSlideSetPos(0, 2000, 4000);
     }
 
     public void AUTONOMOUS_C() {
-        telemetry.addLine("Autonomous C - Blue - Right");
+        telemetry.addLine("Autonomous C - Yellow - Left");
         telemetry.update();
 
-        DropCone();
+        //DropCone();
 
-        Beep.strafe(11.5, 90, 12, 0);
-        Beep.move(21.5, 18, 0);
-        Beep.strafe(48, 90, 12, 0);
+        Beep.BeepArm.ClawFullClose(750);
+        Beep.BeepArm.ViperSlideSetPos(2,20, 1000);
+        Beep.strafe(20, -80, 18, 0);
+        Beep.move(30, 18, 0);
+
+        //Beep.strafe(14, -90, 12, 0);
+        //Beep.move(20, 18, 0);
+        //Beep.strafe(46, -90, 12, 0);
         Beep.BeepArm.ViperSlideSetPos(0, 20, 4000);
 
     }
