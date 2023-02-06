@@ -95,6 +95,7 @@ import java.util.*;
 
 
 
+
         // We'll get a black and white image. The white regions represent the regular stones.
         // inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
         Core.inRange(mat, lowHSV, highHSV, thresh);
@@ -125,8 +126,13 @@ import java.util.*;
         double right_x = 0.75 * width;
         boolean left = false; // true if regular stone found on the left side
         boolean right = false; // "" "" on the right side
+
+        Mat edgeSource = new Mat();
+        Imgproc.drawContours(edgeSource, contours, -1, new Scalar(255, 0, 0), 3);
+
         Mat lines = new Mat();
         Imgproc.HoughLinesP(edges, lines, 1, Math.PI/180, 50, 50, 10);
+
         /*
         for (int i = 0; i != boundRect.length; i++) {
             if (boundRect[i].x < left_x)
@@ -155,24 +161,24 @@ import java.util.*;
 
          */
 
-        /*List points = new ArrayList<>();
+        //List points = new ArrayList<>();
 
         for(int i = 0; i < lines.rows(); i++) {
             double [] l = lines.get(i, 0);
-            List lineCoords = new ArrayList<>();
-            lineCoords.add(l[0]);
-            lineCoords.add(l[1]);
-            lineCoords.add(l[2]);
-            lineCoords.add(l[3]);
+            //List lineCoords = new ArrayList<>();
+            //lineCoords.add(l[0]);
+            //lineCoords.add(l[1]);
+            //lineCoords.add(l[2]);
+            //lineCoords.add(l[3]);
 
-            points.add(lineCoords);
+            //points.add(lineCoords);
 
 
-            Imgproc.line(mat, new Point(l[0], l[1]), new Point(l[2], l[3]), new Scalar(255, 0, 0), 3, Imgproc.LINE_AA, 0);
+            Imgproc.line(mat, new Point(l[0], l[1]), new Point(l[2], l[3]), new Scalar(0, 255, 255), 5, Imgproc.LINE_AA, 0);
         }
 
-         */
-        Imgproc.drawContours(mat, contours, -1, new Scalar(255, 0, 0), 3);
+
+
 
 
 

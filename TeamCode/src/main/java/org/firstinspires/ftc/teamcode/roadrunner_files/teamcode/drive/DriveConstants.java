@@ -20,7 +20,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 public class DriveConstants {
 
     public static double pi = 3.14159265359;
-    public static double SPEED_COEF = 0.35;
+    public static double SPEED_COEF = 1;
 
     /*
      * These are motor constants that should be listed online for your motors.
@@ -50,7 +50,7 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS = 1.88976; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 13.61; // in
+    public static double TRACK_WIDTH = 14.3; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -58,8 +58,8 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.019;
-    public static double kA = 0.003;
+    public static double kV = 0;
+    public static double kA = 0;
     public static double kStatic = 0;
 
     /*
@@ -92,7 +92,7 @@ public class DriveConstants {
      */
     public static double MAX_VEL =  ((MAX_RPM / 60.0) * GEAR_RATIO * WHEEL_RADIUS * 2 * pi) * SPEED_COEF; // 52.48180821614297;
     public static double MAX_ACCEL = (30.0) * SPEED_COEF; // 52.48180821614297;
-    public static double MAX_ANG_VEL = (4.2377777099609375) * SPEED_COEF; // 4.434444427490234;
+    public static double MAX_ANG_VEL = (3.656888961791992) * SPEED_COEF; // 4.434444427490234;
     public static double MAX_ANG_ACCEL = Math.toRadians(180) * SPEED_COEF;; // Math.toRadians(184.02607784577722);
 
 
