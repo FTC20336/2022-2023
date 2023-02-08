@@ -9,7 +9,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@Autonomous(name="AutoUsingDetector_Right", group="Tutorials")
+@Autonomous(name="AutoUsingDetector_Right", group="Right")
 
 public class AutoUsingDetector_RightSide extends LinearOpMode {
     private OpenCvCamera webcam;

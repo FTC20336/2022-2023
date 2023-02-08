@@ -21,7 +21,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
-@Autonomous(name="AutoUsingDetector_Left_RR", group="Tutorials")
+@Autonomous(name="AutoUsingDetector_Left_RR", group="Left")
 
 public class AutoUsingDetector_Left_RR extends LinearOpMode {
     private OpenCvCamera webcam;
