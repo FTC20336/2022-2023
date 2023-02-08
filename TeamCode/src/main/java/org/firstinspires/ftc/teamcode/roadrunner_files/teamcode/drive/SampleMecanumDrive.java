@@ -48,13 +48,16 @@ import static org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.Dri
 import static org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.DriveConstants.kV;
 
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(5, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -121,6 +124,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         leftRear = hardwareMap.get(DcMotorEx.class, "LeftBack");
         rightRear = hardwareMap.get(DcMotorEx.class, "RightBack");
         rightFront = hardwareMap.get(DcMotorEx.class, "RightFront");
+
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 

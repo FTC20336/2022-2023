@@ -7,6 +7,8 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+
+
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.SampleMecanumDrive;
@@ -23,6 +25,11 @@ public class roadrunnertest extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         double startDir = Math.toRadians(90);
+
+        RobotArm BeepArm= new RobotArm();
+
+        BeepArm.init(hardwareMap, this);
+
 
         Pose2d startPose = new Pose2d(-40, -65, Math.toRadians(90));
 
@@ -87,20 +94,33 @@ public class roadrunnertest extends LinearOpMode {
         TrajectorySequence traj1  = drive.trajectorySequenceBuilder(startPose)
                 .setTangent(Math.toRadians(10))
                 .splineToConstantHeading(new Vector2d(-12, -52), Math.toRadians(90))
-                .lineToConstantHeading( new Vector2d(-12, -40))
-                .splineToConstantHeading(new Vector2d(2, -32), Math.toRadians(90))
-                .lineToConstantHeading(new Vector2d(2, -30))
-                .lineToConstantHeading(new Vector2d(2, -36))
-                .lineToConstantHeading(new Vector2d(-12, -36))
-                .lineToLinearHeading(new Pose2d(-12, -13, Math.toRadians(180)))
-                .lineToConstantHeading(new Vector2d(-60, -13))
+                .lineToLinearHeading( new Pose2d(-10, -23, Math.toRadians(0)))
+                .build();
+
+        TrajectorySequence traj15 = drive.trajectorySequenceBuilder(traj1.end())
+                .lineToConstantHeading(new Vector2d(-5, -24))
+                .build();
+
+        TrajectorySequence traj175 = drive.trajectorySequenceBuilder(traj15.end())
+                //.splineToConstantHeading(new Vector2d(0, -32), Math.toRadians(90))
+                //.lineToConstantHeading(new Vector2d(0, -30))
+                //.lineToConstantHeading(new Vector2d(0, -36))
+                //.lineToConstantHeading(new Vector2d(-12, -36))
+                .lineToConstantHeading(new Vector2d(-12, -24))
+                .lineToLinearHeading(new Pose2d(-12, -12, Math.toRadians(180)))
+                //.lineToConstantHeading(new Vector2d(-60, -12))
                 .build();
 
 
+        /*
         TrajectorySequence traj2  = drive.trajectorySequenceBuilder( traj1.end() )
-                .lineToSplineHeading(new Pose2d(-19, -7.5, Math.toRadians(90)))
-                .lineToSplineHeading(new Pose2d(-60, -13, Math.toRadians(180)))
+                .lineToConstantHeading(new Pose2d(-19, -7.5, Math.toRadians(90)))
+                .lineToHeading(new Pose2d(-60, -13, Math.toRadians(180)))
                 .build();
+
+         */
+
+
 
 
         waitForStart();
@@ -110,11 +130,29 @@ public class roadrunnertest extends LinearOpMode {
 
       //  for (double i = 0; i < 2; i++){
 
+        BeepArm.ClawFullClose(-1);
+        BeepArm.ViperSlideSetPos(2, 2, -1);
+
+
         drive.followTrajectorySequence(traj1);
         sleep(500);
+
+        BeepArm.ViperSlideSetPos(32, 24, -1);
+
+
+        drive.followTrajectorySequence(traj15);
+
+        BeepArm.ClawFullOpen(-1);
+
+        BeepArm.ViperSlideSetPos(0, 24, -1);
+
+        drive.followTrajectorySequence(traj175);
+        /*
         for (int i = 0; i < 5; i++){
             drive.followTrajectorySequence(traj2);
         }
+
+         */
         //drive.followTrajectorySequence(traj2);
           //  drive.followTrajectorySequence(traj2);
           //  sleep(500);

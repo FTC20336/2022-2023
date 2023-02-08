@@ -21,6 +21,7 @@ public class DriveConstants {
 
     public static double pi = 3.14159265359;
     public static double SPEED_COEF = 1;
+    public static double ACCEL_COEF = 0.5;
 
     /*
      * These are motor constants that should be listed online for your motors.
@@ -29,7 +30,7 @@ public class DriveConstants {
     public static final double MAX_RPM = 312;
 
     /*
-     * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
+     * Set RUN_USING_ENCODER to true to enableew built-in hub velocity control using drive encoders.
      * Set this flag to false if drive encoders are not present and an alternative localization
      * method is in use (e.g., tracking wheels).
      *
@@ -51,7 +52,7 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS = 1.88976; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 13.71; // in
+    public static double TRACK_WIDTH = 13.65; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -92,8 +93,8 @@ public class DriveConstants {
 
      */
     public static double MAX_VEL =  ((MAX_RPM / 60.0) * GEAR_RATIO * WHEEL_RADIUS * 2 * pi) * SPEED_COEF; // 52.48180821614297;
-    public static double MAX_ACCEL = (30.0) * SPEED_COEF; // 52.48180821614297;
-    public static double MAX_ANG_VEL = (3.656888961791992) * SPEED_COEF; // 4.434444427490234;
+    public static double MAX_ACCEL = (((MAX_RPM / 60.0) * GEAR_RATIO * WHEEL_RADIUS * 2 * pi) * ACCEL_COEF) * SPEED_COEF; // 52.48180821614297;
+    public static double MAX_ANG_VEL = (2) * SPEED_COEF; // 4.434444427490234;
     public static double MAX_ANG_ACCEL = Math.toRadians(180) * SPEED_COEF;; // Math.toRadians(184.02607784577722);
 
 
