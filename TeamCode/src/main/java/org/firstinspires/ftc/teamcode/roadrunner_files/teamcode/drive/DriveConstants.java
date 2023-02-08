@@ -93,7 +93,7 @@ public class DriveConstants {
 
      */
     public static double MAX_VEL =  ((MAX_RPM / 60.0) * GEAR_RATIO * WHEEL_RADIUS * 2 * pi) * SPEED_COEF; // 52.48180821614297;
-    public static double MAX_ACCEL = (((MAX_RPM / 60.0) * GEAR_RATIO * WHEEL_RADIUS * 2 * pi) * ACCEL_COEF) * SPEED_COEF; // 52.48180821614297;
+    public static double MAX_ACCEL = (((MAX_RPM / 60.0) * GEAR_RATIO * WHEEL_RADIUS * 2 * pi) * ACCEL_COEF) ; // 52.48180821614297;
     public static double MAX_ANG_VEL = (2) * SPEED_COEF; // 4.434444427490234;
     public static double MAX_ANG_ACCEL = Math.toRadians(180) * SPEED_COEF;; // Math.toRadians(184.02607784577722);
 

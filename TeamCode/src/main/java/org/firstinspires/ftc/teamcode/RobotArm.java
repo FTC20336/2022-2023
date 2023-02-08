@@ -16,6 +16,9 @@ public class RobotArm {
     static private double CLAW_FULL_OPEN_POS = 0.194;
     static private double SWING_ARM_RATIO = 188;
     static private double VIPER_SLIDE_RATIO = 19.2;
+    static public double HIGHPOS = 32.5;
+    static public double MIDDLEPOS  = 24;
+    static public double LOWPOS = 14;
 
     static double COUNT_PER_DEGREE_ARM = 28 * SWING_ARM_RATIO / 360;
     static double COUNT_PER_DEGREE_SLIDE = 28 * VIPER_SLIDE_RATIO / 360;
@@ -92,6 +95,7 @@ public class RobotArm {
 
     }
 */
+
     public void ViperSlideSetPos(double length, double speed, long timeout){
         ViperSlideMotor.setTargetPosition( (int) (length * SLIDE_TURN_PER_INCH) );
         ViperSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
