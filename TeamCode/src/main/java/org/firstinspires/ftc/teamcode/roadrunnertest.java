@@ -111,6 +111,35 @@ public class roadrunnertest extends LinearOpMode {
                 //.lineToConstantHeading(new Vector2d(-60, -12))
                 .build();
 
+        TrajectorySequence center = drive.trajectorySequenceBuilder(traj175.end())
+                .lineToConstantHeading(new Vector2d(-36, -12))
+                .build();
+
+        TrajectorySequence left = drive.trajectorySequenceBuilder(traj175.end())
+                .lineToConstantHeading(new Vector2d(-60, -12))
+                .build();
+
+        TrajectorySequence setupCycle = drive.trajectorySequenceBuilder(traj175.end())
+                .lineToConstantHeading(new Vector2d(-60, -12))
+                .build();
+
+        TrajectorySequence toCyclePole = drive.trajectorySequenceBuilder(setupCycle.end())
+                .lineToLinearHeading(new Pose2d(-46, -10, Math.toRadians(270)))
+                .build();
+
+        TrajectorySequence front = drive.trajectorySequenceBuilder(toCyclePole.end())
+                .lineToConstantHeading(new Vector2d(-46, -12))
+                .build();
+
+        TrajectorySequence back = drive.trajectorySequenceBuilder(front.end())
+                .lineToConstantHeading(new Vector2d(-46, -10))
+                .build();
+
+        TrajectorySequence toStack = drive.trajectorySequenceBuilder(back.end())
+                .lineToLinearHeading(new Pose2d(-60, -12, Math.toRadians(180)))
+                .build();
+
+
 
         /*
         TrajectorySequence traj2  = drive.trajectorySequenceBuilder( traj1.end() )
@@ -132,21 +161,19 @@ public class roadrunnertest extends LinearOpMode {
 
         BeepArm.ClawFullClose(-1);
         BeepArm.ViperSlideSetPos(2, 2, -1);
-
-
         drive.followTrajectorySequence(traj1);
-        sleep(500);
-
+        //sleep(500);
         BeepArm.ViperSlideSetPos(32, 24, -1);
-
-
         drive.followTrajectorySequence(traj15);
-
         BeepArm.ClawFullOpen(-1);
-
         BeepArm.ViperSlideSetPos(0, 24, -1);
-
         drive.followTrajectorySequence(traj175);
+
+        drive.followTrajectorySequence(setupCycle);
+        drive.followTrajectorySequence(toCyclePole);
+        drive.followTrajectorySequence(front);
+        drive.followTrajectorySequence(back);
+        drive.followTrajectorySequence(toStack);
         /*
         for (int i = 0; i < 5; i++){
             drive.followTrajectorySequence(traj2);
