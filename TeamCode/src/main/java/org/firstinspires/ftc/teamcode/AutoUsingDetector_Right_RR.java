@@ -38,14 +38,17 @@ public class AutoUsingDetector_Right_RR extends LinearOpMode {
     private static double RegionHeight = 50;
 
     private BBBDetector_Color.ElementPosition ParkingPos;
-    public static double startx = 34.5;
+    public static double startx = 32.0;
+    public static double starty = -65.0;
     public static double stackh = 5;
     public static double stackinc = 1.25;
+    public static double conestackx = 62.5;
+    public static double conestacky = -15;
 
     double startDir = Math.toRadians(90);
 
 
-    Pose2d startPose = new Pose2d(startx, -65, Math.toRadians(90));
+    Pose2d startPose = new Pose2d(startx, starty, Math.toRadians(90));
 
 
     @Override
@@ -56,54 +59,53 @@ public class AutoUsingDetector_Right_RR extends LinearOpMode {
 
         TrajectorySequence traj1  = drive.trajectorySequenceBuilder(startPose)
                 .setTangent(Math.toRadians(170))
-                .splineToConstantHeading(new Vector2d(12, -52), Math.toRadians(90))
+                .lineToConstantHeading(new Vector2d(12,-52))
                 .lineToLinearHeading( new Pose2d(12, -24, Math.toRadians(180)))
                 .build();
 
         TrajectorySequence traj15 = drive.trajectorySequenceBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(8, -24),
+                .lineToConstantHeading(new Vector2d(8, -23.75),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         TrajectorySequence traj175 = drive.trajectorySequenceBuilder(traj15.end())
-                //.back(4)
-                .setTangent(Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(24, -12), Math.toRadians(0))
-                //.lineToConstantHeading(new Vector2d(15, -24))
-                //.lineToLinearHeading(new Pose2d(15, -12, Math.toRadians(0)))
+                .lineToConstantHeading(new Vector2d(15, -23.75))
+                .lineToLinearHeading(new Pose2d(24, conestacky, Math.toRadians(0)))
                 .build();
 
         TrajectorySequence setupCycle = drive.trajectorySequenceBuilder(traj175.end())
-                .lineToConstantHeading(new Vector2d(61.5, -12))
+                .lineToConstantHeading(new Vector2d(conestackx, conestacky))
                 .build();
 
         TrajectorySequence toCyclePole = drive.trajectorySequenceBuilder(setupCycle.end())
-                .lineToLinearHeading(new Pose2d(46, -10, Math.toRadians(270)))
+                .back(4)
+                .lineToLinearHeading(new Pose2d(47, conestacky, Math.toRadians(270)))
                 .build();
 
         TrajectorySequence front = drive.trajectorySequenceBuilder(toCyclePole.end())
-                .lineToConstantHeading(new Vector2d(46, -17))
+                .lineToConstantHeading(new Vector2d(46.5, -19.5))
                 .build();
 
         TrajectorySequence back = drive.trajectorySequenceBuilder(front.end())
-                .lineToConstantHeading(new Vector2d(46, -10))
+                .lineToConstantHeading(new Vector2d(46.5, conestacky))
                 .build();
 
         TrajectorySequence toStack = drive.trajectorySequenceBuilder(back.end())
-                .lineToLinearHeading(new Pose2d(61.5, -12, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(conestackx-4, conestacky, Math.toRadians(0)))
+                .forward(4)
                 .build();
 
         TrajectorySequence center = drive.trajectorySequenceBuilder(back.end())
-                .lineToConstantHeading(new Vector2d(36, -12))
+                .lineToConstantHeading(new Vector2d(36, conestacky))
                 .build();
 
         TrajectorySequence left = drive.trajectorySequenceBuilder(back.end())
-                .lineToConstantHeading(new Vector2d(8, -12))
+                .lineToConstantHeading(new Vector2d(12, conestacky))
                 .build();
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(back.end())
-                .lineToConstantHeading(new Vector2d(56, -12))
+                .lineToConstantHeading(new Vector2d(56, conestacky))
                 .build();
 
         BeepArm.init(hardwareMap, this);

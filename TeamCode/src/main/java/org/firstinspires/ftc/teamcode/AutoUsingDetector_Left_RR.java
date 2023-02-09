@@ -1,30 +1,28 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.profile.VelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-
-import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequenceBuilder;
-
-import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.SampleMecanumDrive;
-
-import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequenceBuilder;
-
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-
+@Config
 @Autonomous(name="AutoUsingDetector_Left_RR", group="Left")
 
 public class AutoUsingDetector_Left_RR extends LinearOpMode {
     private OpenCvCamera webcam;
+
+
+    RobotArm BeepArm= new RobotArm();
 
     //Create New Robot based on RobotBase
     //RobotBase Beep = new RobotBase();
@@ -40,23 +38,77 @@ public class AutoUsingDetector_Left_RR extends LinearOpMode {
     private static double RegionHeight = 50;
 
     private BBBDetector_Color.ElementPosition ParkingPos;
+    public static double startx = -39.0;
+    public static double starty = -65.0;
+    public static double stackh = 5;
+    public static double stackinc = 1.25;
+    public static double conestackx = -62.5;
+    public static double conestacky = -14;
+
+    double startDir = Math.toRadians(90);
+
+
+    Pose2d startPose = new Pose2d(startx, starty, Math.toRadians(90));
+
 
     @Override
     public void runOpMode() {
-        //Beep.init(hardwareMap, this);
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        SampleMecanumDrive drive  = new SampleMecanumDrive(hardwareMap);
 
-        double startDir = Math.toRadians(90);
 
-        RobotArm BeepArm= new RobotArm();
+        TrajectorySequence traj1  = drive.trajectorySequenceBuilder(startPose)
+                .lineToConstantHeading(new Vector2d(-12,starty+4))
+                .lineToLinearHeading( new Pose2d(-12, -27, Math.toRadians(0)))
+                .build();
+
+        TrajectorySequence traj15 = drive.trajectorySequenceBuilder(traj1.end())
+                .lineToConstantHeading(new Vector2d(-8, -27),
+                        SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .build();
+
+        TrajectorySequence traj175 = drive.trajectorySequenceBuilder(traj15.end())
+                .lineToConstantHeading(new Vector2d(-12, -27))
+                .lineToLinearHeading(new Pose2d(-14, conestacky, Math.toRadians(180)))
+                .build();
+
+        TrajectorySequence setupCycle = drive.trajectorySequenceBuilder(traj175.end())
+                .lineToConstantHeading(new Vector2d(conestackx, conestacky))
+                .build();
+
+        TrajectorySequence toCyclePole = drive.trajectorySequenceBuilder(setupCycle.end())
+                .back(4)
+                .lineToLinearHeading(new Pose2d(-48, conestacky, Math.toRadians(270)))
+                .build();
+
+        TrajectorySequence front = drive.trajectorySequenceBuilder(toCyclePole.end())
+                .lineToConstantHeading(new Vector2d(-48, -20.5))
+                .build();
+
+        TrajectorySequence back = drive.trajectorySequenceBuilder(front.end())
+                .lineToConstantHeading(new Vector2d(-48, conestacky))
+                .build();
+
+        TrajectorySequence toStack = drive.trajectorySequenceBuilder(back.end())
+                .lineToLinearHeading(new Pose2d(conestackx+4, conestacky, Math.toRadians(180)))
+                .forward(4)
+                .build();
+
+        TrajectorySequence center = drive.trajectorySequenceBuilder(back.end())
+                .lineToConstantHeading(new Vector2d(-36, conestacky))
+                .build();
+
+        TrajectorySequence left = drive.trajectorySequenceBuilder(back.end())
+                .lineToConstantHeading(new Vector2d(-58, conestacky))
+                .build();
+
+        TrajectorySequence right = drive.trajectorySequenceBuilder(back.end())
+                .lineToConstantHeading(new Vector2d(-12, conestacky))
+                .build();
 
         BeepArm.init(hardwareMap, this);
 
-
-        Pose2d startPose = new Pose2d(-40, -65, Math.toRadians(90));
-
-        Pose2d startPose2 = new Pose2d(-0, -28, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
         // OpenCV webcam
@@ -72,6 +124,7 @@ public class AutoUsingDetector_Left_RR extends LinearOpMode {
             @Override
             public void onOpened() {
                 webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+
             }
 
             @Override
@@ -86,89 +139,131 @@ public class AutoUsingDetector_Left_RR extends LinearOpMode {
 
         telemetry.addData("Push Camera Stream and tap screen to update image \nAlign the square to the cone \n \n Wait at least 5 Sec before Pressing Start", "");
         telemetry.update();
-
         waitForStart();
+
 
         // Get the latest frame analyzed result
         ParkingPos = myPipeline.getAnalysis();
-
-        TrajectorySequence traj1  = drive.trajectorySequenceBuilder(startPose)
-                .setTangent(Math.toRadians(10))
-                .splineToConstantHeading(new Vector2d(-12, -52), Math.toRadians(90))
-                .lineToLinearHeading( new Pose2d(-10, -23, Math.toRadians(0)))
-                .build();
-
-        TrajectorySequence traj15 = drive.trajectorySequenceBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(-5, -24))
-                .build();
-
-        TrajectorySequence traj175 = drive.trajectorySequenceBuilder(traj15.end())
-                //.splineToConstantHeading(new Vector2d(0, -32), Math.toRadians(90))
-                //.lineToConstantHeading(new Vector2d(0, -30))
-                //.lineToConstantHeading(new Vector2d(0, -36))
-                //.lineToConstantHeading(new Vector2d(-12, -36))
-                .lineToConstantHeading(new Vector2d(-12, -24))
-                .lineToLinearHeading(new Pose2d(-12, -12, Math.toRadians(180)))
-                //.lineToConstantHeading(new Vector2d(-60, -12))
-                .build();
-
-        TrajectorySequence center = drive.trajectorySequenceBuilder(traj175.end())
-                .lineToConstantHeading(new Vector2d(-36, -12))
-                .build();
-
-        TrajectorySequence left = drive.trajectorySequenceBuilder(traj175.end())
-                .lineToConstantHeading(new Vector2d(-60, -12))
-                .build();
-
-
 
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
             telemetry.addLine("Autonomous A - Blue - Right");
             telemetry.update();
 
-            BeepArm.ClawFullClose(-1);
-            BeepArm.ViperSlideSetPos(2, 2, -1);
+            BeepArm.ClawFullClose(450); //wait 250 ms to make sure the cone is gripped well
+            BeepArm.ViperSlideSetPos(2, 24, -1);
+            BeepArm.ViperSlideSetPos(32.5, 11, 1);
             drive.followTrajectorySequence(traj1);
-            //sleep(500);
-            BeepArm.ViperSlideSetPos(32, 24, -1);
-            drive.followTrajectorySequence(traj15);
-            BeepArm.ClawFullOpen(-1);
-            BeepArm.ViperSlideSetPos(0, 24, -1);
-            drive.followTrajectorySequence(traj175);
 
-            //AUTONOMOUS_A();
+            BeepArm.ViperSlideSetPos(32.5, 24, 1);
+            drive.followTrajectorySequence(traj15);
+            sleep(250); // wait a little if the robot wiggle
+
+            BeepArm.ViperSlideSetPos(30, 6, 1000);
+            BeepArm.ClawFullOpen(250);
+            drive.followTrajectorySequence(traj175);
+            BeepArm.ViperSlideSetPos(stackh, 36, 1); //Don't wait.. go back now
+
+            drive.followTrajectorySequence(setupCycle);
+            BeepArm.ClawFullClose(750);
+            BeepArm.ViperSlideSetPos(16, 36, -1);
+            drive.followTrajectorySequence(toCyclePole);
+            drive.followTrajectorySequence(front);
+            BeepArm.ViperSlideSetPos(6, 6, 250);
+            BeepArm.ClawFullOpen(250);
+            drive.followTrajectorySequence(back);
+            BeepArm.ViperSlideSetPos(stackh - stackinc, 24, -1);
+            drive.followTrajectorySequence(toStack);
+            BeepArm.ClawFullClose(750);
+            BeepArm.ViperSlideSetPos(16, 36, -1);
+            drive.followTrajectorySequence(toCyclePole);
+            drive.followTrajectorySequence(front);
+            BeepArm.ViperSlideSetPos(6, 6, 250);
+            BeepArm.ClawFullOpen(250);
+            drive.followTrajectorySequence(back);
+            BeepArm.ViperSlideSetPos(0,24,1);
+
+            drive.followTrajectorySequence(right);
+
         } else if (ParkingPos == BBBDetector_Color.ElementPosition.CENTER) {
             telemetry.addLine("Autonomous B - Green - Center");
             telemetry.update();
 
-            BeepArm.ClawFullClose(-1);
-            BeepArm.ViperSlideSetPos(2, 2, -1);
+            BeepArm.ClawFullClose(450); //wait 250 ms to make sure the cone is gripped well
+            BeepArm.ViperSlideSetPos(2, 24, -1);
+            BeepArm.ViperSlideSetPos(32.5, 11, 1);
             drive.followTrajectorySequence(traj1);
-            //sleep(500);
-            BeepArm.ViperSlideSetPos(32, 24, -1);
+
+            BeepArm.ViperSlideSetPos(32.5, 24, 1);
             drive.followTrajectorySequence(traj15);
-            BeepArm.ClawFullOpen(-1);
-            BeepArm.ViperSlideSetPos(0, 24, -1);
+            sleep(250); // wait a little if the robot wiggle
+
+            BeepArm.ViperSlideSetPos(30, 6, 1000);
+            BeepArm.ClawFullOpen(250);
             drive.followTrajectorySequence(traj175);
+            BeepArm.ViperSlideSetPos(stackh, 36, 1); //Don't wait.. go back now
+
+            drive.followTrajectorySequence(setupCycle);
+            BeepArm.ClawFullClose(750);
+            BeepArm.ViperSlideSetPos(16, 36, -1);
+            drive.followTrajectorySequence(toCyclePole);
+            drive.followTrajectorySequence(front);
+            BeepArm.ViperSlideSetPos(6, 6, 250);
+            BeepArm.ClawFullOpen(250);
+            drive.followTrajectorySequence(back);
+            BeepArm.ViperSlideSetPos(stackh - stackinc, 24, -1);
+            drive.followTrajectorySequence(toStack);
+            BeepArm.ClawFullClose(750);
+            BeepArm.ViperSlideSetPos(16, 36, -1);
+            drive.followTrajectorySequence(toCyclePole);
+            drive.followTrajectorySequence(front);
+            BeepArm.ViperSlideSetPos(6, 6, 250);
+            BeepArm.ClawFullOpen(250);
+            drive.followTrajectorySequence(back);
+            BeepArm.ViperSlideSetPos(0,24,1);
 
             drive.followTrajectorySequence(center);
-            //AUTONOMOUS_B();
+
         } else if (ParkingPos == BBBDetector_Color.ElementPosition.LEFT) {
             telemetry.addLine("Autonomous C - Yellow - Left");
             telemetry.update();
 
-            BeepArm.ClawFullClose(-1);
-            BeepArm.ViperSlideSetPos(2, 2, -1);
+            BeepArm.ClawFullClose(450); //wait 250 ms to make sure the cone is gripped well
+            BeepArm.ViperSlideSetPos(2, 24, -1);
+            BeepArm.ViperSlideSetPos(32.5, 11, 1);
             drive.followTrajectorySequence(traj1);
-            //sleep(500);
-            BeepArm.ViperSlideSetPos(32, 24, -1);
+
+            BeepArm.ViperSlideSetPos(32.5, 24, 1);
             drive.followTrajectorySequence(traj15);
-            BeepArm.ClawFullOpen(-1);
-            BeepArm.ViperSlideSetPos(0, 24, -1);
+            sleep(250); // wait a little if the robot wiggle
+
+            BeepArm.ViperSlideSetPos(30, 6, 1000);
+            BeepArm.ClawFullOpen(250);
             drive.followTrajectorySequence(traj175);
+            BeepArm.ViperSlideSetPos(stackh, 36, 1); //Don't wait.. go back now
+
+            drive.followTrajectorySequence(setupCycle);
+            BeepArm.ClawFullClose(750);
+            BeepArm.ViperSlideSetPos(16, 36, -1);
+            drive.followTrajectorySequence(toCyclePole);
+            drive.followTrajectorySequence(front);
+            BeepArm.ViperSlideSetPos(6, 6, 250);
+            BeepArm.ClawFullOpen(250);
+            drive.followTrajectorySequence(back);
+            BeepArm.ViperSlideSetPos(stackh - stackinc, 24, -1);
+            drive.followTrajectorySequence(toStack);
+            BeepArm.ClawFullClose(750);
+            BeepArm.ViperSlideSetPos(16, 36, -1);
+            drive.followTrajectorySequence(toCyclePole);
+            drive.followTrajectorySequence(front);
+            BeepArm.ViperSlideSetPos(6, 6, 250);
+            BeepArm.ClawFullOpen(250);
+            drive.followTrajectorySequence(back);
+            BeepArm.ViperSlideSetPos(0,24,1);
 
             drive.followTrajectorySequence(left);
-            //AUTONOMOUS_C();
+
         }
+
     }
+
 }

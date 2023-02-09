@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
+import com.noahbres.meepmeep.roadrunner.SampleMecanumDrive;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 
@@ -91,13 +92,23 @@ public class MeepMeepTesting {
                                 .setTangent(Math.toRadians(10))
                                 .splineToConstantHeading(new Vector2d(-12, -52), Math.toRadians(90))
                                 .lineToLinearHeading( new Pose2d(-12, -24, Math.toRadians(0)))
+                                .lineToConstantHeading(new Vector2d(-7, -24))
+                                .lineToConstantHeading(new Vector2d(-12, -24))
                                 //.splineToConstantHeading(new Vector2d(0, -32), Math.toRadians(90))
                                 //.lineToConstantHeading(new Vector2d(0, -30))
                                 //.lineToConstantHeading(new Vector2d(0, -36))
                                 //.lineToConstantHeading(new Vector2d(-12, -36))
                                 .lineToLinearHeading(new Pose2d(-12, -12, Math.toRadians(180)))
-                                .lineToConstantHeading(new Vector2d(-60, -12))
-                                .lineToSplineHeading(new Pose2d(-24, -7.5, Math.toRadians(90)))
+                                .lineToConstantHeading(new Vector2d(-62, -12))
+                                .lineToSplineHeading(new Pose2d(-48, -10, Math.toRadians(270)))
+                                .lineToConstantHeading(new Vector2d(-48, -17))
+                                .lineToConstantHeading(new Vector2d(-48, -12))
+                                .lineToLinearHeading(new Pose2d(-58, -12, Math.toRadians(180)))
+                                .lineToConstantHeading(new Vector2d(-62, -12))
+                                .lineToSplineHeading(new Pose2d(-48, -10, Math.toRadians(270)))
+                                .lineToConstantHeading(new Vector2d(-48, -17))
+                                .lineToConstantHeading(new Vector2d(-48, -12))
+                                .lineToLinearHeading(new Pose2d(-58, -12, Math.toRadians(180)))
 
 
 
