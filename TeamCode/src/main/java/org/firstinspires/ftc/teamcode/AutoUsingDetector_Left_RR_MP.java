@@ -38,16 +38,16 @@ public class AutoUsingDetector_Left_RR_MP extends LinearOpMode {
 
     private BBBDetector_Color.ElementPosition ParkingPos;
 
-    public static Vector2d coneStack = new Vector2d(-61.25, -13.5);
-    public static Vector2d shortPole = new Vector2d(-49,-19.5);
+    public static Vector2d coneStack = new Vector2d(-60.25, -13.5);
+    public static Vector2d shortPole = new Vector2d(-47.5,-19.0);
 
     public static Vector2d p1 = new Vector2d(-40,-65); // Starting Point
     public static Vector2d p2 = new Vector2d(-13,-63.5); //
     public static Vector2d p3 = new Vector2d(-15,-25.5); // Right of the Medium Middle Junction
-    public static Vector2d p4 = new Vector2d(-18, -24.75); // Align w pole
-    public static Vector2d p5 = new Vector2d(-13,-23.75); //
-    public static Vector2d p6 = new Vector2d(-16,  coneStack.getY() ); //
-
+    public static Vector2d p4 = new Vector2d(-16.5, -24.75); // Align w pole
+    public static Vector2d p5 = new Vector2d(-15,-23.75); //
+    public static Vector2d p6 = new Vector2d(-14,  coneStack.getY() ); //
+    public static long stackDelay = 500;
 
     public static double stackh = 5;
     public static double stackinc = 1.25;
@@ -173,7 +173,7 @@ public class AutoUsingDetector_Left_RR_MP extends LinearOpMode {
 
             drive.followTrajectorySequence(setupCycle);
             BeepArm.ClawFullClose(750);
-            BeepArm.ViperSlideSetPos(16, 36, -1);
+            BeepArm.ViperSlideSetPos(16, 36, stackDelay);
             drive.followTrajectorySequence(toCyclePole);
             drive.followTrajectorySequence(front);
             BeepArm.ViperSlideSetPos(6, 6, 250);
@@ -182,7 +182,7 @@ public class AutoUsingDetector_Left_RR_MP extends LinearOpMode {
             BeepArm.ViperSlideSetPos(stackh - stackinc, 24, -1);
             drive.followTrajectorySequence(toStack);
             BeepArm.ClawFullClose(750);
-            BeepArm.ViperSlideSetPos(16, 36, -1);
+            BeepArm.ViperSlideSetPos(16, 36, stackDelay);
             drive.followTrajectorySequence(toCyclePole);
             drive.followTrajectorySequence(front);
             BeepArm.ViperSlideSetPos(6, 6, 250);
@@ -205,14 +205,14 @@ public class AutoUsingDetector_Left_RR_MP extends LinearOpMode {
             drive.followTrajectorySequence(traj15);
             sleep(250); // wait a little if the robot wiggle
 
-            BeepArm.ViperSlideSetPos(30, 6, 1000);
+            BeepArm.ViperSlideSetPos(22, 6, 1000);
             BeepArm.ClawFullOpen(250);
             drive.followTrajectorySequence(traj175);
             BeepArm.ViperSlideSetPos(stackh, 36, 1); //Don't wait.. go back now
 
             drive.followTrajectorySequence(setupCycle);
             BeepArm.ClawFullClose(750);
-            BeepArm.ViperSlideSetPos(16, 36, -1);
+            BeepArm.ViperSlideSetPos(16, 36, stackDelay);
             drive.followTrajectorySequence(toCyclePole);
             drive.followTrajectorySequence(front);
             BeepArm.ViperSlideSetPos(6, 6, 250);
@@ -221,7 +221,7 @@ public class AutoUsingDetector_Left_RR_MP extends LinearOpMode {
             BeepArm.ViperSlideSetPos(stackh - stackinc, 24, -1);
             drive.followTrajectorySequence(toStack);
             BeepArm.ClawFullClose(750);
-            BeepArm.ViperSlideSetPos(16, 36, -1);
+            BeepArm.ViperSlideSetPos(16, 36, stackDelay);
             drive.followTrajectorySequence(toCyclePole);
             drive.followTrajectorySequence(front);
             BeepArm.ViperSlideSetPos(6, 6, 250);
@@ -244,14 +244,14 @@ public class AutoUsingDetector_Left_RR_MP extends LinearOpMode {
             drive.followTrajectorySequence(traj15);
             sleep(250); // wait a little if the robot wiggle
 
-            BeepArm.ViperSlideSetPos(30, 6, 1000);
+            BeepArm.ViperSlideSetPos(22, 6, 1000);
             BeepArm.ClawFullOpen(250);
             drive.followTrajectorySequence(traj175);
             BeepArm.ViperSlideSetPos(stackh, 36, 1); //Don't wait.. go back now
 
             drive.followTrajectorySequence(setupCycle);
             BeepArm.ClawFullClose(750);
-            BeepArm.ViperSlideSetPos(16, 36, -1);
+            BeepArm.ViperSlideSetPos(16, 36, stackDelay);
             drive.followTrajectorySequence(toCyclePole);
             drive.followTrajectorySequence(front);
             BeepArm.ViperSlideSetPos(6, 6, 250);
@@ -260,7 +260,7 @@ public class AutoUsingDetector_Left_RR_MP extends LinearOpMode {
             BeepArm.ViperSlideSetPos(stackh - stackinc, 24, -1);
             drive.followTrajectorySequence(toStack);
             BeepArm.ClawFullClose(750);
-            BeepArm.ViperSlideSetPos(16, 36, -1);
+            BeepArm.ViperSlideSetPos(16, 36, stackDelay);
             drive.followTrajectorySequence(toCyclePole);
             drive.followTrajectorySequence(front);
             BeepArm.ViperSlideSetPos(6, 6, 250);
