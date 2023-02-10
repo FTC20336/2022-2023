@@ -177,10 +177,10 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
                     rx = -rx;
                 }
                 if (gamepad1.right_bumper || gamepad2.right_bumper) {
-                    xVel = xVel / 5;
-                    yVel = yVel / 5;
-                    rx = rx / 5;
-                    SlideSpeed = SlideInitialSpeed / 5;
+                    xVel = xVel / 4;
+                    yVel = yVel / 4;
+                    rx = rx / 4;
+                    SlideSpeed = SlideInitialSpeed / 4;
                 }
                 if (!gamepad1.right_bumper && !gamepad2.right_bumper) {
                     SlideSpeed = SlideInitialSpeed;

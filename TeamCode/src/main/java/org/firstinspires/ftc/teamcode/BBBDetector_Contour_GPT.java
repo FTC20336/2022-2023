@@ -1,29 +1,26 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.*;
 
-import org.apache.commons.math3.geometry.euclidean.twod.Line;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryImpl;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.opencv.core.*;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 //@Disabled
 @Config
- public class BBBDetector_Contour extends OpenCvPipeline{
+ public class BBBDetector_Contour_GPT extends OpenCvPipeline{
     enum SkystoneLocation {
         LEFT,
         RIGHT,
@@ -38,7 +35,7 @@ import java.util.*;
     public static double sat2 = 255;
     public static double v1 = 0;
     public static double v2 = 255;
-    public org.firstinspires.ftc.robotcore.external.Telemetry telemetry;
+    public Telemetry telemetry;
 
     private int width; // width of the image
     SkystoneLocation location;
@@ -56,7 +53,7 @@ import java.util.*;
      *
      * @param width The width of the image (check your camera)
      */
-    public BBBDetector_Contour(int width) {
+    public BBBDetector_Contour_GPT(int width) {
         this.width = width;
     }
 
@@ -73,6 +70,9 @@ import java.util.*;
         // Make a working copy of the input matrix in HSV
 
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
+
+        Mat blurred = new Mat();
+        Imgproc.GaussianBlur(mat, blurred, new Size(5, 5), 0);
 
 
         // if something is wrong, we assume there's no skystone
@@ -100,19 +100,22 @@ import java.util.*;
         // inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
         Core.inRange(mat, lowHSV, highHSV, thresh);
 
+
         // Use Canny Edge Detection to find edges
         // you might have to tune the thresholds for hysteresis
         Mat edges = new Mat();
-        Imgproc.Canny(thresh, edges, 100, 300);
+        Imgproc.Canny(blurred, edges, 100, 300);
 
         // https://docs.opencv.org/3.4/da/d0c/tutorial_bounding_rects_circles.html
         // Oftentimes the edges are disconnected. findContours connects these edges.
         // We then find the bounding rectangles of those contours
         List<MatOfPoint> contours = new ArrayList<>();
+
         Mat hierarchy = new Mat();
-        Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(thresh, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
        //  Imgproc.fitLine();
 
+        /*
         MatOfPoint2f[] contoursPoly  = new MatOfPoint2f[contours.size()];
         Rect[] boundRect = new Rect[contours.size()];
         for (int i = 0; i < contours.size(); i++) {
@@ -120,6 +123,25 @@ import java.util.*;
             Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(i).toArray()), contoursPoly[i], 3, true);
             boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
         }
+
+         */
+
+        MatOfPoint2f points = new MatOfPoint2f();
+        for (int i = 0; i < contours.size(); i++) {
+            MatOfPoint contour = contours.get(i);
+            RotatedRect rect = Imgproc.minAreaRect(new MatOfPoint2f(contour.toArray()));
+
+            double angle = rect.angle;
+
+            Point listOfPoints[] = new Point[4];
+            rect.points(listOfPoints);
+            for (int j = 0; j < 4; ++j) {
+                Imgproc.line(mat, listOfPoints[j], listOfPoints[(j+1)%4], new Scalar(255, 255, 255));
+            }
+            Imgproc.putText(mat, angle + "", new Point(listOfPoints[1].x+50, listOfPoints[1].y), 3, 5, new Scalar(0, 0, 0) );
+        }
+
+
 
         // Iterate and check whether the bounding boxes
         // cover left and/or right side of the image

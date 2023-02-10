@@ -20,7 +20,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 public class RR_StrafeTest extends LinearOpMode {
 
-    public static double  strafeDistance = 36;
+    public static double  strafeDistance = 72;
 
     @Override
     public void runOpMode() {
@@ -44,7 +44,7 @@ public class RR_StrafeTest extends LinearOpMode {
         telemetry.update();
 
         drive.followTrajectorySequence(traj1);
-        sleep(1000);
+        sleep(5000);
         drive.followTrajectorySequence(traj2);
 
     }

@@ -16,8 +16,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 @Config
-@Autonomous(name="AutoUsingDetector_Left_RR", group="Left")
-
+@Autonomous(name="Left_RR_TP", group="Left")
 public class AutoUsingDetector_Left_RR extends LinearOpMode {
     private OpenCvCamera webcam;
 
@@ -38,17 +37,26 @@ public class AutoUsingDetector_Left_RR extends LinearOpMode {
     private static double RegionHeight = 50;
 
     private BBBDetector_Color.ElementPosition ParkingPos;
-    public static double startx = -39.0;
-    public static double starty = -65.0;
+
+    public static Vector2d coneStack = new Vector2d(-62.25, -13.5);
+    public static Vector2d shortPole = new Vector2d(-50,-19.5);
+
+    public static Vector2d p1 = new Vector2d(-40,-65); // Starting Point
+    public static Vector2d p2 = new Vector2d(-15,-63.5); //
+    public static Vector2d p3 = new Vector2d(-15,-25.5); // Right of the Tall Middle Junction
+    public static Vector2d p4 = new Vector2d(-9, -24.75); //
+    public static Vector2d p5 = new Vector2d(-15.5,-23.75); //
+    public static Vector2d p6 = new Vector2d(-16,  coneStack.getY() ); //
+
+
     public static double stackh = 5;
     public static double stackinc = 1.25;
-    public static double conestackx = -62.5;
-    public static double conestacky = -14;
+
 
     double startDir = Math.toRadians(90);
 
 
-    Pose2d startPose = new Pose2d(startx, starty, Math.toRadians(90));
+    Pose2d startPose = new Pose2d(p1.getX(), p1.getY(), Math.toRadians(90));
 
 
     @Override
@@ -58,53 +66,53 @@ public class AutoUsingDetector_Left_RR extends LinearOpMode {
 
 
         TrajectorySequence traj1  = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-12,starty+4))
-                .lineToLinearHeading( new Pose2d(-12, -27, Math.toRadians(0)))
+                .lineToConstantHeading(new Vector2d(p2.getX(),p2.getY()))
+                .lineToLinearHeading( new Pose2d(p3.getX(), p3.getY(), Math.toRadians(0)))
                 .build();
 
         TrajectorySequence traj15 = drive.trajectorySequenceBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(-8, -27),
+                .lineToConstantHeading(new Vector2d(p4.getX(), p4.getY()),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         TrajectorySequence traj175 = drive.trajectorySequenceBuilder(traj15.end())
-                .lineToConstantHeading(new Vector2d(-12, -27))
-                .lineToLinearHeading(new Pose2d(-14, conestacky, Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(p5.getX(), p5.getY()))
+                .lineToLinearHeading(new Pose2d(p6.getX(), coneStack.getY(), Math.toRadians(180)))
                 .build();
 
         TrajectorySequence setupCycle = drive.trajectorySequenceBuilder(traj175.end())
-                .lineToConstantHeading(new Vector2d(conestackx, conestacky))
+                .lineToConstantHeading(new Vector2d(coneStack.getX(), coneStack.getY()))
                 .build();
 
         TrajectorySequence toCyclePole = drive.trajectorySequenceBuilder(setupCycle.end())
                 .back(4)
-                .lineToLinearHeading(new Pose2d(-48, conestacky, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(shortPole.getX(), coneStack.getY(), Math.toRadians(270)))
                 .build();
 
         TrajectorySequence front = drive.trajectorySequenceBuilder(toCyclePole.end())
-                .lineToConstantHeading(new Vector2d(-48, -20.5))
+                .lineToConstantHeading(new Vector2d(shortPole.getX(), shortPole.getY()))
                 .build();
 
         TrajectorySequence back = drive.trajectorySequenceBuilder(front.end())
-                .lineToConstantHeading(new Vector2d(-48, conestacky))
+                .lineToConstantHeading(new Vector2d(shortPole.getX(), coneStack.getY()))
                 .build();
 
         TrajectorySequence toStack = drive.trajectorySequenceBuilder(back.end())
-                .lineToLinearHeading(new Pose2d(conestackx+4, conestacky, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(coneStack.getX()+4, coneStack.getY(), Math.toRadians(180)))
                 .forward(4)
                 .build();
 
         TrajectorySequence center = drive.trajectorySequenceBuilder(back.end())
-                .lineToConstantHeading(new Vector2d(-36, conestacky))
+                .lineToConstantHeading(new Vector2d(-36, coneStack.getY()))
                 .build();
 
         TrajectorySequence left = drive.trajectorySequenceBuilder(back.end())
-                .lineToConstantHeading(new Vector2d(-58, conestacky))
+                .lineToConstantHeading(new Vector2d(-58, coneStack.getY()))
                 .build();
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(back.end())
-                .lineToConstantHeading(new Vector2d(-12, conestacky))
+                .lineToConstantHeading(new Vector2d(-12, coneStack.getY()))
                 .build();
 
         BeepArm.init(hardwareMap, this);

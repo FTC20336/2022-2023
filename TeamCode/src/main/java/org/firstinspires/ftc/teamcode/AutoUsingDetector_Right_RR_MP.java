@@ -4,7 +4,6 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.profile.VelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -15,10 +14,11 @@ import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequen
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-@Config
-@Autonomous(name="Right_RR_TP", group="Right")
 
-public class AutoUsingDetector_Right_RR extends LinearOpMode {
+@Config
+@Autonomous(name="Right_RR_MP", group="Right")
+
+public class AutoUsingDetector_Right_RR_MP extends LinearOpMode {
     private OpenCvCamera webcam;
 
 
@@ -39,15 +39,15 @@ public class AutoUsingDetector_Right_RR extends LinearOpMode {
 
     private BBBDetector_Color.ElementPosition ParkingPos;
 
-    public static Vector2d coneStack = new Vector2d(62.25, -15);
-    public static Vector2d shortPole = new Vector2d(48,-19.5);
+    public static Vector2d coneStack = new Vector2d(59.75, -15);
+    public static Vector2d shortPole = new Vector2d(45,-19.5);
 
     public static Vector2d p1 = new Vector2d(32,-65); // Starting Point
-    public static Vector2d p2 = new Vector2d(13.15,-63); //
-    public static Vector2d p3 = new Vector2d(13.25,-25.5); // Right of the Tall Middle Junction
-    public static Vector2d p4 = new Vector2d(9, -24.75); //
-    public static Vector2d p5 = new Vector2d(9,-23.75); //
-    public static Vector2d p6 = new Vector2d(16,  coneStack.getY() ); //
+    public static Vector2d p2 = new Vector2d(12.2,-64); //
+    public static Vector2d p3 = new Vector2d(12.2,-26.5); // Right of the Tall Middle Junction
+    public static Vector2d p4 = new Vector2d(16.5, -26.5); //Medium Pole
+    public static Vector2d p5 = new Vector2d(12,-25.5); //
+    public static Vector2d p6 = new Vector2d(12,  coneStack.getY()+3 ); //
 
 
     public static double stackh = 5;
@@ -68,7 +68,7 @@ public class AutoUsingDetector_Right_RR extends LinearOpMode {
 
         TrajectorySequence traj1  = drive.trajectorySequenceBuilder(startPose)
                 .lineToConstantHeading(new Vector2d(p2.getX(),p2.getY()))
-                .lineToLinearHeading( new Pose2d(p3.getX(), p3.getY(), Math.toRadians(180)))
+                .lineToLinearHeading( new Pose2d(p3.getX(), p3.getY(), Math.toRadians(0)))
                 .build();
 
         TrajectorySequence traj15 = drive.trajectorySequenceBuilder(traj1.end())
@@ -96,7 +96,7 @@ public class AutoUsingDetector_Right_RR extends LinearOpMode {
                 .build();
 
         TrajectorySequence back = drive.trajectorySequenceBuilder(front.end())
-                .lineToConstantHeading(new Vector2d(shortPole.getX(), coneStack.getY()))
+                .lineToConstantHeading(new Vector2d(shortPole.getX(), coneStack.getY()+1))
                 .build();
 
         TrajectorySequence toStack = drive.trajectorySequenceBuilder(back.end())
@@ -109,7 +109,7 @@ public class AutoUsingDetector_Right_RR extends LinearOpMode {
                 .build();
 
         TrajectorySequence left = drive.trajectorySequenceBuilder(back.end())
-                .lineToConstantHeading(new Vector2d(14, coneStack.getY()))
+                .lineToConstantHeading(new Vector2d(13, coneStack.getY()))
                 .build();
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(back.end())
@@ -160,14 +160,14 @@ public class AutoUsingDetector_Right_RR extends LinearOpMode {
 
             BeepArm.ClawFullClose(450); //wait 250 ms to make sure the cone is gripped well
             BeepArm.ViperSlideSetPos(2, 24, -1);
-            BeepArm.ViperSlideSetPos(32.5, 11, 1);
+            BeepArm.ViperSlideSetPos(24, 15, 1);
             drive.followTrajectorySequence(traj1);
 
-            BeepArm.ViperSlideSetPos(32.5, 24, 1);
+            BeepArm.ViperSlideSetPos(24, 24, 1);
             drive.followTrajectorySequence(traj15);
             sleep(250); // wait a little if the robot wiggle
 
-            BeepArm.ViperSlideSetPos(30, 6, 1000);
+            BeepArm.ViperSlideSetPos(22, 6, 1000);
             BeepArm.ClawFullOpen(250);
             drive.followTrajectorySequence(traj175);
             BeepArm.ViperSlideSetPos(stackh, 36, 1); //Don't wait.. go back now
@@ -199,14 +199,14 @@ public class AutoUsingDetector_Right_RR extends LinearOpMode {
 
             BeepArm.ClawFullClose(450); //wait 250 ms to make sure the cone is gripped well
             BeepArm.ViperSlideSetPos(2, 24, -1);
-            BeepArm.ViperSlideSetPos(32.5, 11, 1);
+            BeepArm.ViperSlideSetPos(24, 15, 1);
             drive.followTrajectorySequence(traj1);
 
-            BeepArm.ViperSlideSetPos(32.5, 24, 1);
+            BeepArm.ViperSlideSetPos(24, 24, 1);
             drive.followTrajectorySequence(traj15);
             sleep(250); // wait a little if the robot wiggle
 
-            BeepArm.ViperSlideSetPos(30, 6, 1000);
+            BeepArm.ViperSlideSetPos(22, 6, 1000);
             BeepArm.ClawFullOpen(250);
             drive.followTrajectorySequence(traj175);
             BeepArm.ViperSlideSetPos(stackh, 36, 1); //Don't wait.. go back now
@@ -238,14 +238,14 @@ public class AutoUsingDetector_Right_RR extends LinearOpMode {
 
             BeepArm.ClawFullClose(450); //wait 250 ms to make sure the cone is gripped well
             BeepArm.ViperSlideSetPos(2, 24, -1);
-            BeepArm.ViperSlideSetPos(32.5, 11, 1);
+            BeepArm.ViperSlideSetPos(24, 15, 1);
             drive.followTrajectorySequence(traj1);
 
-            BeepArm.ViperSlideSetPos(32.5, 24, 1);
+            BeepArm.ViperSlideSetPos(24, 24, 1);
             drive.followTrajectorySequence(traj15);
             sleep(250); // wait a little if the robot wiggle
 
-            BeepArm.ViperSlideSetPos(30, 6, 1000);
+            BeepArm.ViperSlideSetPos(22, 6, 1000);
             BeepArm.ClawFullOpen(250);
             drive.followTrajectorySequence(traj175);
             BeepArm.ViperSlideSetPos(stackh, 36, 1); //Don't wait.. go back now

@@ -35,8 +35,8 @@ public class contourtesting extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"), cameraMonitorViewId);
 
         //OpenCV Pipeline
-        BBBDetector_Contour myPipeline;
-        webcam.setPipeline(myPipeline = new BBBDetector_Contour(CAMERA_WIDTH));
+        BBBDetector_Contour_GPT myPipeline;
+        webcam.setPipeline(myPipeline = new BBBDetector_Contour_GPT(CAMERA_WIDTH));
 
         // Webcam Streaming
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
