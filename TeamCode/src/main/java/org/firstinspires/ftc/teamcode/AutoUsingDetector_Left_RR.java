@@ -43,8 +43,8 @@ public class AutoUsingDetector_Left_RR extends LinearOpMode {
 
     public static Vector2d p1 = new Vector2d(-40,-65); // Starting Point
     public static Vector2d p2 = new Vector2d(-15,-63.5); //
-    public static Vector2d p3 = new Vector2d(-15,-25.5); // Right of the Tall Middle Junction
-    public static Vector2d p4 = new Vector2d(-9, -24.75); //
+    public static Vector2d p3 = new Vector2d(-15,-24.75); // Right of the Tall Middle Junction
+    public static Vector2d p4 = new Vector2d(-10, -24.75); // Tall Junction Drop Location
     public static Vector2d p5 = new Vector2d(-15.5,-23.75); //
     public static Vector2d p6 = new Vector2d(-16,  coneStack.getY() ); //
 
