@@ -39,8 +39,8 @@ public class AutoUsingDetector_Right_RR extends LinearOpMode {
 
     private BBBDetector_Color.ElementPosition ParkingPos;
 
-    public static Vector2d coneStack = new Vector2d(62.25, -15);
-    public static Vector2d shortPole = new Vector2d(48,-19.5);
+    public static Vector2d coneStack = new Vector2d(62.25, -17.5);
+    public static Vector2d shortPole = new Vector2d(48,-21);
 
     public static Vector2d p1 = new Vector2d(32,-65); // Starting Point
     public static Vector2d p2 = new Vector2d(13.15,-63); //
