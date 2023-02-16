@@ -1,14 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.provider.ContactsContract;
-
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
@@ -21,7 +17,7 @@ import java.util.List;
 
 //@Disabled
 @Config
- public class BBBDetector_Contour_GPT2 extends OpenCvPipeline{
+ public class BBBDetector_Contour_Pole extends OpenCvPipeline{
 
     private double width;
 
@@ -55,7 +51,7 @@ import java.util.List;
     Mat gray = new Mat();
 
 
-    public BBBDetector_Contour_GPT2(int width) {
+    public BBBDetector_Contour_Pole(int width) {
         this.width = width;
     }
 
