@@ -27,10 +27,10 @@ public class contourtesting extends LinearOpMode {
     private static double RegionCenterY = 340; // Distance in pixels from the top
     private static double RegionWidth = 50;
     private static double RegionHeight = 50;
-    public static double Kp = 0.0005;
-    public static double clawCenter = 500;
+    public static double Kp = 0.00015;
+    public static double clawCenter = 710;
     public static double x = .25;
-    public static int pixelMargin = 100;
+    public static int pixelMargin = 200;
 
     @Override
     public void runOpMode() {
