@@ -20,7 +20,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 public class DriveConstants {
 
     public static double pi = 3.14159265359;
-    public static double SPEED_COEF = 1;
+    public static double SPEED_COEF = 0.5;
     public static double ACCEL_COEF = 0.5;
 
     /*
@@ -30,7 +30,7 @@ public class DriveConstants {
     public static final double MAX_RPM = 312;
 
     /*
-     * Set RUN_USING_ENCODER to true to enableew built-in hub velocity control using drive encoders.
+     * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
      * Set this flag to false if drive encoders are not present and an alternative localization
      * method is in use (e.g., tracking wheels).
      *

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -8,6 +9,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
+@Config
 @Autonomous (name="contour test", group="Tutorials")
 
 public class contourtesting extends LinearOpMode {
@@ -25,6 +27,10 @@ public class contourtesting extends LinearOpMode {
     private static double RegionCenterY = 340; // Distance in pixels from the top
     private static double RegionWidth = 50;
     private static double RegionHeight = 50;
+    public static double Kp = 0.0005;
+    public static double clawCenter = 500;
+    public static double x = .25;
+    public static int pixelMargin = 100;
 
     @Override
     public void runOpMode() {
@@ -42,7 +48,7 @@ public class contourtesting extends LinearOpMode {
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN); // Was Upright
             }
 
             @Override
@@ -60,5 +66,43 @@ public class contourtesting extends LinearOpMode {
 
         waitForStart();
 
+        if (opModeIsActive()) {
+
+            double Turnpower;
+            double error = 0;
+
+
+            error = clawCenter - myPipeline.getPosition();
+            telemetry.addData("Current Image x", myPipeline.getPosition());
+            telemetry.addData("Error", error);
+            telemetry.addLine("Starting in 4 sec");
+            telemetry.update();
+            sleep(4000);
+            // while ( (Math.abs(error) > 50) && opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
+            while (opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
+
+                Turnpower = Kp * error;
+                Turnpower = Math.max( -Math.abs(x), Math.min(Turnpower, Math.abs(x)));
+
+
+                Beep.strafe(-Turnpower);
+
+                telemetry.addData("Current Image x", myPipeline.getPosition());
+                telemetry.addData("Error", error);
+                telemetry.addData("TurnPower", -Turnpower);
+                telemetry.addData("DIstance", myPipeline.getWidth());
+                telemetry.update();
+
+                error = clawCenter - myPipeline.getPosition();
+
+                if (Math.abs(error) < 20 ){
+                    error=0;
+                }
+            }
+            Beep.strafe(0);
+            telemetry.addLine("Done Following Pole");
+            telemetry.update();
+
+        }
     }
 }

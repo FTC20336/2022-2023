@@ -67,7 +67,7 @@ public class AutoUsingDetector_Left_RR extends LinearOpMode {
 
         TrajectorySequence traj1  = drive.trajectorySequenceBuilder(startPose)
                 .lineToConstantHeading(new Vector2d(p2.getX(),p2.getY()))
-                .lineToLinearHeading( new Pose2d(p3.getX(), p3.getY(), Math.toRadians(0)))
+                .lineToSplineHeading( new Pose2d(p3.getX(), p3.getY(), Math.toRadians(0)))
                 .build();
 
         TrajectorySequence traj15 = drive.trajectorySequenceBuilder(traj1.end())
@@ -131,7 +131,7 @@ public class AutoUsingDetector_Left_RR extends LinearOpMode {
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN); // Was Upright
 
             }
 
