@@ -11,9 +11,9 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config
-@Autonomous (name="contour test", group="Tutorials")
+@Autonomous (name="contourtesting_noPID", group="Tutorials")
 
-public class contourtesting extends LinearOpMode {
+public class contourtesting_noPID extends LinearOpMode {
     private OpenCvCamera webcam;
 
     //Create New Robot based on RobotBase
