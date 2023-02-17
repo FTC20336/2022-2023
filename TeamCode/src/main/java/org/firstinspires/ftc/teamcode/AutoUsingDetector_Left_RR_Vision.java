@@ -207,8 +207,8 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"), cameraMonitorViewId);
 
         //OpenCV Pipeline
-        BBBDetector_Contour_Pole myPipelinePole;
-        webcam.setPipeline(myPipelinePole = new BBBDetector_Contour_Pole(CAMERA_WIDTH, CAMERA_HEIGHT,clawCenter,pixelMargin ));
+        BBBDetector_Contour_Pole_Cone myPipelinePole;
+        webcam.setPipeline(myPipelinePole = new BBBDetector_Contour_Pole_Cone(CAMERA_WIDTH, CAMERA_HEIGHT,clawCenter,pixelMargin, BBBDetector_Contour_Pole_Cone.conecolor.BLUE ));
 
         //Webcam streaming on the dashboard
         FtcDashboard.getInstance().startCameraStream(webcam, 0);
@@ -295,8 +295,8 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
 
     // Drop Cone function assumes the robot is near a junction
     // We supply the dropping height in inches
-    public void dropConeAt(double dropHeight, @NonNull BBBDetector_Contour_Pole myPipeline, SampleMecanumDrive drive, TrajectorySequence lastTraj){
-        currentPos = myPipeline.getPosition();
+    public void dropConeAt(double dropHeight, @NonNull BBBDetector_Contour_Pole_Cone myPipeline, SampleMecanumDrive drive, TrajectorySequence lastTraj){
+        currentPos = myPipeline.getPolePositionPixels();
 
         BeepArm.ViperSlideSetPos(dropHeight-preDropH, 36, (long)preScanViperTimeout);
         sleep((long) preScanDelay);
@@ -306,7 +306,7 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
         double error = 0;
         double yerror = 0;
 
-        currentPos = myPipeline.getPosition();
+        currentPos = myPipeline.getPolePositionPixels();
         error = clawCenter - currentPos;
         distAdjust = 0;
 
@@ -323,13 +323,13 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
             drive.strafe(-xStick, yStick);
             distAdjust+=-xStick;
 
-            currentPos = myPipeline.getPosition();
+            currentPos = myPipeline.getPolePositionPixels();
 
             telemetry.addData("Current Image x", currentPos);
             telemetry.addData("Error", error);
             telemetry.addData("Strafe Power", -xStick);
-            telemetry.addData("Current Image in Pixels", myPipeline.getWidthpix());
-            telemetry.addData("Distance in inches", String.format("%.2f" , myPipeline.getWidthInches()) );
+            telemetry.addData("Current Image in Pixels", myPipeline.getPoleDistancePixel());
+            telemetry.addData("Distance in inches", String.format("%.2f" , myPipeline.getPoleDistanceInches()) );
             telemetry.addData("Viper Height in inches",String.format("%.2f" , BeepArm.ViperSlideGetPos()) );
             telemetry.addData("Total Adjust distance", String.format("%.3f" ,distAdjust));
 
@@ -359,7 +359,7 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
         telemetry.addLine("Out of Loop");
         telemetry.update();
         // sleep(1500);
-        double lastMove =  myPipeline.getWidthInches();
+        double lastMove =  myPipeline.getPoleDistanceInches();
 
 
         BeepArm.ViperSlideSetPos(dropHeight,12,-1);
@@ -486,8 +486,8 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
 
 // Drop Cone function assumes the robot is near a junction
 // We supply the dropping height in inches
-public void pickConeAt(double dropHeight, @NonNull BBBDetector_Contour_Pole myPipeline, SampleMecanumDrive drive, TrajectorySequence lastTraj){
-        currentPos = myPipeline.getPosition();
+public void pickConeAt(double dropHeight, @NonNull BBBDetector_Contour_Pole_Cone myPipeline, SampleMecanumDrive drive, TrajectorySequence lastTraj){
+        currentPos = myPipeline.getConePositionPixels();
 
         BeepArm.ViperSlideSetPos(dropHeight-preDropH, 36, -1);
         sleep(1000);
@@ -497,7 +497,7 @@ public void pickConeAt(double dropHeight, @NonNull BBBDetector_Contour_Pole myPi
         double error = 0;
         double yerror = 0;
 
-        currentPos = myPipeline.getPosition();
+        currentPos = myPipeline.getConePositionPixels();
         error = clawCenter - currentPos;
         distAdjust = 0;
 
@@ -511,13 +511,13 @@ public void pickConeAt(double dropHeight, @NonNull BBBDetector_Contour_Pole myPi
         drive.strafe(-xStick, yStick);
         distAdjust+=-xStick;
 
-        currentPos = myPipeline.getPosition();
+        currentPos = myPipeline.getConePositionPixels();
 
         telemetry.addData("Current Image x", currentPos);
         telemetry.addData("Error", error);
         telemetry.addData("Strafe Power", -xStick);
-        telemetry.addData("Current Image in Pixels", myPipeline.getWidthpix());
-        telemetry.addData("Distance in inches", String.format("%.2f" , myPipeline.getWidthInches()) );
+        telemetry.addData("Current Image in Pixels", myPipeline.getConeDistancePixel());
+        telemetry.addData("Distance in inches", String.format("%.2f" , myPipeline.getConeDistanceInches()) );
         telemetry.addData("Viper Height in inches",String.format("%.2f" , BeepArm.ViperSlideGetPos()) );
         telemetry.addData("Total Adjust distance", String.format("%.3f" ,distAdjust));
 
@@ -547,7 +547,7 @@ public void pickConeAt(double dropHeight, @NonNull BBBDetector_Contour_Pole myPi
         telemetry.addLine("Out of Loop");
         telemetry.update();
         // sleep(1500);
-        double lastMove =  myPipeline.getWidthInches();
+        double lastMove =  myPipeline.getConeDistanceInches();
 
 
         BeepArm.ViperSlideSetPos(dropHeight,12,-1);
