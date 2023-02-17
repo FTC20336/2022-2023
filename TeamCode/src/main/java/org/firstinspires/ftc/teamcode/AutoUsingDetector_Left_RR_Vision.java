@@ -44,13 +44,13 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
     // Change these values for the PID and autocorrection
     public static double Kp = 0.0003;
     public static int clawCenter = 690;
-    public static double x = .1; // Max power during Strafe
+    public static double x = .2; // Max power during Strafe
     public static int pixelMargin = 35;
     private static int currentPos;
 
     private  NanoClock clock;
     private double currentAdjustTime;
-    private double adjustTimeLimit=6;
+    public static double adjustTimeLimit=1;
     private double distAdjust=0;
 
     //height before a drop
@@ -62,18 +62,36 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
     public static Vector2d coneStack = new Vector2d(-62.75, -13.5);
     public static Vector2d shortPole = new Vector2d(-50,-19);
 
-    public static Vector2d p1 = new Vector2d(-40,-65); // Starting Point
-    public static Vector2d p2 = new Vector2d(-15,-63.5); //
-    public static Vector2d p3 = new Vector2d(-15,-25.5); // Right of the Tall Middle Junction
-    public static Vector2d p4 = new Vector2d(-9.5, -24.5); // Tall Junction Drop Location
-    public static Vector2d p5 = new Vector2d(-16,-23.75); //
-    public static Vector2d p6 = new Vector2d(-16,  coneStack.getY() ); //
+    public static double p1x = -40;
+    public static double p1y = -65;
+
+    public static double p2x = -14;
+    public static double p2y = -56;
+
+    public static double p3x = -15;
+    public static double p3y = -25.5;
+
+    public static double p4x = -9.5;
+    public static double p4y = -24.5;
+
+    public static double p5x = -16;
+    public static double p5y = -23.75;
+
+    public static double p6x = -16;
+    public static double p6y = coneStack.getY();
+
+    private static Vector2d p1 = new Vector2d(p1x, p1y); // Starting Point
+    private static Vector2d p2 = new Vector2d(p2x, p2y); //
+    private static Vector2d p3 = new Vector2d(p3x, p3y); // Right of the Tall Middle Junction
+    private static Vector2d p4 = new Vector2d(p4x, p4y); // Tall Junction Drop Location
+    private static Vector2d p5 = new Vector2d(p5x, p5y); //
+    private static Vector2d p6 = new Vector2d(p6x, p6y); //
     public static long stackDelay = 500;
 
     public static double stackh = 5;
     public static double stackinc = 1.25;
 
-    public static double preScanDelay = 2000;
+    public static double preScanDelay = 500;
 
     double startDir = Math.toRadians(90);
 
@@ -88,7 +106,8 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
 
 
         TrajectorySequence traj1 = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(p2.getX(), p2.getY()))
+                .lineToConstantHeading(new Vector2d(p2x, p2y))
+                .forward(5)
                 .lineToSplineHeading(new Pose2d(p3.getX(), p3.getY(), Math.toRadians(0)))
                 .build();
 
@@ -110,7 +129,7 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
 
         TrajectorySequence toCyclePole = drive.trajectorySequenceBuilder(setupCycle.end())
                 .back(4)
-                .lineToLinearHeading(new Pose2d(shortPole.getX(), coneStack.getY(), Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(shortPole.getX(), coneStack.getY() + 2, Math.toRadians(270)))
                 .build();
 
         TrajectorySequence front = drive.trajectorySequenceBuilder(toCyclePole.end())
@@ -118,7 +137,7 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
                 .build();
 
         TrajectorySequence back = drive.trajectorySequenceBuilder(front.end())
-                .lineToConstantHeading(new Vector2d(shortPole.getX(), coneStack.getY()))
+                .lineToConstantHeading(new Vector2d(shortPole.getX(), coneStack.getY() + 2))
                 .build();
 
         TrajectorySequence toStack = drive.trajectorySequenceBuilder(back.end())
@@ -241,13 +260,13 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
         sleep(250); // wait a little if the robot wiggle
 
         dropConeAt(RobotArm.getHIGHPOS(), myPipelinePole, drive, traj1);
-/*
+
         drive.followTrajectorySequence(traj175);
         BeepArm.ViperSlideSetPos(stackh, 36, 1); //Don't wait.. go back now
 
         drive.followTrajectorySequence(setupCycle);
         BeepArm.ClawFullClose(1000);
-        BeepArm.ViperSlideSetPos(16, 36, stackDelay);
+        BeepArm.ViperSlideSetPos(stackh + 4.5, 36, stackDelay);
         drive.followTrajectorySequence(toCyclePole);
 
         dropConeAt(RobotArm.getLOWPOS(), myPipelinePole, drive, toCyclePole);
@@ -255,7 +274,7 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
         BeepArm.ViperSlideSetPos(stackh - stackinc, 24, -1);
         drive.followTrajectorySequence(toStack);
         BeepArm.ClawFullClose(1000);
-        BeepArm.ViperSlideSetPos(16, 36, stackDelay);
+        BeepArm.ViperSlideSetPos(stackh - stackinc + 4.5, 36, stackDelay);
         drive.followTrajectorySequence(toCyclePole);
 
         dropConeAt(RobotArm.getLOWPOS(), myPipelinePole, drive, toCyclePole);
@@ -269,7 +288,7 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
         } else { // (ParkingPos == BBBDetector_Color.ElementPosition.CENTER) {
             drive.followTrajectorySequence(center);
         }
-*/
+
     }
 
 
@@ -379,7 +398,7 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
         drive.followTrajectorySequence(drop);
         BeepArm.ViperSlideSetPos(dropHeight-3,12,250);
 
-        BeepArm.ClawFullOpen(5000);
+        BeepArm.ClawFullOpen(0);
 
         //drive.followTrajectorySequence(back);
 
