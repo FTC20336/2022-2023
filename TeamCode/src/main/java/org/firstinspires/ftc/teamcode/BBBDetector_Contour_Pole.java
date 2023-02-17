@@ -210,7 +210,8 @@ import java.util.List;
     }
 
     public double getWidthpix() {
-        if (myrec.width!=0) {
+
+        if (myrec.width!=0 && !myrec.empty()) {
             return myrec.width ;
         }
         else

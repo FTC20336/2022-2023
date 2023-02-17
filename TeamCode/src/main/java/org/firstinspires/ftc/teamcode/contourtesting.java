@@ -28,10 +28,10 @@ public class contourtesting extends LinearOpMode {
     private static double RegionCenterY = 340; // Distance in pixels from the top
     private static double RegionWidth = 50;
     private static double RegionHeight = 50;
-    public static double Kp = 0.00065;
-    public static int clawCenter = 690;
+    public static double Kp = 0.0004;
+    public static int clawCenter = 670;
     public static double x = 1;
-    public static int pixelMargin = 15;
+    public static int pixelMargin = 35;
     private static int currentPos;
 
     @Override
@@ -87,11 +87,12 @@ public class contourtesting extends LinearOpMode {
             telemetry.addData("Error", error);
             telemetry.addLine("Starting in 4 sec");
             telemetry.update();
-            sleep(1000);
-            Beep.BeepArm.ClawFullClose(500);
-            Beep.BeepArm.ViperSlideSetPos(28,20,0);
 
-            while ( ((Math.abs(error) > pixelMargin)  || Beep.BeepArm.ViperSlideGetPos() < 28 ) && opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
+            Beep.BeepArm.ClawFullClose(500);
+            Beep.BeepArm.ViperSlideSetPos(26.5,20,0);
+
+
+            while ( (Math.abs(error) > pixelMargin || Beep.BeepArm.ViperSlideGetPos() < 26.4)  && opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
            // while (opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
 
                 xStick = Kp * error;
@@ -123,14 +124,18 @@ public class contourtesting extends LinearOpMode {
                     error=0;
                 }
             }
+            Beep.strafe(0,0);
+
             telemetry.addLine("Out of Loop");
             telemetry.update();
+           // sleep(1500);
+            double lastMove =  myPipeline.getWidth();
 
-            Beep.strafe(0,0);
-            Beep.BeepArm.ViperSlideSetPos(34,12,-1);
 
-            if (myPipeline.getWidth() <6 ) {
-                Beep.move((double) myPipeline.getWidth(), 5.0, -250);
+            Beep.BeepArm.ViperSlideSetPos(32,12,-1);
+
+            if (lastMove <6 ) {
+                Beep.move((double)lastMove, 5.0, -250);
             }
             else{
                 Beep.move((double) 6.0, 5.0, -250);
