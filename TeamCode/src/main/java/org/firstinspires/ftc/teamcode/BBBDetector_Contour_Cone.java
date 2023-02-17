@@ -24,17 +24,17 @@ import java.util.List;
     public static int targetX;
     private int targetDiameter;
 
-
-    public static double H1=15; //15
-    public static double S1=90; //93
+    // Blue Cone
+    public static double H1=90; //15
+    public static double S1=50; //93
     public static double V1=70; //70
-    public static double H2=45; //45
+    public static double H2=128; //45
     public static double S2=255; //255
     public static double V2=255; //255
 
     public static double regionPercentWidth = 1; // we assume the region is centered with the camera
-    public static int regionY1 = 300; // Top of rectangle of the region to check
-    public static int regionPixelHeight = 25;
+    public static int regionY1 = 0; // Top of rectangle of the region to check
+    public static int regionPixelHeight = 600;
 
     private int regionX1= (int) (this.width/2-(this.width/2*regionPercentWidth));
     private int regionX2= (int) (this.width/2+(this.width/2*regionPercentWidth));
@@ -43,6 +43,8 @@ import java.util.List;
     int maxContourId = -1;
     double maxContourArea=0;
     private Rect myrec;
+    private Rect myRecSmall;
+    private Rect myBoundSmall;
 
     static final Scalar ORANGE = new Scalar(255, 100, 0);
     static final Scalar RED = new Scalar(255, 0, 0);
@@ -52,8 +54,8 @@ import java.util.List;
 
 
 
-    private double yellow_x_centroid;
-    private double yellowWidth;
+    private double colorXCentroid;
+    private double colorWidth;
     private double[] vals = new double[4];
 
     //Region to look at
@@ -61,10 +63,10 @@ import java.util.List;
     Point region1_pointB ;
 
     Mat region1_H;
+    Mat regionConeTop;
     Mat hsv = new Mat();
-    Mat hsv2 = new Mat();
     Mat yellow = new Mat();
-    Mat gray = new Mat();
+
 
 
     public BBBDetector_Contour_Cone(int width, int height, int targetX, int targetDiameter) {
@@ -86,9 +88,6 @@ import java.util.List;
 
         region1_pointA = new Point(regionX1,regionY1);
         region1_pointB = new Point(regionX2,regionY1+regionPixelHeight);
-
-        //region1_pointA = new Point(0,300);
-        //region1_pointB = new Point(this.width,400);
 
         /*
          * We need to call this in order to make sure the 'Cb'
@@ -136,7 +135,7 @@ import java.util.List;
         Imgproc.findContours(yellow, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
         // Reset Center of mass to 0
-        yellow_x_centroid=-1;
+        colorXCentroid=-1;
         double cy=0;
 
         //Reset maximum area contour Id and value. We set to -1 in case we don't find any contours
@@ -159,16 +158,7 @@ import java.util.List;
         // if we did find a contour with big area.. calculate the center of mass.
         //https://docs.opencv.org/4.x/dd/d49/tutorial_py_contour_features.html
     if(maxContourId!= -1) {
-        Moments moment = new Moments();
-        moment = Imgproc.moments(contours.get(maxContourId), true);
-        if (moment.m00 != 0) {
-            // We add the 'regionX1' value because the center of mass location origin is the corner of the region
-            // We need to know the centroid from the original image size.
-            yellow_x_centroid = (int) (moment.get_m10() / moment.get_m00()+regionX1) ;
-            cy = (int) (moment.get_m01() / moment.get_m00() +regionY1) ;
-        }
-
-        // Create bounding box around biggest Area, this will be used to calculate the width of the pol
+        // Create bounding box around biggest Area, this will be used to recalculate the width of the Cone at the top
         // hence it's distance
         myrec = Imgproc.boundingRect(contours.get(maxContourId));
        vals[0] = (double)(myrec.x+regionX1);
@@ -177,10 +167,64 @@ import java.util.List;
        vals[3] = (double)(myrec.height);
        myrec.set(vals); // Adding the offset because of the region_H
 
-        //Draw a circle at the center of mass of the yellow region
-        Imgproc.circle(input, new Point(yellow_x_centroid, cy), 10, CYAN, -1);
-        Imgproc.rectangle(input, myrec, BLUE, 7);
+        Rect myRecSmall = new Rect(myrec.x, myrec.y ,myrec.width, 25 );
+        regionConeTop = hsv.submat(myRecSmall);
+        Core.inRange(regionConeTop, new Scalar(H1, S1, V1), new Scalar(H2, S2, V2), yellow);
 
+
+        // Contour for the top of the cone
+        List<MatOfPoint> contoursSmall = new ArrayList<>();
+        Mat hierarchySmall = new Mat();
+        Imgproc.findContours(yellow, contoursSmall, hierarchySmall, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        // Reset Center of mass to 0
+        colorXCentroid=-1;
+        double cy2=0;
+
+        //Reset maximum area contour Id and value. We set to -1 in case we don't find any contours
+        maxContourId = -1;
+        maxContourArea=0;
+
+        //Uncomment to draw all contours on the yellow mat.. won't align with the input mat
+        // Imgproc.drawContours(yellow, contours,-1,new Scalar(255,255, 255), 6);
+        //Uncomment to see how many contour we found
+        //Imgproc.putText(input,  String.valueOf(contours.size()), new Point(200,200), Imgproc.FONT_HERSHEY_SIMPLEX, 4, new Scalar(255, 255, 255), 2);
+
+        // Go thru all contours and if the area is bigger than the current biggest one, then use this new id as  the biggest one
+        for (int i = 0 ; i< contoursSmall.size(); i++) {
+            if (Imgproc.contourArea(contoursSmall.get(i)) > maxContourArea) {
+                maxContourId = i;
+                maxContourArea = Imgproc.contourArea(contoursSmall.get(i));
+            }
+        }
+
+        // if we did find a contour with big area.. calculate the center of mass.
+        //https://docs.opencv.org/4.x/dd/d49/tutorial_py_contour_features.html
+        if(maxContourId!= -1) {
+            Moments momentSmall = new Moments();
+            momentSmall = Imgproc.moments(contoursSmall.get(maxContourId), true);
+            if (momentSmall.m00 != 0) {
+                // We add the 'regionX1' value because the center of mass location origin is the corner of the region
+                // We need to know the centroid from the original image size.
+                colorXCentroid = (int) (momentSmall.get_m10() / momentSmall.get_m00() + myRecSmall.x);
+                cy2 = (int) (momentSmall.get_m01() / momentSmall.get_m00() + myRecSmall.y);
+            }
+
+            // Create bounding box around biggest Area, this will be used to calculate the width of the pol
+            // hence it's distance
+            myBoundSmall = Imgproc.boundingRect(contoursSmall.get(maxContourId));
+            vals[0] = (double) (myBoundSmall.x + regionX1+myRecSmall.x);
+            vals[1] = (double) (myBoundSmall.y + regionY1+myRecSmall.y);
+            vals[2] = (double) (myBoundSmall.width);
+            vals[3] = (double) (myBoundSmall.height);
+            myBoundSmall.set(vals); // Adding the offset because of the region_H
+
+
+            //Draw a circle at the center of mass of the yellow region
+            Imgproc.circle(input, new Point(colorXCentroid, cy), 10, CYAN, -1);
+            Imgproc.rectangle(input, myrec, BLUE, 5);
+            Imgproc.rectangle(input, myBoundSmall, CYAN, 7);
+        }
     }
         // Draw rectangle around the region we checked
         Imgproc.rectangle(input, new Rect(region1_pointA, region1_pointB), ORANGE, 3);
@@ -194,7 +238,7 @@ import java.util.List;
 
 
     public int getPosition() {
-        return (int) yellow_x_centroid;
+        return (int) colorXCentroid;
 
     }
     public double getWidth() {

@@ -318,4 +318,19 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {
         return new ProfileAccelerationConstraint(maxAccel);
     }
+
+// Added for Automotion
+    public void strafe(double xStick, double yStick) {
+
+        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        rightRear.setPower( (yStick + xStick) );
+        leftFront.setPower( (yStick + xStick) );
+        rightFront.setPower( (yStick - xStick) );
+        leftRear.setPower( (yStick - xStick) );
+
+    }
 }

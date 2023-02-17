@@ -198,16 +198,18 @@ import java.util.List;
 
     }
     public double getWidth() {
-    // Distance approximation
-    // Excel says Polynomial Equation: Distance (inches)= y = 7E-05x2 - 0.0616x + 15.581
-        if (myrec.width!=0) {
-            return (.00007 * myrec.width * myrec.width - .0616 * myrec.width +15.581);
-        }
-        else
-        {
+        // Distance approximation
+        // Excel says Polynomial Equation: Distance (inches)= y = 7E-05x2 - 0.0616x + 15.581
+        if (!myrec.empty()) {
+            if (myrec.width != 0) {
+                return (.00007 * myrec.width * myrec.width - .0616 * myrec.width + 15.581);
+            } else {
+                return -1;
+            }
+            }
             return -1;
         }
-    }
+
 
     public double getWidthpix() {
         if (!myrec.empty()) {
@@ -217,5 +219,6 @@ import java.util.List;
                 return -1;
             }
         }
+        return -1;
     }
 }

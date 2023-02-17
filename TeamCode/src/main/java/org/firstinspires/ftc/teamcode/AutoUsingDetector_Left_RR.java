@@ -156,8 +156,6 @@ public class AutoUsingDetector_Left_RR extends LinearOpMode {
         // Get the latest frame analyzed result
         ParkingPos = myPipeline.getAnalysis();
 
-        //Close Camera Device
-        webcam.closeCameraDevice();
 
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
             telemetry.addLine("Autonomous A - Blue - Right");

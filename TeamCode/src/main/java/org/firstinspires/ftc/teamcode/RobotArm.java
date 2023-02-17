@@ -16,9 +16,9 @@ public class RobotArm {
     static private double CLAW_FULL_OPEN_POS = 0.194;
     static private double SWING_ARM_RATIO = 188;
     static private double VIPER_SLIDE_RATIO = 19.2;
-    static public double HIGHPOS = 32.5;
-    static public double MIDDLEPOS  = 24;
-    static public double LOWPOS = 14;
+    private static double HIGHPOS = 32.5;
+    private static double MIDDLEPOS  = 24;
+    private static double LOWPOS = 14;
 
     static double COUNT_PER_DEGREE_ARM = 28 * SWING_ARM_RATIO / 360;
     static double COUNT_PER_DEGREE_SLIDE = 28 * VIPER_SLIDE_RATIO / 360;
@@ -28,6 +28,18 @@ public class RobotArm {
     // Local OpMode members
     HardwareMap hwMap = null;
     LinearOpMode MyOp = null;
+
+    public static double getHIGHPOS() {
+        return HIGHPOS;
+    }
+
+    public static double getMIDDLEPOS() {
+        return MIDDLEPOS;
+    }
+
+    public static double getLOWPOS() {
+        return LOWPOS;
+    }
 
 
     // Constructor - leave this blank for now
