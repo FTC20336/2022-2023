@@ -109,6 +109,10 @@ public class RobotArm {
         }
     }
 
+    public double ViperSlideGetPos(){
+        return (ViperSlideMotor.getCurrentPosition() * SLIDE_TURN_PER_INCH);
+    }
+
 
 
 

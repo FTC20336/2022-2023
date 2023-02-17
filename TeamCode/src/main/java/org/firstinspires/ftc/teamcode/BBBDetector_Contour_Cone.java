@@ -17,7 +17,7 @@ import java.util.List;
 
 //@Disabled
 @Config
- public class BBBDetector_Contour_Pole extends OpenCvPipeline{
+ public class BBBDetector_Contour_Cone extends OpenCvPipeline{
 
     private double width;
     private double height;
@@ -67,7 +67,7 @@ import java.util.List;
     Mat gray = new Mat();
 
 
-    public BBBDetector_Contour_Pole(int width, int height, int targetX, int targetDiameter) {
+    public BBBDetector_Contour_Cone(int width, int height, int targetX, int targetDiameter) {
         this.width = width;
         this.height = height;
         this.targetX = targetX;

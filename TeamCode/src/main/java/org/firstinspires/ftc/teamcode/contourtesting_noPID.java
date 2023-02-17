@@ -91,7 +91,7 @@ public class contourtesting_noPID extends LinearOpMode {
                 Turnpower = Math.max( -Math.abs(x), Math.min(Turnpower, Math.abs(x)));
 
 
-                Beep.strafe(-Turnpower);
+                Beep.strafe(-Turnpower,0);
 
                 currentPos = myPipeline.getPosition();
 
@@ -113,7 +113,7 @@ public class contourtesting_noPID extends LinearOpMode {
                     error=0;
                 }
             }
-            Beep.strafe(0);
+            Beep.strafe(0,0);
             telemetry.addLine("Done Following Pole");
             telemetry.update();
 

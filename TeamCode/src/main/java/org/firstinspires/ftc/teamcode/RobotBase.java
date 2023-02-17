@@ -238,20 +238,17 @@ public class RobotBase {
   }
 
 
-  public void strafe(double power) {
+  public void strafe(double xStick, double yStick) {
 
     RightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     LeftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     LeftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     RightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-    //Position
-    double dy = 0;
-
-    RightBack.setPower( (dy + power) );
-    LeftFront.setPower( (dy + power) );
-    RightFront.setPower( (dy - power) );
-    LeftBack.setPower( (dy - power) );
+    RightBack.setPower( (yStick + xStick) );
+    LeftFront.setPower( (yStick + xStick) );
+    RightFront.setPower( (yStick - xStick) );
+    LeftBack.setPower( (yStick - xStick) );
 
   }
 

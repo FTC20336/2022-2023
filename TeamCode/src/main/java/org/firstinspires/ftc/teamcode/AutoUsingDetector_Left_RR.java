@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -127,6 +128,8 @@ public class AutoUsingDetector_Left_RR extends LinearOpMode {
         BBBDetector_Color myPipeline;
         webcam.setPipeline(myPipeline = new BBBDetector_Color(RegionCenterX, RegionCenterY, RegionWidth, RegionHeight));
 
+        FtcDashboard.getInstance().startCameraStream(webcam, 0);
+
         // Webcam Streaming
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -152,6 +155,9 @@ public class AutoUsingDetector_Left_RR extends LinearOpMode {
 
         // Get the latest frame analyzed result
         ParkingPos = myPipeline.getAnalysis();
+
+        //Close Camera Device
+        webcam.closeCameraDevice();
 
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
             telemetry.addLine("Autonomous A - Blue - Right");

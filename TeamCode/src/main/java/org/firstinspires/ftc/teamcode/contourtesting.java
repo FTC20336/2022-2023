@@ -28,10 +28,10 @@ public class contourtesting extends LinearOpMode {
     private static double RegionCenterY = 340; // Distance in pixels from the top
     private static double RegionWidth = 50;
     private static double RegionHeight = 50;
-    public static double Kp = 0.00015;
-    public static int clawCenter = 710;
-    public static double x = .55;
-    public static int pixelMargin = 50;
+    public static double Kp = 0.00065;
+    public static int clawCenter = 690;
+    public static double x = 1;
+    public static int pixelMargin = 15;
     private static int currentPos;
 
     @Override
@@ -74,32 +74,42 @@ public class contourtesting extends LinearOpMode {
 
         if (opModeIsActive()) {
 
-            double Turnpower;
+            double xStick;
+            double yStick=0;
             double error = 0;
+            double yerror = 0;
 
             currentPos = myPipeline.getPosition();
             error = clawCenter - currentPos;
+
+
             telemetry.addData("Current Image x", currentPos);
             telemetry.addData("Error", error);
             telemetry.addLine("Starting in 4 sec");
             telemetry.update();
-            sleep(4000);
-            // while ( (Math.abs(error) > 50) && opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
-            while (opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
+            sleep(1000);
+            Beep.BeepArm.ClawFullClose(500);
+            Beep.BeepArm.ViperSlideSetPos(28,20,0);
 
-                Turnpower = Kp * error;
-                Turnpower = Math.max( -Math.abs(x), Math.min(Turnpower, Math.abs(x)));
+            while ( ((Math.abs(error) > pixelMargin)  || Beep.BeepArm.ViperSlideGetPos() < 28 ) && opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
+           // while (opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
 
+                xStick = Kp * error;
+                xStick = Math.max( -Math.abs(x), Math.min(xStick, Math.abs(x)));
 
-                Beep.strafe(-Turnpower);
+                yStick = Kp * yerror;
+                yStick = Math.max( -Math.abs(x), Math.min(yStick, Math.abs(x)));
+
+                Beep.strafe(-xStick, yStick);
 
                 currentPos = myPipeline.getPosition();
 
                 telemetry.addData("Current Image x", currentPos);
                 telemetry.addData("Error", error);
-                telemetry.addData("TurnPower", -Turnpower);
-               // telemetry.addData("Current Image x", currentPos);
+                telemetry.addData("Strafe Power", -xStick);
+                telemetry.addData("Current Image in Pixels", myPipeline.getWidthpix());
                 telemetry.addData("Distance in inches", myPipeline.getWidth());
+                telemetry.addData("Viper Height in inches",Beep.BeepArm.ViperSlideGetPos());
                 telemetry.update();
 
                 if ( currentPos>1 ) {
@@ -113,7 +123,22 @@ public class contourtesting extends LinearOpMode {
                     error=0;
                 }
             }
-            Beep.strafe(0);
+            telemetry.addLine("Out of Loop");
+            telemetry.update();
+
+            Beep.strafe(0,0);
+            Beep.BeepArm.ViperSlideSetPos(34,12,-1);
+
+            if (myPipeline.getWidth() <6 ) {
+                Beep.move((double) myPipeline.getWidth(), 5.0, -250);
+            }
+            else{
+                Beep.move((double) 6.0, 5.0, -250);
+            }
+
+            Beep.BeepArm.ClawFullOpen(500);
+
+
             telemetry.addLine("Done Following Pole");
             telemetry.update();
 

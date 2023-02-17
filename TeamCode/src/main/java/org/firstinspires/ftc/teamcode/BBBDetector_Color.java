@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.opencv.core.Core;
@@ -9,14 +10,15 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-@Disabled
+//@Disabled
+@Config
  public class BBBDetector_Color extends OpenCvPipeline{
 
 
-     private double RX;
-     private double RY; // Distance in pixels from the top
-     private double RW;
-     private double RH;
+    public static double RX = 950;
+    public static double RY = 150; // Distance in pixels from the top
+    public static double RW=50;
+    public static double RH=50;
 
      public int dummy;
         /*
@@ -78,10 +80,11 @@ import org.openftc.easyopencv.OpenCvPipeline;
         }
 
      public BBBDetector_Color(double RX,double RY,double RW,double RH) {
-         this.RX = RX;
-         this.RY = RY;
-         this.RW = RW;
-         this.RH = RH;
+       /*  this.RX = 875;
+         this.RY = 340;
+         this.RW = 50;
+         this.RH = 50;*/
+
      }
 
      public void configureBorders(double RX, double RY, double RW, double RH) {
