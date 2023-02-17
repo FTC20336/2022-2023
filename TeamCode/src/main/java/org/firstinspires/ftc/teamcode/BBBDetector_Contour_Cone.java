@@ -244,22 +244,22 @@ import java.util.List;
     public double getWidth() {
     // Distance approximation
     // Excel says Polynomial Equation: Distance (inches)= y = 7E-05x2 - 0.0616x + 15.581
-        if (myrec.width!=0) {
-            return (.00007 * myrec.width * myrec.width - .0616 * myrec.width +15.581);
-        }
-        else
-        {
-            return -1;
+        if (!myrec.empty()) {
+            if (myrec.width != 0) {
+                return (.00007 * myrec.width * myrec.width - .0616 * myrec.width + 15.581);
+            } else {
+                return -1;
+            }
         }
     }
 
     public double getWidthpix() {
-        if (myrec.width!=0) {
-            return myrec.width ;
-        }
-        else
-        {
-            return -1;
+        if (!myrec.empty()){
+            if (myrec.width != 0) {
+                return myrec.width;
+            } else {
+                return -1;
+            }
         }
     }
 }
