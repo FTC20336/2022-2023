@@ -210,13 +210,12 @@ import java.util.List;
     }
 
     public double getWidthpix() {
-
-        if (myrec.width!=0 && !myrec.empty()) {
-            return myrec.width ;
-        }
-        else
-        {
-            return -1;
+        if (!myrec.empty()) {
+            if (myrec.width != 0) {
+                return myrec.width;
+            } else {
+                return -1;
+            }
         }
     }
 }
