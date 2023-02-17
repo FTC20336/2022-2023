@@ -99,7 +99,7 @@ public class contourtesting_noPID extends LinearOpMode {
                 telemetry.addData("Error", error);
                 telemetry.addData("TurnPower", -Turnpower);
                // telemetry.addData("Current Image x", currentPos);
-                telemetry.addData("Distance in inches", myPipeline.getWidth());
+                telemetry.addData("Distance in inches", myPipeline.getWidthInches());
                 telemetry.update();
 
                 if ( currentPos>1 ) {

@@ -197,7 +197,14 @@ import java.util.List;
         return (int) yellow_x_centroid;
 
     }
-    public double getWidth() {
+
+    public double getPositionInches() {
+
+        return  (yellow_x_centroid/25);
+
+    }
+
+    public double getWidthInches() {
         // Distance approximation
         // Excel says Polynomial Equation: Distance (inches)= y = 7E-05x2 - 0.0616x + 15.581
         if (!myrec.empty()) {

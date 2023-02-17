@@ -109,7 +109,7 @@ public class contourtesting extends LinearOpMode {
                 telemetry.addData("Error", error);
                 telemetry.addData("Strafe Power", -xStick);
                 telemetry.addData("Current Image in Pixels", myPipeline.getWidthpix());
-                telemetry.addData("Distance in inches", myPipeline.getWidth());
+                telemetry.addData("Distance in inches", myPipeline.getWidthInches());
                 telemetry.addData("Viper Height in inches",Beep.BeepArm.ViperSlideGetPos());
                 telemetry.update();
 
@@ -129,7 +129,7 @@ public class contourtesting extends LinearOpMode {
             telemetry.addLine("Out of Loop");
             telemetry.update();
            // sleep(1500);
-            double lastMove =  myPipeline.getWidth();
+            double lastMove =  myPipeline.getWidthInches();
 
 
             Beep.BeepArm.ViperSlideSetPos(32,12,-1);
