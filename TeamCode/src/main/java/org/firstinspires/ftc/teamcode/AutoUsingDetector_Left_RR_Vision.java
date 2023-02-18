@@ -251,8 +251,8 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
                 telemetry.update();
         }
 
-        // Test Code to check COlor
-        /*
+        // Test Code to check Color
+/*
         sleep(4000);
         BeepArm.ViperSlideSetPos(stackh,35,-1);
         while (   opModeIsActive() ) {

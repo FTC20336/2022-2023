@@ -50,15 +50,15 @@ import java.util.List;
 
     // Red Cone
     public static double H1r=0; //15
-    public static double S1r=175; //93
+    public static double S1r=80; //93
     public static double V1r=20; //70
     public static double H2r=10; //45
     public static double S2r=255; //255
     public static double V2r=255; //255
 
     // Red Cone2
-    public static double H1r2=170; //15
-    public static double S1r2=175; //93
+    public static double H1r2=160; //15
+    public static double S1r2=80; //93
     public static double V1r2=20; //70
     public static double H2r2=180; //45
     public static double S2r2=255; //255
@@ -202,7 +202,7 @@ import java.util.List;
         if(coneColor == conecolor.RED){
             Core.inRange(coneRegion, new Scalar(H1r, S1r, V1r), new Scalar(H2r, S2r, V2r), coneMat);
             Core.inRange(coneRegion, new Scalar(H1r2, S1r2, V1r2), new Scalar(H2r2, S2r2, V2r2), coneMat2);
-            Core.add( coneMat, coneMat2,coneMat);
+            Core.addWeighted( coneMat, .5, coneMat2,.5,0,coneMat);
 
         }else {
             Core.inRange(coneRegion, new Scalar(H1b, S1b, V1b), new Scalar(H2b, S2b, V2b), coneMat);
