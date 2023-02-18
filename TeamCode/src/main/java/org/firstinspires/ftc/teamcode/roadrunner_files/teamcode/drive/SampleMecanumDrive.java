@@ -351,33 +351,33 @@ public class SampleMecanumDrive extends MecanumDrive {
     // Distance in inches
     // Speed in inches/sec
     public void move(double distance, double speed, long timeout, LinearOpMode opMo) {
-        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        rightRear.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+
+        rightRear.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE + rightRear.getCurrentPosition()));
         rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightRear.setVelocity(COUNTS_PER_IN_DRIVE * speed); // Set Velocity is in Ticks per Second
 
-        leftFront.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+        leftFront.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE + leftFront.getCurrentPosition()));
         leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftFront.setVelocity(COUNTS_PER_IN_DRIVE * speed);
 
-        rightFront.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+        rightFront.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE + rightFront.getCurrentPosition()));
         rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightFront.setVelocity(COUNTS_PER_IN_DRIVE * speed);
 
 
-        leftRear.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+        leftRear.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE + leftRear.getCurrentPosition()));
         leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftRear.setVelocity(COUNTS_PER_IN_DRIVE * speed);
 
 
-        while (opMo.opModeIsActive() && ( leftRear.isBusy() || rightRear.isBusy() || leftFront.isBusy() || rightFront.isBusy()))
-        {}
-
-        opMo.sleep(Math.abs(timeout));
+        if (timeout < 0 ){
+            while (opMo.opModeIsActive() && ( leftRear.isBusy() || rightRear.isBusy() || leftFront.isBusy() || rightFront.isBusy()))
+            {}
+        }
+        else {
+            opMo.sleep(Math.abs(timeout));
+        }
 
     }
 }

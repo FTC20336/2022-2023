@@ -20,6 +20,9 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Config
 @Autonomous(name="Left-TallPole-BLUE", group="Left")
 public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
@@ -61,7 +64,7 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
     private BBBDetector_Color.ElementPosition ParkingPos;
 
     public static Vector2d coneStack = new Vector2d(-62.75+6, -13.5);
-    public static Vector2d shortPole = new Vector2d(-48,-19);
+    public static Vector2d shortPole = new Vector2d(-49,-19);
 
     public static double p1x = -40;
     public static double p1y = -65;
@@ -321,6 +324,9 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
         BeepArm.ViperSlideSetPos(dropHeight-preDropH, 36, (long)preScanViperTimeout);
         sleep((long) preScanDelay);
 
+      //  List<Double> wheelPosInit = new ArrayList<>();
+       // wheelPosInit = drive.getWheelPositions();
+
         double xStick;
         double yStick=0;
         double error = 0;
@@ -376,6 +382,11 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
         }
         drive.strafe(0,0);
 
+       // List<Double> wheelPosAfter= new ArrayList<>();
+        //wheelPosAfter= drive.getWheelPositions();
+
+      //  double shift= wheelPosAfter.get(0) - wheelPosInit.get(0);
+
         telemetry.addLine("Out of Loop");
         telemetry.update();
         // sleep(1500);
@@ -419,7 +430,7 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
         drive.followTrajectorySequence(drop);
         BeepArm.ViperSlideSetPos(dropHeight-3,12,250);
 
-        BeepArm.ClawFullOpen(0);
+        BeepArm.ClawFullOpen(250);
 
         drive.followTrajectorySequence(back);
 
@@ -470,7 +481,9 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
         if (lastMove <6 ) {
             telemetry.addData("Moving inches", String.format("%.3f" ,lastMove));
             telemetry.update();
-            drop = drive.trajectorySequenceBuilder(lastTraj.end())
+
+
+            /*drop = drive.trajectorySequenceBuilder(lastTraj.end())
                     // This needs to be adjusted depending on the orientation
                     .lineToConstantHeading( new Vector2d(lastTraj.end().getX() -lastMove, lastTraj.end().getY()+lateralError),
                             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -480,13 +493,15 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
                     .back(lastMove)
                     .build();
 
+             */
+
             sleep(250);
         }
         else{
             telemetry.addLine("Moving 6 inches");
             telemetry.update();
 
-            drop = drive.trajectorySequenceBuilder(lastTraj.end())
+            /*drop = drive.trajectorySequenceBuilder(lastTraj.end())
                     .forward(6,
                             SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                             SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -494,13 +509,15 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
             back = drive.trajectorySequenceBuilder(drop.end())
                     .back(6)
                     .build();
+
+             */
             sleep(250);
         }
-        drive.followTrajectorySequence(drop);
+        drive.move(lastMove, 15, 1500, this);
         BeepArm.ViperSlideSetPos(dropHeight-3,12,250);
 
         BeepArm.ClawFullOpen(250);
-        drive.followTrajectorySequence(back);
+        drive.move(-lastMove, 15, 1000, this);
 
     }
 

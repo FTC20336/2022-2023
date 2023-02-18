@@ -59,13 +59,13 @@ public class AutoUsingDetector_Left_RR_MP_Vision extends LinearOpMode {
     private BBBDetector_Color.ElementPosition ParkingPos;
 
     public static Vector2d coneStack = new Vector2d(-62.75+8, -13.5);
-    public static Vector2d shortPole = new Vector2d(-46,-19);
+    public static Vector2d shortPole = new Vector2d(-48,-19);
 
     public static double p1x = -40;
     public static double p1y = -65;
 
     public static double p2x = -14;
-    public static double p2y = -56;
+    public static double p2y = -57;
 
     public static double p3x = -13;
     public static double p3y = -23.5;
@@ -407,8 +407,7 @@ public class AutoUsingDetector_Left_RR_MP_Vision extends LinearOpMode {
         drive.followTrajectorySequence(drop);
         BeepArm.ViperSlideSetPos(dropHeight-3,12,250);
 
-        BeepArm.ClawFullOpen(0);
-
+        BeepArm.ClawFullOpen(250);
         drive.followTrajectorySequence(back);
 
     }
