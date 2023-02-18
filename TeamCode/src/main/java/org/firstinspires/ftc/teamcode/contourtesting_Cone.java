@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -90,10 +89,10 @@ public class contourtesting_Cone extends LinearOpMode {
             telemetry.update();
 
             Beep.BeepArm.ClawFullClose(500);
-            Beep.BeepArm.ViperSlideSetPos(5,20,0);
+            Beep.BeepArm.ViperSlideSetPos(26.5,20,0);
 
 
-            while ( (Math.abs(error) >= 0 || Beep.BeepArm.ViperSlideGetPos() < 26.4)  && opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
+            while ( (Math.abs(error) > pixelMargin || Beep.BeepArm.ViperSlideGetPos() < 26.4)  && opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
            // while (opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
 
                 xStick = Kp * error;
@@ -102,18 +101,16 @@ public class contourtesting_Cone extends LinearOpMode {
                 yStick = Kp * yerror;
                 yStick = Math.max( -Math.abs(x), Math.min(yStick, Math.abs(x)));
 
-                //Beep.strafe(-xStick, yStick);
+                Beep.strafe(-xStick, yStick);
 
                 currentPos = myPipeline.getPosition();
 
                 telemetry.addData("Current Image x", currentPos);
                 telemetry.addData("Error", error);
                 telemetry.addData("Strafe Power", -xStick);
-                telemetry.addData("Current Image width in Pixels", myPipeline.getWidthpix());
-                telemetry.addData("Distance in inches   (Camera)",  String.format("%.2f" ,myPipeline.getWidth()));
-                telemetry.addData("Distance in inches (Distance)",    String.format("%.2f" ,Beep.distanceSensor.getDistance(DistanceUnit.INCH)));
+                telemetry.addData("Current Image in Pixels", myPipeline.getWidthpix());
+                telemetry.addData("Distance in inches", myPipeline.getWidth());
                 telemetry.addData("Viper Height in inches",Beep.BeepArm.ViperSlideGetPos());
-
                 telemetry.update();
 
                 if ( currentPos>1 ) {
