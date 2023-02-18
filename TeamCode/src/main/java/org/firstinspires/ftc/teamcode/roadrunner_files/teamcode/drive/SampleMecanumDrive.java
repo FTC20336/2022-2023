@@ -19,6 +19,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -66,6 +67,13 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
     public DistanceSensor distanceSensor;
+
+    static private double PI = 3.141592;
+    static private double CIRCUMFERENCE = 96 / 25.4 * PI;
+
+
+    static private double MOTOR_GEAR_RATIO = 19.2;
+    static private double COUNTS_PER_IN_DRIVE = 28 * MOTOR_GEAR_RATIO / CIRCUMFERENCE;
 
     private TrajectorySequenceRunner trajectorySequenceRunner;
 
@@ -336,6 +344,40 @@ public class SampleMecanumDrive extends MecanumDrive {
         leftFront.setPower( (yStick + xStick) );
         rightFront.setPower( (yStick - xStick) );
         leftRear.setPower( (yStick - xStick) );
+
+    }
+
+
+    // Distance in inches
+    // Speed in inches/sec
+    public void move(double distance, double speed, long timeout, LinearOpMode opMo) {
+        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        rightRear.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+        rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightRear.setVelocity(COUNTS_PER_IN_DRIVE * speed); // Set Velocity is in Ticks per Second
+
+        leftFront.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftFront.setVelocity(COUNTS_PER_IN_DRIVE * speed);
+
+        rightFront.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setVelocity(COUNTS_PER_IN_DRIVE * speed);
+
+
+        leftRear.setTargetPosition((int) (distance * COUNTS_PER_IN_DRIVE));
+        leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftRear.setVelocity(COUNTS_PER_IN_DRIVE * speed);
+
+
+        while (opMo.opModeIsActive() && ( leftRear.isBusy() || rightRear.isBusy() || leftFront.isBusy() || rightFront.isBusy()))
+        {}
+
+        opMo.sleep(Math.abs(timeout));
 
     }
 }
