@@ -25,12 +25,29 @@ import java.util.List;
     private int targetDiameter;
 
     // Blue Cone
-    public static double H1=90; //15
-    public static double S1=50; //93
+    public static double H1=90; //90
+    public static double S1=50; //50
     public static double V1=70; //70
-    public static double H2=128; //45
+    public static double H2=128; //128
     public static double S2=255; //255
     public static double V2=255; //255
+/*
+    // Red Cone
+    public static double H1r=0; //15
+    public static double S1r=175; //93
+    public static double V1r=20; //70
+    public static double H2r=10; //45
+    public static double S2r=255; //255
+    public static double V2r=255; //255
+
+    // Red Cone2
+    public static double H1r2=170; //15
+    public static double S1r2=175; //93
+    public static double V1r2=20; //70
+    public static double H2r2=180; //45
+    public static double S2r2=255; //255
+    public static double V2r2=255; //255
+*/
 
     public static double regionPercentWidth = 1; // we assume the region is centered with the camera
     public static int regionY1 = 0; // Top of rectangle of the region to check
@@ -167,7 +184,7 @@ import java.util.List;
        vals[3] = (double)(myrec.height);
        myrec.set(vals); // Adding the offset because of the region_H
 
-        Rect myRecSmall = new Rect(myrec.x, myrec.y ,myrec.width, 25 );
+        Rect myRecSmall = new Rect(myrec.x, myrec.y ,myrec.width,35 );
         regionConeTop = hsv.submat(myRecSmall);
         Core.inRange(regionConeTop, new Scalar(H1, S1, V1), new Scalar(H2, S2, V2), yellow);
 
@@ -244,22 +261,24 @@ import java.util.List;
     public double getWidth() {
     // Distance approximation
     // Excel says Polynomial Equation: Distance (inches)= y = 7E-05x2 - 0.0616x + 15.581
-        if (!myrec.empty()) {
-            if (myrec.width != 0) {
-                return (.00007 * myrec.width * myrec.width - .0616 * myrec.width + 15.581);
+        if (!myBoundSmall.empty()) {
+            if (myBoundSmall.width != 0) {
+                return (-.00003 * myBoundSmall.width * myBoundSmall.width - .0498 * myBoundSmall.width + 21.398);
             } else {
                 return -1;
             }
         }
+        return -1;
     }
 
     public double getWidthpix() {
-        if (!myrec.empty()){
-            if (myrec.width != 0) {
-                return myrec.width;
+        if (!myBoundSmall.empty()){
+            if (myBoundSmall.width != 0) {
+                return myBoundSmall.width;
             } else {
                 return -1;
             }
         }
+        return -1;
     }
 }

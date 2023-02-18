@@ -249,10 +249,10 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
                     imu_IMU.resetYaw();
                 }
                 if (gamepad1.dpad_left) {
-                    TurnLeft180new(.75,180,true);
+                    TurnLeft180new(.75,180,false);
                 }
                 if (gamepad1.dpad_right) {
-                    TurnLeft180new(-0.75, 180, true);
+                    TurnLeft180new(-0.75, 180, false);
                 }
                 if (gamepad2.dpad_left) {
                     AlignHeading(0, .9);

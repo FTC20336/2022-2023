@@ -43,7 +43,7 @@ import java.util.List;
     // Blue Cone
     public static double H1b=90; //15
     public static double S1b=50; //93
-    public static double V1b=70; //70
+    public static double V1b=120; //70
     public static double H2b=128; //45
     public static double S2b=255; //255
     public static double V2b=255; //255
@@ -421,10 +421,10 @@ import java.util.List;
 
     public double getConeDistanceInches() {
         // Distance approximation
-        // Excel says Polynomial Equation: Distance (inches)= y = 7E-05x2 - 0.0616x + 15.581
-        if (!poleSizingBox.empty()) {
-            if (poleSizingBox.width != 0) {
-                return (.00007 * poleSizingBox.width * coneSizingBox.width - .0616 * poleSizingBox.width + 15.581);
+        // Excel says Polynomial Equation: Distance (inches)= y = -3E-05x2 - 0.0498x + 21.398
+        if (!coneSizingBox.empty()) {
+            if (coneSizingBox.width != 0) {
+                return (-.00003 * coneSizingBox.width * coneSizingBox.width - .0498 * coneSizingBox.width + 21.398);
             } else {
                 return -1;
             }

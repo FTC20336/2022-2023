@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -24,6 +25,7 @@ public class RobotBase {
   public DcMotorEx LeftBack;
   public DcMotorEx RightFront;
   public DcMotorEx RightBack;
+  public DistanceSensor distanceSensor;
   public RobotArm BeepArm= new RobotArm();
 
   static private double PI = 3.141592;
@@ -319,6 +321,10 @@ public class RobotBase {
     RightBack = hwMap.get(DcMotorEx.class, "RightBack");
     LeftFront = hwMap.get(DcMotorEx.class, "LeftFront");
     RightFront = hwMap.get(DcMotorEx.class, "RightFront");
+    RightFront = hwMap.get(DcMotorEx.class, "RightFront");
+
+    distanceSensor = hwMap.get(DistanceSensor.class, "dist");
+
     imu_IMU = hwMap.get(IMU.class, "imu");
     SetIMU();
 
