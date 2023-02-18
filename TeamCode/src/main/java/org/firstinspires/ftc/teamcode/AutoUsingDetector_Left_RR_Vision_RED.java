@@ -21,8 +21,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config
-@Autonomous(name="Left-TallPole-BLUE", group="Left")
-public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
+@Autonomous(name="Left-TallPole-RED", group="Left")
+public class AutoUsingDetector_Left_RR_Vision_RED extends LinearOpMode {
     private OpenCvCamera webcam;
     private OpenCvCamera webcam2;
 
@@ -67,7 +67,7 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
     public static double p1y = -65;
 
     public static double p2x = -14;
-    public static double p2y = -57;
+    public static double p2y = -56;
 
     public static double p3x = -15;
     public static double p3y = -25.5;
@@ -209,7 +209,7 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
 
         //OpenCV Pipeline
         BBBDetector_Contour_Pole_Cone myPipelinePole;
-        webcam.setPipeline(myPipelinePole = new BBBDetector_Contour_Pole_Cone(CAMERA_WIDTH, CAMERA_HEIGHT,clawCenter,pixelMargin, BBBDetector_Contour_Pole_Cone.conecolor.BLUE));
+        webcam.setPipeline(myPipelinePole = new BBBDetector_Contour_Pole_Cone(CAMERA_WIDTH, CAMERA_HEIGHT,clawCenter,pixelMargin, BBBDetector_Contour_Pole_Cone.conecolor.RED ));
 
         //Webcam streaming on the dashboard
         FtcDashboard.getInstance().startCameraStream(webcam, 0);
@@ -251,8 +251,8 @@ public class AutoUsingDetector_Left_RR_Vision extends LinearOpMode {
                 telemetry.update();
         }
 
-        // Test Code to check Color
-/*
+        // Test Code to check COlor
+        /*
         sleep(4000);
         BeepArm.ViperSlideSetPos(stackh,35,-1);
         while (   opModeIsActive() ) {
