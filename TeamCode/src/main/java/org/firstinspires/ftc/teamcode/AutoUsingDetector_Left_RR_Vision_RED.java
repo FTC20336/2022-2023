@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequen
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.firstinspires.ftc.teamcode.DropCone;
 
 @Config
 @Autonomous(name="Left-TallPole-RED", group="Left")
@@ -99,7 +98,6 @@ public class AutoUsingDetector_Left_RR_Vision_RED extends LinearOpMode {
 
 
     Pose2d startPose = new Pose2d(p1.getX(), p1.getY(), Math.toRadians(90));
-    DropCone drop = new DropCone();
 
     @Override
     public void runOpMode() {
