@@ -283,7 +283,6 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
         BeepArm.ViperSlideSetPos(2, 24, -1);
         drive.followTrajectorySequence(traj1);
 
-      //  drive.followTrajectorySequence(traj15);
         sleep(250); // wait a little if the robot wiggle
 
         AutoAction.dropConeAt(RobotArm.getHIGHPOS(), traj1);
@@ -295,25 +294,11 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
 
         AutoAction.pickConeAt(stackh, setupCycle);
 
-     //   BeepArm.ClawFullClose(1000);
-    //    BeepArm.ViperSlideSetPos(stackh + 4.5, 36, stackDelay);
-
         BeepArm.ViperSlideSetPos(RobotArm.getLOWPOS()-preDropH, 36, 1); //Don't wait.. go back now
         drive.followTrajectorySequence(toCyclePole);
 
         AutoAction.dropConeAt(RobotArm.getLOWPOS(),  toCyclePole);
-/*
-        BeepArm.ViperSlideSetPos(stackh - stackinc, 24, -1);
-        drive.followTrajectorySequence(toStack);
-       // BeepArm.ClawFullClose(1000);
-        //BeepArm.ViperSlideSetPos(stackh - stackinc + 4.5, 36, stackDelay);
 
-        pickConeAt(stackh- stackinc, myPipelinePole,drive,toStack);
-
-        drive.followTrajectorySequence(toCyclePole);
-
-        dropConeAt(RobotArm.getLOWPOS(), myPipelinePole, drive, toCyclePole);
-*/
         BeepArm.ViperSlideSetPos(0, 24, 1);
 
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {

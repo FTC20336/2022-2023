@@ -375,12 +375,6 @@ import java.util.List;
 
     }
 
-    public double getPolePositionInches() {
-
-        return  (poleCentroidX/25);
-
-    }
-
     public double getPoleDistanceInches() {
         // Distance approximation
         // Excel says Polynomial Equation: Distance (inches)= y = 7E-05x2 - 0.0616x + 15.581

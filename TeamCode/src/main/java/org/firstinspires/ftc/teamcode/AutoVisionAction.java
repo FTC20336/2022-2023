@@ -31,6 +31,7 @@ public class AutoVisionAction {
     public static double x = .2; // Max power during Strafe
     public static int pixelMargin = 35;
     private static int currentPos;
+    private static double currentPosInches;
 
     private NanoClock clock;
     private double currentAdjustTime;
@@ -163,38 +164,24 @@ public class AutoVisionAction {
     // Drop Cone function assumes the robot is near a junction
     // We supply the dropping height in inches
     public void dropConeAtNoPID(double dropHeight, TrajectorySequence lastTraj) {
-        currentPos = (int)myPipeline.getPoleDistanceInches();
-
+        // Move slide to PreDrop height so we can look at the tip of the pole
         BeepArm.ViperSlideSetPos(dropHeight - preDropH, 36, 1);
 
-        double xStick;
-        double yStick = 0;
-        double error = 0;
 
-        double lateralError = 0;
+        // This is the lateral error in pixels from the center of the claw to the current position of the pole
+        double lateralError = clawCenter - currentPos;
 
-        myOp.sleep(750);
-
-        currentPos = (int) myPipeline.getPoleDistanceInches();
+        // This is the distance from the pole and the center of the 'cone in the claw' based on the width of the yellow pole
         double lastMove = myPipeline.getPoleDistanceInches();
 
-        error = clawCenter - currentPos;
-        lateralError = error / 25; // Convert pixels to inches for lateral correction
+        // Convert the lateral error from pixels to inches.... This may be need change
+        lateralError = lateralError / 25; // Convert pixels to inches for lateral correction
 
-         myOp.telemetry.addData("Current Image x", currentPos);
-         myOp.telemetry.addData("Error", error);
-         myOp.telemetry.addData("Current Image in Pixels", myPipeline.getPoleDistancePixel());
-         myOp.telemetry.addData("Lateral Distance in inches", String.format("%.3f", lateralError));
+         myOp.telemetry.addData("Lateral Error in Inches", String.format("%.2f", lateralError) );
          myOp.telemetry.addData("Distance in inches", String.format("%.2f", myPipeline.getPoleDistanceInches()));
-
          myOp.telemetry.update();
 
-        drive.strafe(0, 0);
-
-         myOp.telemetry.addLine("Out of Loop");
-         myOp.telemetry.update();
-        // sleep(1500);
-
+         // Move slide up to dropping position to clear the pole
         BeepArm.ViperSlideSetPos(dropHeight, 12, -1);
 
         TrajectorySequence drop;// = new TrajectorySequence;
@@ -229,7 +216,7 @@ public class AutoVisionAction {
             myOp.sleep(250);
         }
         drive.followTrajectorySequence(drop);
-        BeepArm.ViperSlideSetPos(dropHeight - 3, 12, 250);
+        BeepArm.ViperSlideSetPos(dropHeight - 3, 12, 150);
 
         BeepArm.ClawFullOpen(250);
         drive.followTrajectorySequence(back);
@@ -347,6 +334,8 @@ public class AutoVisionAction {
         BeepArm.ViperSlideSetPos(pickHeight + 6, 15, 500);
 
         drive.followTrajectorySequence(back);
+
+      //  return back;
 
     }
     
