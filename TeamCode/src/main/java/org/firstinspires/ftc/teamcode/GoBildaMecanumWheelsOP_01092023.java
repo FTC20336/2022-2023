@@ -117,7 +117,7 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
      */
     private void GoToPreset(List PresetList, String Height) {
         if (Height.equals("High")) {
-            ViperSlideMotor.setTargetPosition(ViperSlideInchesToTicks(34));
+            ViperSlideMotor.setTargetPosition(ViperSlideInchesToTicks(33));
         } else if (Height.equals("Med")) {
             ViperSlideMotor.setTargetPosition(ViperSlideInchesToTicks(24));
         } else if (Height.equals("Low")) {

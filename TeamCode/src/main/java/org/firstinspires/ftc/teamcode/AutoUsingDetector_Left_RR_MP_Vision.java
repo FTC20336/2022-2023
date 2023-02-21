@@ -58,7 +58,7 @@ public class AutoUsingDetector_Left_RR_MP_Vision extends LinearOpMode {
 
     private BBBDetector_Color.ElementPosition ParkingPos;
 
-    public static Vector2d coneStack = new Vector2d(-62.75+8, -13.5);
+    public static Vector2d coneStack = new Vector2d(-62.75+6, -13.5);
     public static Vector2d shortPole = new Vector2d(-48,-19);
 
     public static double p1x = -40;
@@ -391,7 +391,7 @@ public class AutoUsingDetector_Left_RR_MP_Vision extends LinearOpMode {
             sleep(250);
         }
         else{
-            telemetry.addLine("Moving 6 inches");
+            telemetry.addData("Moving 6 inches", String.format("%.3f" ,lastMove));
             telemetry.update();
 
             drop = drive.trajectorySequenceBuilder(lastTraj.end())
@@ -470,7 +470,7 @@ public class AutoUsingDetector_Left_RR_MP_Vision extends LinearOpMode {
             sleep(250);
         }
         else{
-            telemetry.addLine("Moving 6 inches");
+            telemetry.addData("Moving 6 inches, we detected: ", String.format("%.3f" ,lastMove));
             telemetry.update();
 
             drop = drive.trajectorySequenceBuilder(lastTraj.end())
@@ -558,7 +558,7 @@ public class AutoUsingDetector_Left_RR_MP_Vision extends LinearOpMode {
         telemetry.addLine("Out of Loop");
         telemetry.update();
         // sleep(1500);
-        double lastMove =  drive.distanceSensor.getDistance(DistanceUnit.INCH);
+        double lastMove =  drive.distanceSensor.getDistance(DistanceUnit.INCH)-4;
         // double lastMove =  myPipeline.getConeDistanceInches();
 
 
@@ -567,8 +567,8 @@ public class AutoUsingDetector_Left_RR_MP_Vision extends LinearOpMode {
         TrajectorySequence drop;// = new TrajectorySequence;
         TrajectorySequence back;// = new TrajectorySequence;
 
-        if (lastMove <6 ) {
-            telemetry.addData("Moving inches", String.format("%.3f" ,lastMove));
+        if (lastMove < 10) {
+            telemetry.addData("Moving inches", String.format("%.3f", lastMove));
             telemetry.update();
             drop = drive.trajectorySequenceBuilder(lastTraj.end())
                     .forward(lastMove,
@@ -581,9 +581,8 @@ public class AutoUsingDetector_Left_RR_MP_Vision extends LinearOpMode {
                     .build();
 
             sleep(250);
-        }
-        else{
-            telemetry.addLine("Moving 6 inches");
+        } else {
+            telemetry.addData("Moving 10 inches, we found: ", String.format("%.3f", lastMove));
             telemetry.update();
 
             drop = drive.trajectorySequenceBuilder(lastTraj.end())

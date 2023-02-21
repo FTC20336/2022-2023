@@ -89,10 +89,10 @@ public class contourtesting_Cone extends LinearOpMode {
             telemetry.update();
 
             Beep.BeepArm.ClawFullClose(500);
-            Beep.BeepArm.ViperSlideSetPos(26.5,20,0);
+            Beep.BeepArm.ViperSlideSetPos(5,20,0);
 
 
-            while ( (Math.abs(error) > pixelMargin || Beep.BeepArm.ViperSlideGetPos() < 26.4)  && opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
+            while (  opModeIsActive() ) {
            // while (opModeIsActive() && Math.abs(gamepad1.right_stick_x) < 0.2) {
 
                 xStick = Kp * error;
@@ -131,7 +131,7 @@ public class contourtesting_Cone extends LinearOpMode {
            // sleep(1500);
             double lastMove =  myPipeline.getWidth();
 
-
+/*
             Beep.BeepArm.ViperSlideSetPos(32,12,-1);
 
             if (lastMove <6 ) {
@@ -142,7 +142,7 @@ public class contourtesting_Cone extends LinearOpMode {
             }
 
             Beep.BeepArm.ClawFullOpen(500);
-
+*/
 
             telemetry.addLine("Done Following Pole");
             telemetry.update();

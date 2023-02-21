@@ -73,7 +73,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
 
     static private double MOTOR_GEAR_RATIO = 19.2;
-    static private double COUNTS_PER_IN_DRIVE = 28 * MOTOR_GEAR_RATIO / CIRCUMFERENCE;
+    static public double COUNTS_PER_IN_DRIVE = 28 * MOTOR_GEAR_RATIO / CIRCUMFERENCE;
 
     private TrajectorySequenceRunner trajectorySequenceRunner;
 
