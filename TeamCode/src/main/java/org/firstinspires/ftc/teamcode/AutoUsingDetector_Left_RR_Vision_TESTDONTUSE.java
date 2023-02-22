@@ -31,9 +31,9 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
     private OpenCvCamera webcam;
     private OpenCvCamera webcam2;
 
-    RobotArm BeepArm= new RobotArm();
+    RobotArm BeepArm = new RobotArm();
 
-    AutoVisionAction AutoAction;
+    AutoVisionAction AutoAction = new AutoVisionAction();
 
     //Create New Robot based on RobotBase
     //RobotBase Beep = new RobotBase();
@@ -85,7 +85,7 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
     public static double p5x = -16;
     public static double p5y = -23.75;
 
-    public static double p6x = -16;
+    public static double p6x = -24;
     public static double p6y = coneStack.getY();
 
     private static Vector2d p1 = new Vector2d(p1x, p1y); // Starting Point
@@ -95,6 +95,29 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
     private static Vector2d p5 = new Vector2d(p5x, p5y); //
     private static Vector2d p6 = new Vector2d(p6x, p6y); //
     public static long stackDelay = 500;
+
+
+    public static double stackh = 5;
+    public static double stackinc = 1.25;
+
+    public static double preScanDelay = 500;
+
+    double startDir = Math.toRadians(90);
+
+
+    Pose2d startPose = new Pose2d(p1.getX(), p1.getY(), Math.toRadians(90));
+
+
+    @Override
+    public void runOpMode() {
+
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        //Initialize BeepArm
+        BeepArm.init(hardwareMap, this);
+
+
+        //Initialize clock
+        clock = NanoClock.system();
 
     /*
     .setTangent(Math.toRadians(10))
@@ -126,23 +149,6 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
                                 */
 
 
-    public static double stackh = 5;
-    public static double stackinc = 1.25;
-
-    public static double preScanDelay = 500;
-
-    double startDir = Math.toRadians(90);
-
-
-    Pose2d startPose = new Pose2d(p1.getX(), p1.getY(), Math.toRadians(90));
-
-
-    @Override
-    public void runOpMode() {
-
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
-
         TrajectorySequence traj1 = drive.trajectorySequenceBuilder(startPose)
                 .setTangent(Math.toRadians(10))
                 .splineToConstantHeading(new Vector2d(p2x, p2y), Math.toRadians(90))
@@ -157,16 +163,15 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
                 .build();
 
         // was traj15.end before
-        TrajectorySequence traj175 = drive.trajectorySequenceBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(p5.getX(), p5.getY()))
-                .lineToLinearHeading(new Pose2d(p6.getX(), coneStack.getY(), Math.toRadians(180)))
+
+
+        TrajectorySequence setupCycle = drive.trajectorySequenceBuilder(traj1.end())
+                .setTangent(Math.toRadians(140))
+                .splineToSplineHeading(new Pose2d(p6x,p6y, Math.toRadians(180)),  Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(coneStack.getX(), coneStack.getY()),Math.toRadians(180))
                 .build();
 
-        TrajectorySequence setupCycle = drive.trajectorySequenceBuilder(traj175.end())
-                .lineToConstantHeading(new Vector2d(coneStack.getX(), coneStack.getY()))
-                .build();
-
-        TrajectorySequence toCyclePole = drive.trajectorySequenceBuilder(setupCycle.end())
+        TrajectorySequence toCyclePole = drive.trajectorySequenceBuilder(traj1.end())
                 .back(4)
                 .lineToLinearHeading(new Pose2d(shortPole.getX(), coneStack.getY() + 2, Math.toRadians(270)))
                 .build();
@@ -198,7 +203,6 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
 
 
 
-        drive.setPoseEstimate(startPose);
 
         // OpenCV webcam
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -248,7 +252,7 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
 
         //OpenCV Pipeline
         BBBDetector_Contour_Pole_Cone myPipelinePole;
-        webcam.setPipeline(myPipelinePole = new BBBDetector_Contour_Pole_Cone(CAMERA_WIDTH, CAMERA_HEIGHT,clawCenter,pixelMargin, BBBDetector_Contour_Pole_Cone.conecolor.BLUE));
+        webcam.setPipeline(myPipelinePole = new BBBDetector_Contour_Pole_Cone(CAMERA_WIDTH, CAMERA_HEIGHT,clawCenter,pixelMargin, BBBDetector_Contour_Pole_Cone.conecolor.RED));
 
         //Webcam streaming on the dashboard
         FtcDashboard.getInstance().startCameraStream(webcam, 0);
@@ -270,15 +274,8 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
             }
         });
 
-
-        //Initialize BeepArm
-        BeepArm.init(hardwareMap, this);
-
         // Initialize AutoAction.. Setting this LinearOp, Image processsing Pipeline, Mecanum Drive and BeepARm
-   //     AutoAction.init(this,myPipelinePole,drive,BeepArm );
-
-        //Initialize clock
-        clock = NanoClock.system();
+        AutoAction.init(this,myPipelinePole,drive,BeepArm );
 
         // Show on the screen which Parking Spot was detected
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
@@ -296,35 +293,44 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
                 telemetry.addLine("DID NOT SEE.. SO we park at - Center");
                 telemetry.update();
         }
-
-        // Test Code to check Color
 /*
-        sleep(4000);
+        // Test Code to check Color
         BeepArm.ViperSlideSetPos(stackh,35,-1);
         while (   opModeIsActive() ) {
-            telemetry.addData("Current Image in Pixels", myPipelinePole.getConeDistancePixel());
-            telemetry.addData("Distance in inches", String.format("%.2f", myPipelinePole.getConeDistanceInches()));
+
+            telemetry.addData("Cone Lateral Position in Pixels", myPipelinePole.getConePositionPixels());
+            telemetry.addData("Cone Lateral Position in Inches", myPipelinePole.getConePositionInches());
+            telemetry.addData("Cone Current Image in Pixels", myPipelinePole.getConeDistancePixel());
+            telemetry.addData("Cone Distance in inches, image", String.format("%.2f", myPipelinePole.getConeDistanceInches()));
+            telemetry.addData("Cone Distance in inches, Sensor", String.format("%.2f", drive.ConeToClaw()));
             telemetry.addData("Viper Height in inches", String.format("%.2f", BeepArm.ViperSlideGetPos()));
-            telemetry.addData("Total Adjust distance", String.format("%.3f", distAdjust));
+            telemetry.addData("Lateral Shift in inches: ", String.format("%.2f",drive.LateralConeToClaw(myPipelinePole.getConePositionPixels(), clawCenter)));
+            telemetry.update();
 
         }
 */
-            //Main Movement
+        //Main Movement
+
+        drive.setPoseEstimate(startPose);
         BeepArm.ClawFullClose(450); //wait 250 ms to make sure the cone is gripped well
         BeepArm.ViperSlideSetPos(2, 24, -1);
         drive.followTrajectorySequence(traj1);
 
         sleep(250); // wait a little if the robot wiggle
 
-        dropConeAt(RobotArm.getHIGHPOS(), traj1);
+        Pose2d end =  AutoAction.dropConeAtNoPID(RobotArm.getHIGHPOS(), traj1 );
 
-        drive.followTrajectorySequence(traj175);
-        BeepArm.ViperSlideSetPos(stackh, 36, 1); //Don't wait.. go back now
+        TrajectorySequence after1stConeToStack = drive.trajectorySequenceBuilder(end)
+                .setTangent(Math.toRadians(140))
+                .splineToSplineHeading(new Pose2d(p6x,p6y, Math.toRadians(180)),  Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(coneStack.getX(), coneStack.getY()),Math.toRadians(180))
+                .addTemporalMarker(2, ()-> BeepArm.ViperSlideSetPos(stackh, 36, (long) -0.0000001)) //Don't wait.. go back now )
+                .build();
 
-        drive.followTrajectorySequence(setupCycle);
+        drive.followTrajectorySequence(after1stConeToStack);
 
-        AutoAction.pickConeAt(stackh, setupCycle);
-
+        end  = AutoAction.pickConeAtNoPID(stackh, setupCycle);
+/*
         BeepArm.ViperSlideSetPos(RobotArm.getLOWPOS()-preDropH, 36, 1); //Don't wait.. go back now
         drive.followTrajectorySequence(toCyclePole);
 
@@ -339,7 +345,7 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
         } else { // (ParkingPos == BBBDetector_Color.ElementPosition.CENTER) {
             drive.followTrajectorySequence(center);
         }
-
+*/
     }
 
 }

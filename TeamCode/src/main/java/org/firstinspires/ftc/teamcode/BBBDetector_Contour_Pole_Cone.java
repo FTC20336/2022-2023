@@ -75,7 +75,7 @@ import java.util.List;
     // Initially look at the top 600 pixels on the screen
     public static double coneRegionPercentWidth = 1; // we assume the region is centered with the camera
     public static int coneRegionY1 = 0; // Top of rectangle of the region to check
-    public static int coneRegionPixelHeight = 600;
+    public static int coneRegionPixelHeight = 700;
 
     private int coneRegionX1; // = (int) (this.width/2-(this.width/2*poleRegionPercentWidth));
     private int coneRegionX2; // = (int) (this.width/2+(this.width/2*poleRegionPercentWidth));
@@ -87,11 +87,13 @@ import java.util.List;
     int coneMaxContourId = -1;
     double coneMaxContourArea=0;
 
-    private Rect poleSizingBox;
-    private Rect coneSizingBox;
-    private Rect coneTempSizingBox;
+    // Create Rectangle to make sure we have rectangles in case we don't detect color
+    private Rect poleSizingBox = new Rect();
+    private Rect coneSizingBox = new Rect();
+
 
     static final Scalar ORANGE = new Scalar(255, 100, 0);
+    static final Scalar YELLOW = new Scalar(255, 255, 0);
     static final Scalar RED = new Scalar(255, 0, 0);
     static final Scalar GREEN = new Scalar(0, 255, 0);
     static final Scalar BLUE = new Scalar(0, 0, 255);
@@ -196,59 +198,30 @@ import java.util.List;
         // Create an HSV image using input
         Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
 
+        // Process All the POLE
         // Look for yellow in the region_H.. dump into yellow matrix (image in yellow will be white if it found yellow.. black if not)
         Core.inRange(poleRegion, new Scalar(H1y, S1y, V1y), new Scalar(H2y, S2y, V2y), poleMat);
-
-        if(coneColor == conecolor.RED){
-            Core.inRange(coneRegion, new Scalar(H1r, S1r, V1r), new Scalar(H2r, S2r, V2r), coneMat);
-            Core.inRange(coneRegion, new Scalar(H1r2, S1r2, V1r2), new Scalar(H2r2, S2r2, V2r2), coneMat2);
-            Core.addWeighted( coneMat, .5, coneMat2,.5,0,coneMat);
-
-        }else {
-            Core.inRange(coneRegion, new Scalar(H1b, S1b, V1b), new Scalar(H2b, S2b, V2b), coneMat);
-
-        }
-
 
         // Find all the poleContours of pole stuff
         List<MatOfPoint> poleContours = new ArrayList<>();
         Mat poleHierarchy = new Mat();
+
+        // Find contours of all the yellow in the image
         Imgproc.findContours(poleMat, poleContours, poleHierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
-        // Find all the poleContours of pole stuff
-        List<MatOfPoint> coneContours = new ArrayList<>();
-        Mat coneHierarchy = new Mat();
-        Imgproc.findContours(coneMat, coneContours, poleHierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
-
         // Reset Center of mass to 0
-        poleCentroidX=-1;
-        double poleCentroidY=0;
+        poleCentroidX=-1; // Set to -1 so we know we haven't seen a yellow pole
+        poleCentroidY=0;
 
         //Reset maximum area contour Id and value. We set to -1 in case we don't find any poleContours
         poleMaxContourId = -1;
         poleMaxContourArea=0;
-
-        coneMaxContourId = -1;
-        coneMaxContourArea=0;
-
-        //Uncomment to draw all poleContours on the yellow mat.. won't align with the input mat
-        // Imgproc.drawContours(yellow, poleContours,-1,new Scalar(255,255, 255), 6);
-        //Uncomment to see how many contour we found
-        //Imgproc.putText(input,  String.valueOf(poleContours.size()), new Point(200,200), Imgproc.FONT_HERSHEY_SIMPLEX, 4, new Scalar(255, 255, 255), 2);
 
         // Go thru all poleContours and Cone Contours and if the area is bigger than the current biggest one, then use this new id as  the biggest one
         for (int i = 0 ; i< poleContours.size(); i++) {
             if (Imgproc.contourArea(poleContours.get(i)) > poleMaxContourArea) {
                 poleMaxContourId = i;
                 poleMaxContourArea = Imgproc.contourArea(poleContours.get(i));
-            }
-        }
-
-        for (int i = 0 ; i< coneContours.size(); i++) {
-            if (Imgproc.contourArea(coneContours.get(i)) > coneMaxContourArea) {
-                coneMaxContourId = i;
-                coneMaxContourArea = Imgproc.contourArea(coneContours.get(i));
             }
         }
 
@@ -275,92 +248,88 @@ import java.util.List;
 
         //Draw a circle at the center of mass of the yellow region
         Imgproc.circle(input, new Point(poleCentroidX, poleCentroidY), 10, CYAN, -1);
-        Imgproc.rectangle(input, poleSizingBox, BLUE, 7);
 
-    }
-
-        // if we did find a contour with big area.. Create new SubRegion for just the top to check width of Cone
-        if(coneMaxContourId!= -1) {
-            // Create bounding box around biggest Area, this will be used to recalculate the width of the Cone at the top
-            // hence it's distance
-            coneTempSizingBox = Imgproc.boundingRect(coneContours.get(coneMaxContourId));
-            coneVals[0] = (double) (coneTempSizingBox.x + coneRegionX1);
-            coneVals[1] = (double) (coneTempSizingBox.y + coneRegionY1);
-            coneVals[2] = (double) (coneTempSizingBox.width);
-            coneVals[3] = (double) (coneTempSizingBox.height);
-            coneTempSizingBox.set(coneVals); // Adding the offset because of the region_H
-
-            Rect coneSizingBox2 = new Rect(coneTempSizingBox.x, coneTempSizingBox.y, coneTempSizingBox.width, 25);
-            coneRegionTop = hsv.submat(coneSizingBox2);
-
-            if (coneColor == conecolor.RED) {
-                Core.inRange(coneRegionTop, new Scalar(H1r, S1r, V1r), new Scalar(H2r, S2r, V2r), coneMat);
-                Core.inRange(coneRegionTop, new Scalar(H1r2, S1r2, V1r2), new Scalar(H2r2, S2r2, V2r2), coneMat2);
-                Core.add(coneMat, coneMat2, coneMat);
-
-            } else {
-                Core.inRange(coneRegionTop, new Scalar(H1b, S1b, V1b), new Scalar(H2b, S2b, V2b), coneMat);
-
-            }
-
-
-            // Contour for the top of the cone
-            List<MatOfPoint> coneContoursSize = new ArrayList<>();
-            Mat coneSizeHierarchy = new Mat();
-            Imgproc.findContours(coneMat, coneContoursSize, coneSizeHierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
-            // Reset Center of mass to 0
-            coneCentroidX = -1;
-            coneCentroidY = 0;
-
-            //Reset maximum area contour Id and value. We set to -1 in case we don't find any contours
-            coneMaxContourId = -1;
-            coneMaxContourArea = 0;
-
-            //Uncomment to draw all contours on the yellow mat.. won't align with the input mat
-            // Imgproc.drawContours(yellow, contours,-1,new Scalar(255,255, 255), 6);
-            //Uncomment to see how many contour we found
-            //Imgproc.putText(input,  String.valueOf(contours.size()), new Point(200,200), Imgproc.FONT_HERSHEY_SIMPLEX, 4, new Scalar(255, 255, 255), 2);
-
-            // Go thru all contours and if the area is bigger than the current biggest one, then use this new id as  the biggest one
-            for (int i = 0; i < coneContoursSize.size(); i++) {
-                if (Imgproc.contourArea(coneContoursSize.get(i)) > coneMaxContourArea) {
-                    coneMaxContourId = i;
-                    coneMaxContourArea = Imgproc.contourArea(coneContoursSize.get(i));
-                }
-            }
-
-            // if we did find a contour with big area.. calculate the center of mass.
-            //https://docs.opencv.org/4.x/dd/d49/tutorial_py_contour_features.html
-            if (coneMaxContourId != -1) {
-                Moments momentSmall = new Moments();
-                momentSmall = Imgproc.moments(coneContoursSize.get(coneMaxContourId), true);
-                if (momentSmall.m00 != 0) {
-                    // We add the 'regionX1' value because the center of mass location origin is the corner of the region
-                    // We need to know the centroid from the original image size.
-                    coneCentroidX = (int) (momentSmall.get_m10() / momentSmall.get_m00() + coneSizingBox2.x);
-                    coneCentroidY = (int) (momentSmall.get_m01() / momentSmall.get_m00() + coneSizingBox2.y);
-                }
-
-                // Create bounding box around biggest Area, this will be used to calculate the width of the pol
-                // hence it's distance
-                coneSizingBox = Imgproc.boundingRect(coneContoursSize.get(coneMaxContourId));
-                coneVals[0] = (double) (coneSizingBox.x + coneRegionX1);
-                coneVals[1] = (double) (coneSizingBox.y + coneRegionY1);
-                coneVals[2] = (double) (coneSizingBox.width);
-                coneVals[3] = (double) (coneSizingBox.height);
-                coneSizingBox.set(coneVals); // Adding the offset because of the region_H
-
-
-                //Draw a circle at the center of mass of the yellow region
-                Imgproc.circle(input, new Point(coneCentroidX, coneCentroidY), 10, CYAN, -1);
-                Imgproc.rectangle(input, coneTempSizingBox, BLUE, 5);
-                Imgproc.rectangle(input, coneSizingBox, CYAN, 7);
-            }
-        }
+        //Draw a BLue box around the Biggest Contour we found and that we calculated CENTROID FROM
+        Imgproc.rectangle(input, poleSizingBox, CYAN, 7);
 
         // Draw rectangle around the region we checked
         Imgproc.rectangle(input, new Rect(poleRegionP1, poleRegionP2), ORANGE, 3);
+
+    }
+
+
+    // Draw Where we check Cone
+        // Draw rectangle around the region we checked
+        Imgproc.rectangle(input, new Rect(coneRegionP1, coneRegionP2), RED, 3);
+
+        if(coneColor == conecolor.RED){
+            Core.inRange(coneRegion, new Scalar(H1r, S1r, V1r), new Scalar(H2r, S2r, V2r), coneMat);
+            Core.inRange(coneRegion, new Scalar(H1r2, S1r2, V1r2), new Scalar(H2r2, S2r2, V2r2), coneMat2);
+            Core.addWeighted( coneMat, 1, coneMat2,1,0,coneMat);
+
+        }else {
+            Core.inRange(coneRegion, new Scalar(H1b, S1b, V1b), new Scalar(H2b, S2b, V2b), coneMat);
+        }
+
+        // Reset Center of mass to 0
+        coneCentroidX=-1; // Set to -1 so we know we haven't seen a yellow pole
+        coneCentroidY=0;
+
+        coneMaxContourId = -1;
+        coneMaxContourArea=0;
+
+        // Find all the poleContours of pole stuff
+        List<MatOfPoint> coneContours = new ArrayList<>();
+        Mat coneHierarchy = new Mat();
+        Imgproc.findContours(coneMat, coneContours, coneHierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        // Go thru all contours colored (red or blue).. find the biggest area
+        for (int i = 0 ; i< coneContours.size(); i++) {
+            if (Imgproc.contourArea(coneContours.get(i)) > coneMaxContourArea) {
+                coneMaxContourId = i;
+                coneMaxContourArea = Imgproc.contourArea(coneContours.get(i));
+            }
+        }
+ /*       Imgproc.putText (
+                input,                          // Matrix obj of the image
+                "issue: "+ String.valueOf(coneMaxContourId),          // Text to be added
+                new Point (100,200),               // point
+                3,      // front face
+                2,                               // front scale
+                RED,             // Scalar object for color
+                2                                // Thickness
+        );
+*/
+
+        // if we did find a contour with big area.. calculate the center of mass.
+        //https://docs.opencv.org/4.x/dd/d49/tutorial_py_contour_features.html
+        if(coneMaxContourId!= -1) {
+            /*Moments momentCone = new Moments();
+            momentCone = Imgproc.moments(coneContours.get(coneMaxContourId), true);
+
+
+            if (momentCone.m00 != 0) {
+                // We add the 'poleRegionX1' value because the center of mass location origin is the corner of the region
+                // We need to know the centroid from the original image size.
+                coneCentroidX = (int) (momentCone.get_m10() / momentCone.get_m00() + coneRegionX1);
+                coneCentroidY = (int) (momentCone.get_m01() / momentCone.get_m00() + coneRegionY1);
+            }
+*/
+            coneSizingBox = Imgproc.boundingRect(coneContours.get(coneMaxContourId));
+            coneVals[0] = (double) (coneSizingBox.x + coneRegionX1);
+            coneVals[1] = (double) (coneSizingBox.y + coneRegionY1);
+            coneVals[2] = (double) (coneSizingBox.width);
+            coneVals[3] = (double) (coneSizingBox.height);
+            coneSizingBox.set(coneVals); // Adding the offset because of the region_H
+            coneCentroidX = coneSizingBox.x + coneSizingBox.width/2;
+            coneCentroidY = coneSizingBox.y + coneSizingBox.height/2;
+
+                    //Draw a circle at the center of mass of the yellow region
+            Imgproc.circle(input, new Point(coneCentroidX, coneCentroidY), 10, YELLOW, 4);
+            Imgproc.rectangle(input, coneSizingBox, YELLOW, 5);
+
+        }
+
         // Draw line of the target.. center of Claw
         Imgproc.line(input, new Point( targetX, 0 ), new Point(targetX, this.height), GREEN, 5);
         Imgproc.line(input, new Point( targetX-targetTolerance/2, 0 ), new Point(targetX-targetTolerance/2, this.height), GREEN, 2,4);
@@ -415,10 +384,10 @@ import java.util.List;
 
     public double getConeDistanceInches() {
         // Distance approximation
-        // Excel says Polynomial Equation: Distance (inches)= y = -3E-05x2 - 0.0498x + 21.398
+        // Excel says Polynomial Equation: Distance (inches)= y = 4E-05x2 - 0.0713x + 33.854
         if (!coneSizingBox.empty()) {
             if (coneSizingBox.width != 0) {
-                return (-.00003 * coneSizingBox.width * coneSizingBox.width - .0498 * coneSizingBox.width + 21.398);
+                return (.00004 * coneSizingBox.width * coneSizingBox.width - .0713 * coneSizingBox.width + 33.854);
             } else {
                 return -1;
             }

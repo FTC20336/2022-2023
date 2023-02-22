@@ -29,6 +29,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -381,4 +382,40 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
     }
+
+    // return distance from Cone center to Claw based on the 2M distance Sensor.
+    // Should be done between 8" and 16" only
+    public double ConeToClaw()
+    {
+        return (0.7824 * distanceSensor.getDistance(DistanceUnit.INCH) - 1.4702);
+    }
+
+    // pixels: position on the screen of the center of cone
+    // clawcenter: position on the screen of the center of the claw
+
+    public double LateralConeToClaw(int pixels, int clawCenter){
+        double lateralDistance = -1.0;
+
+        // Slope for translating Pixels to Inches
+       double slope = 8.035 * distanceSensor.getDistance(DistanceUnit.INCH)  - 235.56;
+
+        if (slope !=0) {
+            lateralDistance =  (clawCenter-pixels) / slope;
+        }
+
+        return lateralDistance;
+    }
+
+    public double LateralPoleToClaw(int pixels, int clawCenter, double poleDistanceInches){
+        double lateralDistance = -1.0;
+
+        // Slope for translating Pixels to Inches...NUMBERS NEEDS CONFIRMATION
+        double slope = 8.035 * poleDistanceInches  - 205.43;
+        if (slope !=0) {
+            lateralDistance =  (pixels - clawCenter) / slope;
+        }
+
+        return lateralDistance;
+    }
+
 }
