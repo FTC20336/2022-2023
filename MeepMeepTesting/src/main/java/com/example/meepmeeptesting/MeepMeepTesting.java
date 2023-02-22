@@ -23,7 +23,7 @@ public class MeepMeepTesting {
                                 .setTangent(Math.toRadians(10))
                                 .splineToConstantHeading(new Vector2d(-12, -52), Math.toRadians(90))
                                 .splineToConstantHeading( new Vector2d(-12, -46), Math.toRadians(90))
-                                .splineToSplineHeading( new Pose2d(-12, -24), Math.toRadians(90))
+                                .splineToSplineHeading( new Pose2d(-12, -24, Math.toRadians(0)), Math.toRadians(90))
                                 .forward(6)
                                 .setTangent(Math.toRadians(140))
                                 .splineToSplineHeading(new Pose2d(-24,-11, Math.toRadians(180)),  Math.toRadians(180))

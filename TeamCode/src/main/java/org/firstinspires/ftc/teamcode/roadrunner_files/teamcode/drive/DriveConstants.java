@@ -21,7 +21,7 @@ public class DriveConstants {
 
     public static double pi = 3.14159265359;
     public static double SPEED_COEF = 0.85;
-    public static double ACCEL_COEF = 0.5;
+    public static double ACCEL_COEF = 0.75;
 
     /*
      * These are motor constants that should be listed online for your motors.

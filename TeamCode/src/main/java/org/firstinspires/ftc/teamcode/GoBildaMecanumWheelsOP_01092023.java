@@ -190,8 +190,8 @@ public class GoBildaMecanumWheelsOP_01092023 extends LinearOpMode {
                 LeftBack.setPower(((yVel - xVel) + rx) / denominator);
                 RightFront.setPower(((yVel - xVel) - rx) / denominator);
                 RightBack.setPower(((yVel + xVel) - rx) / denominator);
-                if (claw.getPosition() > 0.194) {
-                    claw.setPosition(0.194);
+                if (claw.getPosition() > 0.2) {
+                    claw.setPosition(0.2);
                 } else {
                     if (gamepad1.x || gamepad2.x) {
                         claw.setPosition(0);

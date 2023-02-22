@@ -74,13 +74,13 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
     public static double p1y = -65;
 
     public static double p2x = -14;
-    public static double p2y = -57;
+    public static double p2y = -52;
 
-    public static double p3x = -15;
-    public static double p3y = -25.5;
+    public static double p3x = -13;
+    public static double p3y = -46;
 
-    public static double p4x = -9.5;
-    public static double p4y = -24.5;
+    public static double p4x = -13;
+    public static double p4y = -24;
 
     public static double p5x = -16;
     public static double p5y = -23.75;
@@ -95,6 +95,36 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
     private static Vector2d p5 = new Vector2d(p5x, p5y); //
     private static Vector2d p6 = new Vector2d(p6x, p6y); //
     public static long stackDelay = 500;
+
+    /*
+    .setTangent(Math.toRadians(10))
+                                .splineToConstantHeading(new Vector2d(-12, -52), Math.toRadians(90))
+                                .splineToConstantHeading( new Vector2d(-12, -46), Math.toRadians(90))
+                                .splineToSplineHeading( new Pose2d(-12, -24,), Math.toRadians(90))
+                                .forward(6)
+                                .setTangent(Math.toRadians(140))
+                                .splineToSplineHeading(new Pose2d(-24,-11, Math.toRadians(180)),  Math.toRadians(180))
+                                .splineToConstantHeading(new Vector2d(-57,-12),Math.toRadians(180))
+                                .forward(6) // PIck up Cone
+                                .splineToConstantHeading(new Vector2d(-57,-12),Math.toRadians(180))
+                                .setTangent(Math.toRadians(0))
+                                .splineToSplineHeading(new Pose2d(-55,-13,Math.toRadians(315)), Math.toRadians(315))
+                                .forward(6) //Drop COne
+                                .setTangent(Math.toRadians(135))
+                                .setReversed(true)
+                                .splineToSplineHeading(new Pose2d(-57,-11,Math.toRadians(180)), Math.toRadians(180))
+                                .forward(6) // Pickup COne
+                                .splineToConstantHeading(new Vector2d(-57,-12),Math.toRadians(180))
+                                .setTangent(Math.toRadians(0))
+                                .splineToSplineHeading(new Pose2d(-31,-13,Math.toRadians(315)), Math.toRadians(315))
+                                .forward(6) //Drop COne
+                                .setReversed(true)
+                                .setTangent(Math.toRadians(90))
+                                .lineToSplineHeading(new Pose2d(-30,-12, Math.toRadians(270)))
+                                .setTangent(Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(-12,-12), Math.toRadians(0))
+                                */
+
 
     public static double stackh = 5;
     public static double stackinc = 1.25;
@@ -114,13 +144,14 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
 
 
         TrajectorySequence traj1 = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(p2x, p2y))
-                .lineToConstantHeading(new Vector2d(p2x, p2y+5))
-                .lineToSplineHeading(new Pose2d(p3.getX(), p3.getY(), Math.toRadians(0)))
+                .setTangent(Math.toRadians(10))
+                .splineToConstantHeading(new Vector2d(p2x, p2y), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(p3x, p3y), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(p4x, p4y, Math.toRadians(0)), Math.toRadians(90))
                 .build();
 
         TrajectorySequence traj15 = drive.trajectorySequenceBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(p4.getX(), p4.getY()),
+                .lineToConstantHeading(new Vector2d(p4.getX()-5, p4.getY()-5),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
@@ -244,7 +275,7 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
         BeepArm.init(hardwareMap, this);
 
         // Initialize AutoAction.. Setting this LinearOp, Image processsing Pipeline, Mecanum Drive and BeepARm
-        AutoAction.init(this,myPipelinePole,drive,BeepArm );
+   //     AutoAction.init(this,myPipelinePole,drive,BeepArm );
 
         //Initialize clock
         clock = NanoClock.system();
@@ -285,7 +316,7 @@ public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
 
         sleep(250); // wait a little if the robot wiggle
 
-        AutoAction.dropConeAt(RobotArm.getHIGHPOS(), traj1);
+        dropConeAt(RobotArm.getHIGHPOS(), traj1);
 
         drive.followTrajectorySequence(traj175);
         BeepArm.ViperSlideSetPos(stackh, 36, 1); //Don't wait.. go back now

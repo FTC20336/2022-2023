@@ -18,12 +18,13 @@ public class AutoVisionAction {
         this.myPipeline = myPipeline;
         this.drive = drive;
         BeepArm = beepArm;
+
     }
 
     private LinearOpMode myOp;
-    BBBDetector_Contour_Pole_Cone myPipeline;
-    SampleMecanumDrive drive;
-    RobotArm BeepArm;
+    private BBBDetector_Contour_Pole_Cone myPipeline;
+    private SampleMecanumDrive drive;
+    private RobotArm BeepArm;
 
     // Change these values for the PID and autocorrection
     public static double Kp = 0.0003;
@@ -336,6 +337,74 @@ public class AutoVisionAction {
         drive.followTrajectorySequence(back);
 
       //  return back;
+
+    }
+    public void pickConeAtNoPID(double pickHeight, TrajectorySequence lastTraj) {
+        currentPos = myPipeline.getConePositionPixels();
+
+        BeepArm.ViperSlideSetPos(pickHeight, 36, -1);
+        // sleep(1000);
+        BeepArm.ClawFullOpen(0);
+
+        double error = 0;
+
+        currentPos = myPipeline.getConePositionPixels();
+        error = clawCenter - currentPos;
+
+
+
+            myOp.telemetry.addData("Current Image x", currentPos);
+            myOp.telemetry.addData("Error", error);
+
+            myOp.telemetry.addData("Current Image in Pixels", myPipeline.getConeDistancePixel());
+            //    myOp.telemetry.addData("Distance in inches", String.format("%.2f" , myPipeline.getConeDistanceInches()) );
+            myOp.telemetry.addData("Distance in inches", String.format("%.2f", drive.distanceSensor.getDistance(DistanceUnit.INCH)));
+            myOp.telemetry.addData("Viper Height in inches", String.format("%.2f", BeepArm.ViperSlideGetPos()));
+            myOp.telemetry.addData("Total Adjust distance", String.format("%.3f", distAdjust));
+
+        double fwdMove = drive.distanceSensor.getDistance(DistanceUnit.INCH) - 4;
+        double sideMove = fwdMove;
+
+        TrajectorySequence drop;// = new TrajectorySequence;
+        TrajectorySequence back;// = new TrajectorySequence;
+
+        if (fwdMove < 10) {
+            myOp.telemetry.addData("Moving inches", String.format("%.3f", fwdMove));
+            myOp.telemetry.update();
+            drop = drive.trajectorySequenceBuilder(lastTraj.end())
+                    .forward(fwdMove,
+                            SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                            SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                    .build();
+
+            back = drive.trajectorySequenceBuilder(drop.end())
+                    .back(fwdMove)
+                    .build();
+
+            myOp.sleep(250);
+        } else {
+            myOp.telemetry.addData("Moving 10 inches, we found: ", String.format("%.3f", fwdMove));
+            myOp.telemetry.update();
+
+            drop = drive.trajectorySequenceBuilder(lastTraj.end())
+                    .forward(6,
+                            SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                            SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                    .build();
+
+            back = drive.trajectorySequenceBuilder(drop.end())
+                    .back(6)
+                    .build();
+            myOp.sleep(250);
+        }
+
+        drive.followTrajectorySequence(drop);
+        BeepArm.ClawFullClose(400);
+        BeepArm.ViperSlideSetPos(pickHeight + 6, 15, 500);
+
+        drive.followTrajectorySequence(back);
+
+        //  return back;
 
     }
     

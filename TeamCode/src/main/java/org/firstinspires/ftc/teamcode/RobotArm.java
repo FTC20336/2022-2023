@@ -13,7 +13,7 @@ public class RobotArm {
 
     public DcMotorEx ViperSlideMotor;
     public Servo Claw;
-    static private double CLAW_FULL_OPEN_POS = 0.194;
+    static private double CLAW_FULL_OPEN_POS = 0.2;
     static private double SWING_ARM_RATIO = 188;
     static private double VIPER_SLIDE_RATIO = 19.2;
     private static double HIGHPOS = 32.5;
