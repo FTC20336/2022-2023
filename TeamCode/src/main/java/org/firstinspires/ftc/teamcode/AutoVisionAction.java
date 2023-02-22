@@ -177,7 +177,7 @@ public class AutoVisionAction {
         BeepArm.ViperSlideSetPos(dropHeight - preDropH, 36, 1);
 
         // This is the lateral error in pixels from the center of the claw to the current position of the pole
-        double lateralError = myPipeline.getPolePositionPixels()- clawCenter ;
+        double lateralError = myPipeline.getPolePositionPixels()- BeepArm.clawCenter;
 
         // This is the distance from the pole and the center of the 'cone in the claw' based on the width of the yellow pole
         // Maybe we could read a few values and do the average of let's say 5 values

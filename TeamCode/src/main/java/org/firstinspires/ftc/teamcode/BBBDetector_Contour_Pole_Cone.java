@@ -32,6 +32,8 @@ import java.util.List;
     public static int targetX;
     private int targetTolerance;
 
+    private double cameraHFOV = 60; // How wide in degrees the camera image is.
+
     // Yellow Color for Pole
     public static double H1y=15; //15
     public static double S1y=90; //93
@@ -338,9 +340,15 @@ import java.util.List;
         return input; // return the mat with rectangles drawn
     }
 
-
+    // Distance in Pixels from Top left corner of image to Pole Center
     public int getPolePositionPixels() {
-        return (int) poleCentroidX;
+        return (int) (poleCentroidX);
+
+    }
+
+    // Distance in Pixels from target (claw center) to Pole Center
+    public int getPolePositionPixelsFromCenter() {
+        return (int) (poleCentroidX-targetX);
 
     }
 
@@ -356,6 +364,20 @@ import java.util.List;
             }
             return -1;
         }
+
+    public double getPoleDistanceInchesFromClaw() {
+        // Distance approximation
+        // Excel says Polynomial Equation: Distance (inches)= y = 7E-05x2 - 0.0616x + 15.581
+        if (!poleSizingBox.empty()) {
+            if (poleSizingBox.width != 0) {
+
+                return (.00007 * poleSizingBox.width * poleSizingBox.width - .0616 * poleSizingBox.width + 15.581);
+            } else {
+                return -1;
+            }
+        }
+        return -1;
+    }
 
 
     public double getPoleDistancePixel() {

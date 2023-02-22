@@ -20,6 +20,8 @@ public class RobotArm {
     private static double MIDDLEPOS  = 24;
     private static double LOWPOS = 14;
 
+    public static int clawCenter = 690; // Pixel position of the center of the claw based on a 1280 pixel resolution
+
     static double COUNT_PER_DEGREE_ARM = 28 * SWING_ARM_RATIO / 360;
     static double COUNT_PER_DEGREE_SLIDE = 28 * VIPER_SLIDE_RATIO / 360;
 
