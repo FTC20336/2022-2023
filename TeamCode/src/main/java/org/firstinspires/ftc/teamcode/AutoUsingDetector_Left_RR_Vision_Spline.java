@@ -329,9 +329,9 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
         p7y = shortPole.getY() - coneApproachDist * Math.sin(Math.toRadians(dropAngle));
         TrajectorySequence drop2 = drive.trajectorySequenceBuilder(end)
                                     .setTangent(Math.toRadians(0))
-                                    .splineToLinearHeading(new Pose2d(end.getX()+5, end.getY()+2,Math.toRadians(225)),Math.toRadians(225))
-                                    .setTangent(Math.toRadians(0))
-                                    .splineToLinearHeading(new Pose2d(p7x,p7y,Math.toRadians(dropAngle)), Math.toRadians(dropAngle))
+                                    //.splineToSplineHeading(new Pose2d(end.getX()+5, end.getY()+2,Math.toRadians(225)),Math.toRadians(0))
+                                   // .setTangent(Math.toRadians(0))
+                                    .splineToLinearHeading(new Pose2d(p7x,p7y,Math.toRadians(dropAngle)), Math.toRadians(0))
                                     .build();
 
         // Drive to Short Pole

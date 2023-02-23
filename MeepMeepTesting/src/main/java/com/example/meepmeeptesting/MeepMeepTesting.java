@@ -31,7 +31,7 @@ public class MeepMeepTesting {
                                 .forward(12) // PIck up Cone
                                 .splineToConstantHeading(new Vector2d(-58,-10),Math.toRadians(180))
                                 .setTangent(Math.toRadians(0))
-                                .splineToLinearHeading(new Pose2d(-56,-14, Math.toRadians(315)), Math.toRadians(315))
+                                .splineToLinearHeading(new Pose2d(-56,-14, Math.toRadians(315)), Math.toRadians(0))
                                 .forward(6) //Drop COne
                                 .setTangent(Math.toRadians(135))
                                 .setReversed(true)
