@@ -59,11 +59,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(5, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(6, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(5, 0, 0); //Kp was 5
 
-    public static double LATERAL_MULTIPLIER = 1.16666;
+    public static double LATERAL_MULTIPLIER = 1.1198; // was 1.16666
 
+    public static double LENGTH=14;
+    public static double WIDTH = 16;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;

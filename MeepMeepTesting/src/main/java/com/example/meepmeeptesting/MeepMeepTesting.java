@@ -27,11 +27,11 @@ public class MeepMeepTesting {
                                 .forward(6)
                                 .setTangent(Math.toRadians(140))
                                 .splineToSplineHeading(new Pose2d(-24,-11, Math.toRadians(180)),  Math.toRadians(180))
-                                .splineToConstantHeading(new Vector2d(-57,-12),Math.toRadians(180))
-                                .forward(6) // PIck up Cone
-                                .splineToConstantHeading(new Vector2d(-57,-12),Math.toRadians(180))
+                                .splineToConstantHeading(new Vector2d(-70+19,-12),Math.toRadians(180))
+                                .forward(12) // PIck up Cone
+                                .splineToConstantHeading(new Vector2d(-58,-10),Math.toRadians(180))
                                 .setTangent(Math.toRadians(0))
-                                .splineToSplineHeading(new Pose2d(-55,-13,Math.toRadians(315)), Math.toRadians(315))
+                                .splineToLinearHeading(new Pose2d(-56,-14, Math.toRadians(315)), Math.toRadians(315))
                                 .forward(6) //Drop COne
                                 .setTangent(Math.toRadians(135))
                                 .setReversed(true)

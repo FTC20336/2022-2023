@@ -352,8 +352,9 @@ import java.util.List;
 
     }
 
+
     public double getPoleDistanceInches() {
-        // Distance approximation
+        // Distance approximation from Claw center to POle
         // Excel says Polynomial Equation: Distance (inches)= y = 7E-05x2 - 0.0616x + 15.581
         if (!poleSizingBox.empty()) {
             if (poleSizingBox.width != 0) {
@@ -365,13 +366,27 @@ import java.util.List;
             return -1;
         }
 
-    public double getPoleDistanceInchesFromClaw() {
+    public int getPoleWidthPixels() {
         // Distance approximation
         // Excel says Polynomial Equation: Distance (inches)= y = 7E-05x2 - 0.0616x + 15.581
         if (!poleSizingBox.empty()) {
             if (poleSizingBox.width != 0) {
+                return poleSizingBox.width;
+            } else {
+                return -1;
+            }
+        }
+        return -1;
+    }
 
-                return (.00007 * poleSizingBox.width * poleSizingBox.width - .0616 * poleSizingBox.width + 15.581);
+    // Distance approximation
+    // Base on the known width of the Pole of 0.75"
+    public double getPolePositionFromClawInches() {
+
+        if (!poleSizingBox.empty()) {
+            if (poleSizingBox.width != 0) {
+                return ((double) getPolePositionPixelsFromCenter() * (1.0 / getPoleWidthPixels()) );
+                //return (.00007 * poleSizingBox.width * poleSizingBox.width - .0616 * poleSizingBox.width + 15.581);
             } else {
                 return -1;
             }
@@ -422,6 +437,21 @@ import java.util.List;
         if (!coneSizingBox.empty()) {
             if (coneSizingBox.width != 0) {
                 return coneSizingBox.width;
+            } else {
+                return -1;
+            }
+        }
+        return -1;
+    }
+
+    // Distance approximation
+    // Base on the known width of the Pole of 0.75"
+    public double getConePositionFromClawInches() {
+
+        if (!coneSizingBox.empty()) {
+            if (coneSizingBox.width != 0) {
+                return ((double) (getConePositionPixels()-targetX) * 4.0 / coneSizingBox.width  );
+
             } else {
                 return -1;
             }

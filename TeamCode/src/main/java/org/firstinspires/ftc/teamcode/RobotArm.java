@@ -22,6 +22,16 @@ public class RobotArm {
 
     public static int clawCenter = 690; // Pixel position of the center of the claw based on a 1280 pixel resolution
 
+    public static double getClawToRobotCenter() {
+        return clawToRobotCenter;
+    }
+
+    public static void setClawToRobotCenter(double clawToRobotCenter) {
+        RobotArm.clawToRobotCenter = clawToRobotCenter;
+    }
+
+    public static double clawToRobotCenter = 6.75; //Claw is 1/4" inside the robot to the front.. Robot is 14" long
+
     static double COUNT_PER_DEGREE_ARM = 28 * SWING_ARM_RATIO / 360;
     static double COUNT_PER_DEGREE_SLIDE = 28 * VIPER_SLIDE_RATIO / 360;
 
