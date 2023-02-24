@@ -20,7 +20,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 public class DriveConstants {
 
     public static double pi = 3.14159265359;
-    public static double SPEED_COEF = 0.85;
+    public static double SPEED_COEF = 0.80;
     public static double ACCEL_COEF = 0.5;
 
     /*
@@ -40,7 +40,7 @@ public class DriveConstants {
     // getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV)
     public static final boolean RUN_USING_ENCODER = true;
     // WAS  kP19  Kd5
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(17, 0, 3,
+    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(19, 0, 5,
            12.7);
 
     /*
@@ -52,7 +52,7 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 1.88976; // in
-    public static double GEAR_RATIO = 102.5/100.29; // output (wheel) speed / input (motor) speed
+    public static double GEAR_RATIO = 1.000; // output (wheel) speed / input (motor) speed
     public static double TRACK_WIDTH = 13.62; // in
 
     /*

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -12,9 +10,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequence;
-import org.opencv.core.Mat;
+
 @Config
-public class AutoVisionAction {
+public class AutoVisionAction_Backup {
 
     private LinearOpMode myOp;
     private BBBDetector_Contour_Pole_Cone myPipeline;
@@ -60,7 +58,7 @@ public class AutoVisionAction {
     public static double lateralTolerance = 3; // Pole
     public static double coneLateralTolerance = 3.5; // Cone
     public static double poleFwdAftTolerance =4;
-    public static double coneFwdAftTolerance =6;
+    public static double coneFwdAftTolerance =4;
 
     public static long preScanDelay = 500;
     
@@ -226,7 +224,7 @@ public class AutoVisionAction {
 
         // Do calculation to move foward and strafe according to the orientation
         double newPx = lastTraj.end().getX() + Math.cos(lastTraj.end().getHeading()) * fwdAftError
-                                                +  Math.sin(lastTraj.end().getHeading()) * lateralError;
+                                                -  Math.sin(lastTraj.end().getHeading()) * lateralError;
 
         double newPy = lastTraj.end().getY() + Math.sin(lastTraj.end().getHeading()) * fwdAftError
                                                 -  Math.cos(lastTraj.end().getHeading()) * lateralError;
@@ -379,21 +377,18 @@ public class AutoVisionAction {
 
 
         BeepArm.ClawFullOpen(0);
-        BeepArm.ViperSlideSetPos(pickHeight, 36, (long) 0);
+        BeepArm.ViperSlideSetPos(pickHeight, 36, (long)0);
         // Move slide to PreDrop height so we can look at the tip of the pole
-        myOp.sleep((long) preScanDelay);
+        myOp.sleep((long)preScanDelay);
 
         //double lateralError = myPipeline.getConePositionPixels()- clawCenter ;
         double lateralError = myPipeline.getConePositionFromClawInches();
 
         // drive ConeToClaw
-        double fwdAftError = drive.ConeToClaw() -3.5;
-      //  while (!myOp.gamepad1.a && myOp.opModeIsActive()) {
-          //  fwdAftError = drive.ConeToClaw()-3.5;
-            lateralError = myPipeline.getConePositionFromClawInches();
-
+        double fwdAftError = drive.ConeToClaw()-3.5 ;
+       // while (!myOp.gamepad1.a && myOp.opModeIsActive()) {
             // This is the lateral error in pixels from the center of the claw to the current position of the pole
-            //  lateralError = myPipeline.getConePositionPixels() - clawCenter;
+          //  lateralError = myPipeline.getConePositionPixels() - clawCenter;
 
             // This is the distance from the pole and the center of the 'cone in the claw' based on the width of the yellow pole
             // Maybe we could read a few values and do the average of let's say 5 values
@@ -402,38 +397,39 @@ public class AutoVisionAction {
                 fwdAftError = 8;
             } else if (fwdAftError < 3.5) {
                 fwdAftError = 6;
-
+            }
 */
             // Convert the lateral error from pixels to inches.... This may be need change
             // y = pixels width for 1" shift at x distance y = 8x2 - 137.73x + 802.52
             // if laterError is too much , we don't correct.. maybe we could try moving left and right.. or back to see move pole
-            //  double shiftSlope = 8 * fwdAftError * fwdAftError - 137.73 * fwdAftError + 802.52;
-            //    if (shiftSlope != 0) {
-            //      lateralError = lateralError / shiftSlope; // Convert pixels to inches for lateral correction
-            //  }
+          //  double shiftSlope = 8 * fwdAftError * fwdAftError - 137.73 * fwdAftError + 802.52;
+        //    if (shiftSlope != 0) {
+          //      lateralError = lateralError / shiftSlope; // Convert pixels to inches for lateral correction
+          //  }
 
-            if (Math.abs(lateralError) > coneLateralTolerance) {
-                myOp.telemetry.addData("Lateral OUTSIDE LIMIT", String.format("%.2f", lateralError));
-                lateralError = 0;
-            }
-            // This is the distance from the pole and the center of the 'cone in the claw' based on the width of the yellow pole
-            // Maybe we could read a few values and do the average of let's say 5 values
-            //fwdAftError = myPipeline.getPoleDistanceInches();
+        if (Math.abs(lateralError) > coneLateralTolerance) {
+            myOp.telemetry.addData("Lateral OUTSIDE LIMIT", String.format("%.2f", lateralError));
+            lateralError = 0;
+        }
+        // This is the distance from the pole and the center of the 'cone in the claw' based on the width of the yellow pole
+        // Maybe we could read a few values and do the average of let's say 5 values
+        //fwdAftError = myPipeline.getPoleDistanceInches();
 
-            // If we measure distance more than (19"-6.75"+2") = 14.25 or less 10.25 " set to move to where the Pole should be
-            if (fwdAftError > (coneApproachDist - BeepArm.getClawToRobotCenter() + coneFwdAftTolerance)
-                    || (fwdAftError < (coneApproachDist - BeepArm.getClawToRobotCenter() - coneFwdAftTolerance))) {
-                myOp.telemetry.addData("FwdAft OUTSIDE LIMIT", String.format("%.2f", fwdAftError));
-                fwdAftError = (coneApproachDist - BeepArm.getClawToRobotCenter());
+        // If we measure distance more than (19"-6.75"+2") = 14.25 or less 10.25 " set to move to where the Pole should be
+        if (fwdAftError > (coneApproachDist -BeepArm.getClawToRobotCenter() + coneFwdAftTolerance  )
+                || (fwdAftError < (coneApproachDist -BeepArm.getClawToRobotCenter() - coneFwdAftTolerance  )))
+        {
+            myOp.telemetry.addData("FwdAft OUTSIDE LIMIT", String.format("%.2f", fwdAftError));
+            fwdAftError =(coneApproachDist -BeepArm.getClawToRobotCenter()) ;
 
-            }
+        }
 
 
             myOp.telemetry.addData("Lateral Move needed in Inches", String.format("%.2f", lateralError));
             myOp.telemetry.addData("Fwd/Aft Move needed in inches", String.format("%.2f", fwdAftError));
             myOp.telemetry.update();
-            //  }
-       // }
+      //  }
+
        TrajectorySequence pick;// = new TrajectorySequence;
 
         // Do calculation to move foward and strafe according to the orientation

@@ -39,7 +39,7 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
     private static final int CAMERA_HEIGHT = 720; // height of wanted camera resolution
 
     // Change these values to move the little square/region where we check what color we see
-    private static double RegionCenterX = 875; // Distance in pixels from the Left
+    private static double RegionCenterX = 855; // Distance in pixels from the Left
     private static double RegionCenterY = 340; // Distance in pixels from the top
     private static double RegionWidth = 50;
     private static double RegionHeight = 50;
@@ -62,9 +62,9 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
     public static double poleApproachDist = 15; // Pole Center to Center of Robot
     public static double coneApproachDist = 19; // Cone CEnter to CEnter of Robot
 
-    public static Vector2d coneStack = new Vector2d(-70, -12);
-    public static Vector2d shortPole = new Vector2d(-48,-24);
-    public static Vector2d mediumPole = new Vector2d(-48,-24);
+    public static Vector2d coneStack = new Vector2d(-71, -9.5); // Field is not really 6'..
+    public static Vector2d shortPole = new Vector2d(-51,-24);
+    public static Vector2d mediumPole = new Vector2d(-23.75,-24);
 
     public static long stackDelay = 500;
 
@@ -72,17 +72,17 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
     public static double stackinc = 1.25;
 
 
-    public static double p1x = -40;
-    public static double p1y = -64.5; // 72" - 1/2 Robot Length (14")
+    public static double p1x = -39.25; //
+    public static double p1y = -63.75; // 70.75" - 1/2 Robot Length (14")
 
-    public static double p2x = -15;
-    public static double p2y = -52;
+    public static double p2x = -15; //24.25
+    public static double p2y = -52; // 11.75
 
     public static double p3x = -15;
     public static double p3y = -46;
 
     public static double p4x = -poleApproachDist;
-    public static double p4y = -24;
+    public static double p4y = -22;
 
     public static double p5x = -16;
     public static double p5y = -23.75;
@@ -155,43 +155,6 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(p3x, p3y), Math.toRadians(90))
                 .splineToSplineHeading(new Pose2d(p4x, p4y, Math.toRadians(0)), Math.toRadians(90))
                 .build();
-/*
-        TrajectorySequence traj15 = drive.trajectorySequenceBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(p4.getX()-5, p4.getY()-5),
-                        SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
-*/
-        // was traj15.end before
-
-/*
-        TrajectorySequence setupCycle = drive.trajectorySequenceBuilder(traj1.end())
-                .setTangent(Math.toRadians(140))
-                .splineToSplineHeading(new Pose2d(p6x,p6y, Math.toRadians(180)),  Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(coneStack.getX(), coneStack.getY()),Math.toRadians(180))
-                .build();
-
-        TrajectorySequence toCyclePole = drive.trajectorySequenceBuilder(traj1.end())
-                .back(4)
-                .lineToLinearHeading(new Pose2d(shortPole.getX(), coneStack.getY() + 2, Math.toRadians(270)))
-                .build();
-
-        TrajectorySequence front = drive.trajectorySequenceBuilder(toCyclePole.end())
-                .lineToConstantHeading(new Vector2d(shortPole.getX(), shortPole.getY()))
-                .build();
-
-        TrajectorySequence back = drive.trajectorySequenceBuilder(front.end())
-                .lineToConstantHeading(new Vector2d(shortPole.getX(), coneStack.getY() + 2))
-                .build();
-
-        TrajectorySequence toStack = drive.trajectorySequenceBuilder(back.end())
-                .lineToLinearHeading(new Pose2d(coneStack.getX() + 4, coneStack.getY(), Math.toRadians(180)))
-                .forward(4)
-                .build();
-*/
-
-
-
 
 
         // OpenCV webcam
@@ -307,6 +270,8 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
 
         Pose2d end =  AutoAction.dropConeAtNoPID(RobotArm.getHIGHPOS(), startTo1stDrop );
 
+       // drive.setPoseEstimate(new Pose2d(-6,-24,Math.toRadians(0)));
+
         // Create Trajectory to go to the Cone Stack.. Stop short to Camera REad
         TrajectorySequence after1stConeToStack = drive.trajectorySequenceBuilder(end)
                 .setTangent(Math.toRadians(140))
@@ -319,6 +284,7 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
 
         // Drive to the Cone Stack
         drive.followTrajectorySequence(after1stConeToStack);
+
 
         // Pickup First Cone
         end  = AutoAction.pickConeAtNoPID(stackh, after1stConeToStack);
@@ -339,6 +305,8 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
 
         // Drop to Short Pole
         end = AutoAction.dropConeAtNoPID(RobotArm.getLOWPOS(), drop2);
+
+      //  drive.setPoseEstimate(shortPole.getX()-6.75, shortPole.getY(), Math.toRadians(0)))=;
 /*
         // Create Trajectory to drive to Cone Stack
         TrajectorySequence backToStack = drive.trajectorySequenceBuilder(end)
@@ -369,29 +337,30 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
         // Drop to Medium Pole
         end = AutoAction.dropConeAtNoPID(RobotArm.getLOWPOS(), drop3);
 */
-        BeepArm.ViperSlideSetPos(0, 24, 1);
+        BeepArm.ViperSlideSetPos(0, 24, 0);
 
 
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
                 TrajectorySequence park = drive.trajectorySequenceBuilder(end)
-                        .setReversed(true)
+                        //.setReversed(true)
+                        .setTangent(Math.toRadians(90))
                         .splineToConstantHeading( new Vector2d(end.getX(), end.getY()+2),Math.toRadians(270))
-                        .splineToConstantHeading(new Vector2d(-12, coneStack.getY()),Math.toRadians(270))
+                        .lineToConstantHeading(new Vector2d(-14, coneStack.getY()))
                 .build();
             drive.followTrajectorySequence(park);
         } else if (ParkingPos == BBBDetector_Color.ElementPosition.LEFT) {
                 TrajectorySequence park = drive.trajectorySequenceBuilder(end)
-                        .setReversed(true)
+                        .setTangent(Math.toRadians(90))
                         .splineToConstantHeading( new Vector2d(end.getX(), end.getY()+2),Math.toRadians(270))
-                        .splineToConstantHeading(new Vector2d(-58, coneStack.getY()),Math.toRadians(270))
+                        .lineToConstantHeading(new Vector2d(-60, coneStack.getY()))
                 .build();
             drive.followTrajectorySequence(park);
 
         } else { // (ParkingPos == BBBDetector_Color.ElementPosition.CENTER)
             TrajectorySequence park = drive.trajectorySequenceBuilder(end)
-                    .setReversed(true)
+                    .setTangent(Math.toRadians(90))
                     .splineToConstantHeading( new Vector2d(end.getX(), end.getY()+2),Math.toRadians(270))
-                    .splineToConstantHeading(new Vector2d(-36, coneStack.getY()),Math.toRadians(270))
+                    .lineToConstantHeading(new Vector2d(-38, coneStack.getY()))
                 .build();
             drive.followTrajectorySequence(park);
         }

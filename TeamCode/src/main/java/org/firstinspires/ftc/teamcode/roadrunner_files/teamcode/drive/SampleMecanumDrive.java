@@ -59,10 +59,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(6, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(5, 0, 0); //Kp was 5
 
-    public static double LATERAL_MULTIPLIER = 1.1198; // was 1.16666
+    public static double LATERAL_MULTIPLIER = 1.166; // was 1.16666
 
     public static double LENGTH=14;
     public static double WIDTH = 16;
@@ -389,7 +389,8 @@ public class SampleMecanumDrive extends MecanumDrive {
     // Should be done between 8" and 16" only
     public double ConeToClaw()
     {
-        return (0.7824 * distanceSensor.getDistance(DistanceUnit.INCH) - 1.4702);
+        return ( distanceSensor.getDistance(DistanceUnit.INCH));
+        //return (0.7824 * distanceSensor.getDistance(DistanceUnit.INCH) - 1.4702);
     }
 
     // pixels: position on the screen of the center of cone
