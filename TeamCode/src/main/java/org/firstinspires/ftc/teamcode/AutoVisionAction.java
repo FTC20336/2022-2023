@@ -205,7 +205,7 @@ public class AutoVisionAction {
                      || (fwdAftError < (poleApproachDist -BeepArm.getClawToRobotCenter() - poleFwdAftTolerance  )))
             {
                 myOp.telemetry.addData("FwdAft OUTSIDE LIMIT", String.format("%.2f", fwdAftError));
-                fwdAftError =(poleApproachDist - BeepArm.getClawToRobotCenter()) ;
+                fwdAftError = 6; // (poleApproachDist - BeepArm.getClawToRobotCenter()) ;
             }
 
             // Convert the lateral error from pixels to inches.... This may be need change
