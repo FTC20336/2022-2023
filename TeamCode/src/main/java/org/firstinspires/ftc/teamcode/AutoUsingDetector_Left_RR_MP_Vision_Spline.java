@@ -16,17 +16,20 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.roadrunner_files.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config
-@Autonomous(name="Left-MediumPole-BLUE_Spline", group="Left")
+@Autonomous(name="Left-MedPole-BLUE_Spline", group="Left")
 public class AutoUsingDetector_Left_RR_MP_Vision_Spline extends LinearOpMode {
     private OpenCvCamera webcam;
+    private OpenCvCamera webcam2;
 
+    RobotArm BeepArm = new RobotArm();
 
-    RobotArm BeepArm= new RobotArm();
+    AutoVisionAction AutoAction = new AutoVisionAction();
 
     //Create New Robot based on RobotBase
     //RobotBase Beep = new RobotBase();
@@ -36,14 +39,16 @@ public class AutoUsingDetector_Left_RR_MP_Vision_Spline extends LinearOpMode {
     private static final int CAMERA_HEIGHT = 720; // height of wanted camera resolution
 
     // Change these values to move the little square/region where we check what color we see
-    private static double RegionCenterX = 875; // Distance in pixels from the Left
+    private static double RegionCenterX = 855; // Distance in pixels from the Left
     private static double RegionCenterY = 340; // Distance in pixels from the top
     private static double RegionWidth = 50;
     private static double RegionHeight = 50;
 
-    public static double Kp = 0.0003;
+
+    // Change these values for the PID and autocorrection
+    public static double Kp = 0.00035;
     public static int clawCenter = 690;
-    public static double x = .17; // Max power during Strafe
+    public static double x = .25; // Max power during Strafe
     public static int pixelMargin = 35;
     private static int currentPos;
 
@@ -52,32 +57,43 @@ public class AutoUsingDetector_Left_RR_MP_Vision_Spline extends LinearOpMode {
     public static double adjustTimeLimit=1;
     private double distAdjust=0;
 
-    //height before a drop
-    public static double preDropH = 7;
-    public static double preScanViperTimeout = -1;
-
     private BBBDetector_Color.ElementPosition ParkingPos;
 
-    public static Vector2d coneStack = new Vector2d(-62.75+6, -13.5);
-    public static Vector2d shortPole = new Vector2d(-48,-19);
+    public static double poleApproachDist = 15; // Pole Center to Center of Robot
+    public static double coneApproachDist = 19; // Cone CEnter to CEnter of Robot
 
-    public static double p1x = -40;
-    public static double p1y = -65;
+    public static Vector2d coneStack = new Vector2d(-71, -9.5); // Field is not really 6'..
+    public static Vector2d shortPole = new Vector2d(-51,-24);
+    public static Vector2d mediumPole = new Vector2d(-26,-24);
 
-    public static double p2x = -14;
-    public static double p2y = -57;
+    public static long stackDelay = 500;
 
-    public static double p3x = -13;
-    public static double p3y = -23.5;
+    public static double stackh = 5;
+    public static double stackinc = 1.25;
 
-    public static double p4x = -19;
-    public static double p4y = -23.5;
 
-    public static double p5x = -15;
+    public static double p1x = -39.25; //
+    public static double p1y = -63.75; // 70.75" - 1/2 Robot Length (14")
+
+    public static double p2x = -17; //24.25
+    public static double p2y = -52; // 11.75
+
+    public static double p3x = -15;
+    public static double p3y = -46;
+
+    public static double p4x = -13;
+    public static double p4y = -20;
+
+    public static double p5x = -16;
     public static double p5y = -23.75;
 
-    public static double p6x = -14;
+    public static double p6x = -30;
     public static double p6y = coneStack.getY();
+
+    // GOing to Short Pole
+    public static double p7x;
+    public static double p7y;
+
 
     private static Vector2d p1 = new Vector2d(p1x, p1y); // Starting Point
     private static Vector2d p2 = new Vector2d(p2x, p2y); //
@@ -85,12 +101,6 @@ public class AutoUsingDetector_Left_RR_MP_Vision_Spline extends LinearOpMode {
     private static Vector2d p4 = new Vector2d(p4x, p4y); // Tall Junction Drop Location
     private static Vector2d p5 = new Vector2d(p5x, p5y); //
     private static Vector2d p6 = new Vector2d(p6x, p6y); //
-    public static long stackDelay = 500;
-
-    public static double stackh = 5;
-    public static double stackinc = 1.25;
-
-    public static double preScanDelay = 500;
 
     double startDir = Math.toRadians(90);
 
@@ -101,68 +111,57 @@ public class AutoUsingDetector_Left_RR_MP_Vision_Spline extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        SampleMecanumDrive drive  = new SampleMecanumDrive(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-
-        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(p2x, p2y))
-                .lineToConstantHeading(new Vector2d(p2x, p2y+8))
-                .lineToSplineHeading(new Pose2d(p3.getX(), p3.getY(), Math.toRadians(180)))
-                .build();
-
-        TrajectorySequence traj15 = drive.trajectorySequenceBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(p4.getX(), p4.getY()),
-                        SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
-
-        TrajectorySequence traj175 = drive.trajectorySequenceBuilder(traj1.end())
-                //.lineToConstantHeading(new Vector2d(p5.getX(), p5.getY()))
-                .lineToConstantHeading(new Vector2d(p6.getX(), coneStack.getY()))
-                .build();
-
-        TrajectorySequence setupCycle = drive.trajectorySequenceBuilder(traj175.end())
-                .lineToConstantHeading(new Vector2d(coneStack.getX(), coneStack.getY()))
-                .build();
-
-        TrajectorySequence toCyclePole = drive.trajectorySequenceBuilder(setupCycle.end())
-                .back(4)
-                .lineToLinearHeading(new Pose2d(shortPole.getX(), coneStack.getY(), Math.toRadians(270)))
-                .build();
-
-        TrajectorySequence front = drive.trajectorySequenceBuilder(toCyclePole.end())
-                .lineToConstantHeading(new Vector2d(shortPole.getX(), shortPole.getY()))
-                .build();
-
-        TrajectorySequence back = drive.trajectorySequenceBuilder(front.end())
-                .lineToConstantHeading(new Vector2d(shortPole.getX(), coneStack.getY()))
-                .build();
-
-        TrajectorySequence toStack = drive.trajectorySequenceBuilder(back.end())
-                .lineToLinearHeading(new Pose2d(coneStack.getX()+4, coneStack.getY(), Math.toRadians(180)))
-                .forward(4)
-                .build();
-
-        TrajectorySequence center = drive.trajectorySequenceBuilder(back.end())
-                .lineToConstantHeading(new Vector2d(-36, coneStack.getY()))
-                .build();
-
-        TrajectorySequence left = drive.trajectorySequenceBuilder(back.end())
-                .lineToConstantHeading(new Vector2d(-59, coneStack.getY()))
-                .build();
-
-        TrajectorySequence right = drive.trajectorySequenceBuilder(back.end())
-                .lineToConstantHeading(new Vector2d(-12, coneStack.getY()))
-                .build();
-
+        //Initialize BeepArm
         BeepArm.init(hardwareMap, this);
-        drive.setPoseEstimate(startPose);
+
+        //Initialize clock
+        clock = NanoClock.system();
+
+    /*
+    .setTangent(Math.toRadians(10))
+                                .splineToConstantHeading(new Vector2d(-12, -52), Math.toRadians(90))
+                                .splineToConstantHeading( new Vector2d(-12, -46), Math.toRadians(90))
+                                .splineToSplineHeading( new Pose2d(-12, -24,), Math.toRadians(90))
+                                .forward(6)
+                                .setTangent(Math.toRadians(140))
+                                .splineToSplineHeading(new Pose2d(-24,-11, Math.toRadians(180)),  Math.toRadians(180))
+                                .splineToConstantHeading(new Vector2d(-57,-12),Math.toRadians(180))
+                                .forward(6) // PIck up Cone
+                                .splineToConstantHeading(new Vector2d(-57,-12),Math.toRadians(180))
+                                .setTangent(Math.toRadians(0))
+                                .splineToSplineHeading(new Pose2d(-55,-13,Math.toRadians(315)), Math.toRadians(315))
+                                .forward(6) //Drop COne
+                                .setTangent(Math.toRadians(135))
+                                .setReversed(true)
+                                .splineToSplineHeading(new Pose2d(-57,-11,Math.toRadians(180)), Math.toRadians(180))
+                                .forward(6) // Pickup COne
+                                .splineToConstantHeading(new Vector2d(-57,-12),Math.toRadians(180))
+                                .setTangent(Math.toRadians(0))
+                                .splineToSplineHeading(new Pose2d(-31,-13,Math.toRadians(315)), Math.toRadians(315))
+                                .forward(6) //Drop COne
+                                .setReversed(true)
+                                .setTangent(Math.toRadians(90))
+                                .lineToSplineHeading(new Pose2d(-30,-12, Math.toRadians(270)))
+                                .setTangent(Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(-12,-12), Math.toRadians(0))
+                                */
+
+
+        TrajectorySequence startTo1stDrop = drive.trajectorySequenceBuilder(startPose)
+                .setTangent(Math.toRadians(10))
+                .splineToConstantHeading(new Vector2d(p2x, p2y), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(p3x, p3y), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(p4x, p4y, Math.toRadians(180)), Math.toRadians(90))
+                .build();
+
 
         // OpenCV webcam
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"), cameraMonitorViewId);
 
-        //OpenCV Pipeline
+        //OpenCV Pipeline for Sleeve Color Detection
         BBBDetector_Color myPipeline;
         webcam.setPipeline(myPipeline = new BBBDetector_Color(RegionCenterX, RegionCenterY, RegionWidth, RegionHeight));
 
@@ -186,6 +185,19 @@ public class AutoUsingDetector_Left_RR_MP_Vision_Spline extends LinearOpMode {
             }
         });
 
+        // Pre-Start Color
+        // Show on the screen which Parking Spot was detected
+        if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
+            telemetry.addLine("Autonomous A - Blue - Right...Initial Reading.. May change");
+
+        } else if (ParkingPos == BBBDetector_Color.ElementPosition.CENTER) {
+            telemetry.addLine("Autonomous B - Green - Center...Initial Reading.. May change");
+
+        } else if (ParkingPos == BBBDetector_Color.ElementPosition.LEFT) {
+            telemetry.addLine("Autonomous C - Yellow - Left...Initial Reading.. May change");
+        }else{
+            telemetry.addLine("DID NOT SEE.. SO we park at - Center...Initial Reading.. May change");
+        }
         telemetry.addData("Push Camera Stream and tap screen to update image \nAlign the square to the cone \n \n Wait at least 5 Sec before Pressing Start", "");
         telemetry.update();
         waitForStart();
@@ -194,8 +206,10 @@ public class AutoUsingDetector_Left_RR_MP_Vision_Spline extends LinearOpMode {
         // Get the latest frame analyzed result
         ParkingPos = myPipeline.getAnalysis();
 
+        //Close Camera Device
         webcam.closeCameraDevice();
 
+        // Start Pipeline for Automatic Placement
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
         // OpenCV webcam
@@ -209,6 +223,7 @@ public class AutoUsingDetector_Left_RR_MP_Vision_Spline extends LinearOpMode {
         //Webcam streaming on the dashboard
         FtcDashboard.getInstance().startCameraStream(webcam, 0);
 
+        // Webcam Streaming
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -225,7 +240,8 @@ public class AutoUsingDetector_Left_RR_MP_Vision_Spline extends LinearOpMode {
             }
         });
 
-        clock = NanoClock.system();
+        // Initialize AutoAction.. Setting this LinearOp, Image processsing Pipeline, Mecanum Drive and BeepARm
+        AutoAction.init(this,myPipelinePole,drive,BeepArm );
 
         // Show on the screen which Parking Spot was detected
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
@@ -244,364 +260,115 @@ public class AutoUsingDetector_Left_RR_MP_Vision_Spline extends LinearOpMode {
             telemetry.update();
         }
 
-        // Test Code to check Color
-/*
-        sleep(4000);
-        BeepArm.ViperSlideSetPos(stackh,35,-1);
-        while (   opModeIsActive() ) {
-            telemetry.addData("Current Image in Pixels", myPipelinePole.getConeDistancePixel());
-            telemetry.addData("Distance in inches", String.format("%.2f", myPipelinePole.getConeDistanceInches()));
-            telemetry.addData("Viper Height in inches", String.format("%.2f", BeepArm.ViperSlideGetPos()));
-            telemetry.addData("Total Adjust distance", String.format("%.3f", distAdjust));
-
-        }
-*/
         //Main Movement
-        BeepArm.ClawFullClose(450); //wait 250 ms to make sure the cone is gripped well
+        drive.setPoseEstimate(startPose);
+        BeepArm.ClawFullClose(450); //wait 450 ms to make sure the cone is gripped well
         BeepArm.ViperSlideSetPos(2, 24, -1);
-        drive.followTrajectorySequence(traj1);
 
-        //  drive.followTrajectorySequence(traj15);
-        sleep(250); // wait a little if the robot wiggle
+        // Drive to Tall pool for a Drop
+        drive.followTrajectorySequence(startTo1stDrop);
 
-        dropConeAt(RobotArm.getMIDDLEPOS(), myPipelinePole, drive, traj1);
+        Pose2d end =  AutoAction.dropConeAtNoPID(RobotArm.getMIDDLEPOS(), startTo1stDrop );
 
-        drive.followTrajectorySequence(traj175);
-        BeepArm.ViperSlideSetPos(stackh, 36, 1); //Don't wait.. go back now
+        // drive.setPoseEstimate(new Pose2d(-6,-24,Math.toRadians(0)));
 
-        drive.followTrajectorySequence(setupCycle);
+        // Create Trajectory to go to the Cone Stack.. Stop short to Camera REad
+        TrajectorySequence after1stConeToStack = drive.trajectorySequenceBuilder(end)
+                .setTangent(Math.toRadians(40))
+                .splineToConstantHeading(new Vector2d(p6x,p6y),  Math.toRadians(180),
+                        SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL *1, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .splineToConstantHeading(new Vector2d(coneStack.getX()+coneApproachDist, coneStack.getY()),Math.toRadians(180))
+                .addTemporalMarker(2, ()-> BeepArm.ViperSlideSetPos(stackh, 36, (long) 0)) //Don't wait.. go back now )
+                .build();
 
-        pickConeAt(stackh, myPipelinePole,drive,setupCycle);
+        // Drive to the Cone Stack
+        drive.followTrajectorySequence(after1stConeToStack);
 
-        //   BeepArm.ClawFullClose(1000);
-        //    BeepArm.ViperSlideSetPos(stackh + 4.5, 36, stackDelay);
 
-        BeepArm.ViperSlideSetPos(RobotArm.getLOWPOS()-preDropH, 36, 1); //Don't wait.. go back now
-        drive.followTrajectorySequence(toCyclePole);
+        // Pickup First Cone
+        end  = AutoAction.pickConeAtNoPID(stackh, after1stConeToStack);
 
-        dropConeAt(RobotArm.getLOWPOS(), myPipelinePole, drive, toCyclePole);
+
+        // Create Trajectory to drop on Short Pole
+        double dropAngle = 270;/*
+        p7x = shortPole.getX() - coneApproachDist * Math.cos(Math.toRadians(dropAngle));
+        p7y = shortPole.getY() - coneApproachDist * Math.sin(Math.toRadians(dropAngle));
+        TrajectorySequence drop2 = drive.trajectorySequenceBuilder(end)
+                                    .setTangent(Math.toRadians(0))
+                                    //.splineToSplineHeading(new Pose2d(end.getX()+5, end.getY()+2,Math.toRadians(225)),Math.toRadians(0))
+                                   // .setTangent(Math.toRadians(0))
+                                    .splineToLinearHeading(new Pose2d(p7x,p7y,Math.toRadians(dropAngle)), Math.toRadians(0))
+                                    .build();
+
+        // Drive to Short Pole
+        drive.followTrajectorySequence(drop2);
+
+        // Drop to Short Pole
+        end = AutoAction.dropConeAtNoPID(RobotArm.getLOWPOS(), drop2);
+
+         */
+
+        //  drive.setPoseEstimate(shortPole.getX()-6.75, shortPole.getY(), Math.toRadians(0)))=;
 /*
-        BeepArm.ViperSlideSetPos(stackh - stackinc, 24, -1);
-        drive.followTrajectorySequence(toStack);
-       // BeepArm.ClawFullClose(1000);
-        //BeepArm.ViperSlideSetPos(stackh - stackinc + 4.5, 36, stackDelay);
+        // Create Trajectory to drive to Cone Stack
+        TrajectorySequence backToStack = drive.trajectorySequenceBuilder(end)
+                .setTangent(Math.toRadians(dropAngle))
+               // .setReversed(true)
+                .splineToSplineHeading(new Pose2d(coneStack.getX()+coneApproachDist, coneStack.getY(),Math.toRadians(180)), Math.toRadians(180))
+                .build();
 
-        pickConeAt(stackh- stackinc, myPipelinePole,drive,toStack);
+        drive.followTrajectorySequence(backToStack);
 
-        drive.followTrajectorySequence(toCyclePole);
+        // Pickup Second Cone
+        end  = AutoAction.pickConeAtNoPID(stackh-stackinc, backToStack);
+        /*
+ */
 
-        dropConeAt(RobotArm.getLOWPOS(), myPipelinePole, drive, toCyclePole);
-*/
-        BeepArm.ViperSlideSetPos(0, 24, 1);
+
+        // Create Trajectory to drop on medium Pole
+        dropAngle = 270;
+        p7x = mediumPole.getX() - poleApproachDist * Math.cos(Math.toRadians(dropAngle));
+        p7y = mediumPole.getY() - poleApproachDist * Math.sin(Math.toRadians(dropAngle));
+        TrajectorySequence drop3 = drive.trajectorySequenceBuilder(end)
+                .splineToConstantHeading(new Vector2d(end.getX()+17, end.getY()+2),Math.toRadians(180))
+                // .setTangent(Math.toRadians(0))
+                .lineToSplineHeading(new Pose2d(p7x,p7y,Math.toRadians(dropAngle)))
+                .build();
+
+        // Drive to Medium Pole
+        drive.followTrajectorySequence(drop3);
+
+        // Drop to Medium Pole
+        end = AutoAction.dropConeAtNoPID(RobotArm.getMIDDLEPOS(), drop3);
+
+        BeepArm.ViperSlideSetPos(0, 24, 0);
+
 
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
-            drive.followTrajectorySequence(right);
+            TrajectorySequence park = drive.trajectorySequenceBuilder(end)
+                    //.setReversed(true)
+                    .setTangent(Math.toRadians(90))
+                    .splineToConstantHeading( new Vector2d(end.getX(), end.getY()+2),Math.toRadians(270))
+                    .lineToConstantHeading(new Vector2d(-14, coneStack.getY()))
+                    .build();
+            drive.followTrajectorySequence(park);
         } else if (ParkingPos == BBBDetector_Color.ElementPosition.LEFT) {
-            drive.followTrajectorySequence(left);
-        } else { // (ParkingPos == BBBDetector_Color.ElementPosition.CENTER) {
-            drive.followTrajectorySequence(center);
+            TrajectorySequence park = drive.trajectorySequenceBuilder(end)
+                    .setTangent(Math.toRadians(90))
+                    .splineToConstantHeading( new Vector2d(end.getX(), end.getY()+2),Math.toRadians(270))
+                    .lineToConstantHeading(new Vector2d(-60, coneStack.getY()))
+                    .build();
+            drive.followTrajectorySequence(park);
+
+        } else { // (ParkingPos == BBBDetector_Color.ElementPosition.CENTER)
+            TrajectorySequence park = drive.trajectorySequenceBuilder(end)
+                    .setTangent(Math.toRadians(90))
+                    .splineToConstantHeading( new Vector2d(end.getX(), end.getY()+2),Math.toRadians(270))
+                    .lineToConstantHeading(new Vector2d(-38, coneStack.getY()))
+                    .build();
+            drive.followTrajectorySequence(park);
         }
-
-    }
-    public void dropConeAt(double dropHeight, @NonNull BBBDetector_Contour_Pole_Cone myPipeline, SampleMecanumDrive drive, TrajectorySequence lastTraj){
-        currentPos = myPipeline.getPolePositionPixels();
-
-        BeepArm.ViperSlideSetPos(dropHeight-preDropH, 36, (long)preScanViperTimeout);
-        sleep((long) preScanDelay);
-
-        double xStick;
-        double yStick=0;
-        double error = 0;
-        double yerror = 0;
-
-        currentPos = myPipeline.getPolePositionPixels();
-        error = clawCenter - currentPos;
-        distAdjust = 0;
-
-        currentAdjustTime = clock.seconds();
-
-        double lowErrorTimer = clock.seconds();
-
-        while ( (Math.abs(error) > pixelMargin || BeepArm.ViperSlideGetPos() < (dropHeight-preDropH-.5) ) && (clock.seconds()-currentAdjustTime) < adjustTimeLimit  && opModeIsActive() ) {
-
-
-            xStick = Kp * error;
-            xStick = Math.max( -Math.abs(x), Math.min(xStick, Math.abs(x)));
-
-            drive.strafe(-xStick, yStick);
-            distAdjust+=-xStick;
-
-            currentPos = myPipeline.getPolePositionPixels();
-
-            telemetry.addData("Current Image x", currentPos);
-            telemetry.addData("Error", error);
-            telemetry.addData("Strafe Power", -xStick);
-            telemetry.addData("Current Image in Pixels", myPipeline.getPoleDistancePixel());
-            telemetry.addData("Distance in inches", String.format("%.2f" , myPipeline.getPoleDistanceInches()) );
-            telemetry.addData("Viper Height in inches",String.format("%.2f" , BeepArm.ViperSlideGetPos()) );
-            telemetry.addData("Total Adjust distance", String.format("%.3f" ,distAdjust));
-
-
-            if ( currentPos>1 ) {
-                error = clawCenter - currentPos;
-                telemetry.addData("Time doing Correction is: ", clock.seconds()-currentAdjustTime);
-            }
-            else{
-                // Reset timer
-                // currentAdjustTime = clock.seconds();
-                telemetry.addLine("Resetting time because not yellow read");
-                telemetry.update();
-                //  error=0;
-            }
-
-            if (Math.abs(error) < pixelMargin ){
-                currentAdjustTime = clock.seconds();
-                telemetry.addLine("Resetting time because within Margin");
-                error=0;
-            }
-
-            telemetry.update();
-        }
-        drive.strafe(0,0);
-
-        telemetry.addLine("Out of Loop");
-        telemetry.update();
-        // sleep(1500);
-        // Using Distance Sensor
-        double lastMove =  myPipeline.getPoleDistanceInches()+0.5;
-
-
-        BeepArm.ViperSlideSetPos(dropHeight,12,-1);
-
-        TrajectorySequence drop;// = new TrajectorySequence;
-        TrajectorySequence back;// = new TrajectorySequence;
-
-        if (lastMove <6 ) {
-            telemetry.addData("Moving inches", String.format("%.3f" ,lastMove));
-            telemetry.update();
-            drop = drive.trajectorySequenceBuilder(lastTraj.end())
-                    .forward(lastMove,
-                            SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                            SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                    .build();
-            back = drive.trajectorySequenceBuilder(drop.end())
-                    .back(lastMove)
-                    .build();
-
-            sleep(250);
-        }
-        else{
-            telemetry.addData("Moving 6 inches", String.format("%.3f" ,lastMove));
-            telemetry.update();
-
-            drop = drive.trajectorySequenceBuilder(lastTraj.end())
-                    .forward(6,
-                            SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                            SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                    .build();
-            back = drive.trajectorySequenceBuilder(drop.end())
-                    .back(6)
-                    .build();
-            sleep(250);
-        }
-        drive.followTrajectorySequence(drop);
-        BeepArm.ViperSlideSetPos(dropHeight-3,12,250);
-
-        BeepArm.ClawFullOpen(250);
-        drive.followTrajectorySequence(back);
-
-    }
-
-
-
-    // Drop Cone function assumes the robot is near a junction
-    // We supply the dropping height in inches
-    public void dropConeAtNoPID(double dropHeight, @NonNull BBBDetector_Contour_Cone myPipeline, SampleMecanumDrive drive, TrajectorySequence lastTraj){
-        currentPos = myPipeline.getPosition();
-
-        BeepArm.ViperSlideSetPos(dropHeight-preDropH, 36, 1);
-
-        double xStick;
-        double yStick=0;
-        double error = 0;
-
-        double lateralError = 0;
-
-        sleep(750);
-
-        currentPos = myPipeline.getPosition();
-        double lastMove =  myPipeline.getWidth();
-
-        error = clawCenter - currentPos;
-        lateralError = error/25; // Convert pixels to inches for lateral correction
-
-        telemetry.addData("Current Image x", currentPos);
-        telemetry.addData("Error", error);
-        telemetry.addData("Current Image in Pixels", myPipeline.getWidthpix());
-        telemetry.addData("Lateral Distance in inches", String.format("%.3f" , lateralError ));
-        telemetry.addData("Distance in inches", String.format("%.2f" , myPipeline.getWidth()) );
-
-        telemetry.update();
-
-        drive.strafe(0,0);
-
-        telemetry.addLine("Out of Loop");
-        telemetry.update();
-        // sleep(1500);
-
-        BeepArm.ViperSlideSetPos(dropHeight,12,-1);
-
-        TrajectorySequence drop;// = new TrajectorySequence;
-        TrajectorySequence back;// = new TrajectorySequence;
-
-        if (lastMove <6 ) {
-            telemetry.addData("Moving inches", String.format("%.3f" ,lastMove));
-            telemetry.update();
-            drop = drive.trajectorySequenceBuilder(lastTraj.end())
-                    // This needs to be adjusted depending on the orientation
-                    .lineToConstantHeading( new Vector2d(lastTraj.end().getX() -lastMove, lastTraj.end().getY()+lateralError),
-                            SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                            SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                    .build();
-            back = drive.trajectorySequenceBuilder(drop.end())
-                    .back(lastMove)
-                    .build();
-
-            sleep(250);
-        }
-        else{
-            telemetry.addData("Moving 6 inches, we detected: ", String.format("%.3f" ,lastMove));
-            telemetry.update();
-
-            drop = drive.trajectorySequenceBuilder(lastTraj.end())
-                    .forward(6,
-                            SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                            SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                    .build();
-            back = drive.trajectorySequenceBuilder(drop.end())
-                    .back(6)
-                    .build();
-            sleep(250);
-        }
-        drive.followTrajectorySequence(drop);
-        BeepArm.ViperSlideSetPos(dropHeight-3,12,250);
-
-        BeepArm.ClawFullOpen(250);
-        drive.followTrajectorySequence(back);
-
-    }
-
-
-
-    // Drop Cone function assumes the robot is near a junction
-// We supply the dropping height in inches
-    public void pickConeAt(double pickHeight, @NonNull BBBDetector_Contour_Pole_Cone myPipeline, SampleMecanumDrive drive, TrajectorySequence lastTraj){
-        currentPos = myPipeline.getConePositionPixels();
-
-        BeepArm.ViperSlideSetPos(pickHeight, 36, -1);
-        // sleep(1000);
-        BeepArm.ClawFullOpen(0);
-
-        double xStick;
-        double yStick=0;
-        double error = 0;
-        double yerror = 0;
-
-        currentPos = myPipeline.getConePositionPixels();
-        error = clawCenter - currentPos;
-        distAdjust = 0;
-
-        currentAdjustTime = clock.seconds();
-        while ( (Math.abs(error) > pixelMargin || BeepArm.ViperSlideGetPos() < (pickHeight-preDropH-.5) ) && (clock.seconds()-currentAdjustTime) < adjustTimeLimit  && opModeIsActive() ) {
-
-
-            xStick = Kp * error;
-            xStick = Math.max( -Math.abs(x), Math.min(xStick, Math.abs(x)));
-
-            drive.strafe(-xStick, yStick);
-            distAdjust+=-xStick;
-
-            currentPos = myPipeline.getConePositionPixels();
-
-            telemetry.addData("Current Image x", currentPos);
-            telemetry.addData("Error", error);
-            telemetry.addData("Strafe Power", -xStick);
-            telemetry.addData("Current Image in Pixels", myPipeline.getConeDistancePixel());
-            //   telemetry.addData("Distance in inches", String.format("%.2f" , myPipeline.getConeDistanceInches()) );
-            telemetry.addData("Distance in inches", String.format("%.2f" ,  drive.distanceSensor.getDistance(DistanceUnit.INCH)) );
-            telemetry.addData("Viper Height in inches",String.format("%.2f" , BeepArm.ViperSlideGetPos()) );
-            telemetry.addData("Total Adjust distance", String.format("%.3f" ,distAdjust));
-
-
-            if ( currentPos>1 ) {
-                error = clawCenter - currentPos;
-                telemetry.addData("Time doing Correction is: ", clock.seconds()-currentAdjustTime);
-            }
-            else{
-                // Reset timer
-                currentAdjustTime = clock.seconds();
-                telemetry.addLine("Resetting time because not yellow read");
-                telemetry.update();
-                // error=0;
-            }
-
-            if (Math.abs(error) < pixelMargin ){
-                currentAdjustTime = clock.seconds();
-                telemetry.addLine("Resetting time because within Margin");
-                error=0;
-            }
-
-            telemetry.update();
-        }
-        drive.strafe(0,0);
-
-        telemetry.addLine("Out of Loop");
-        telemetry.update();
-        // sleep(1500);
-        double lastMove =  drive.distanceSensor.getDistance(DistanceUnit.INCH)-4;
-        // double lastMove =  myPipeline.getConeDistanceInches();
-
-
-        // BeepArm.ViperSlideSetPos(pickHeight,12,-1);
-
-        TrajectorySequence drop;// = new TrajectorySequence;
-        TrajectorySequence back;// = new TrajectorySequence;
-
-        if (lastMove < 10) {
-            telemetry.addData("Moving inches", String.format("%.3f", lastMove));
-            telemetry.update();
-            drop = drive.trajectorySequenceBuilder(lastTraj.end())
-                    .forward(lastMove,
-                            SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                            SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                    .build();
-
-            back = drive.trajectorySequenceBuilder(drop.end())
-                    .back(lastMove)
-                    .build();
-
-            sleep(250);
-        } else {
-            telemetry.addData("Moving 10 inches, we found: ", String.format("%.3f", lastMove));
-            telemetry.update();
-
-            drop = drive.trajectorySequenceBuilder(lastTraj.end())
-                    .forward(6,
-                            SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                            SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                    .build();
-
-            back = drive.trajectorySequenceBuilder(drop.end())
-                    .back(6)
-                    .build();
-            sleep(250);
-        }
-
-        drive.followTrajectorySequence(drop);
-        BeepArm.ClawFullClose(400);
-        BeepArm.ViperSlideSetPos(pickHeight+6,15,500);
-
-        drive.followTrajectorySequence(back);
 
     }
 

@@ -64,7 +64,7 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
 
     public static Vector2d coneStack = new Vector2d(-71, -9.5); // Field is not really 6'..
     public static Vector2d shortPole = new Vector2d(-51,-24);
-    public static Vector2d mediumPole = new Vector2d(-23.75,-24);
+    public static Vector2d mediumPole = new Vector2d(-26,-24);
 
     public static long stackDelay = 500;
 
@@ -289,8 +289,9 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
         // Pickup First Cone
         end  = AutoAction.pickConeAtNoPID(stackh, after1stConeToStack);
 
+
         // Create Trajectory to drop on Short Pole
-        double dropAngle = 270;
+        double dropAngle = 270;/*
         p7x = shortPole.getX() - coneApproachDist * Math.cos(Math.toRadians(dropAngle));
         p7y = shortPole.getY() - coneApproachDist * Math.sin(Math.toRadians(dropAngle));
         TrajectorySequence drop2 = drive.trajectorySequenceBuilder(end)
@@ -306,6 +307,8 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
         // Drop to Short Pole
         end = AutoAction.dropConeAtNoPID(RobotArm.getLOWPOS(), drop2);
 
+         */
+
       //  drive.setPoseEstimate(shortPole.getX()-6.75, shortPole.getY(), Math.toRadians(0)))=;
 /*
         // Create Trajectory to drive to Cone Stack
@@ -319,6 +322,8 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
 
         // Pickup Second Cone
         end  = AutoAction.pickConeAtNoPID(stackh-stackinc, backToStack);
+        /*
+ */
 
 
         // Create Trajectory to drop on medium Pole
@@ -327,16 +332,16 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
         p7y = mediumPole.getY() - coneApproachDist * Math.sin(Math.toRadians(dropAngle));
         TrajectorySequence drop3 = drive.trajectorySequenceBuilder(end)
                 .splineToConstantHeading(new Vector2d(end.getX()+5, end.getY()+2),Math.toRadians(180))
-                .setTangent(Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(p7x,p7y,Math.toRadians(dropAngle)), Math.toRadians(dropAngle))
+               // .setTangent(Math.toRadians(0))
+                .lineToSplineHeading(new Pose2d(p7x,p7y,Math.toRadians(dropAngle)))
                 .build();
 
         // Drive to Medium Pole
         drive.followTrajectorySequence(drop3);
 
         // Drop to Medium Pole
-        end = AutoAction.dropConeAtNoPID(RobotArm.getLOWPOS(), drop3);
-*/
+        end = AutoAction.dropConeAtNoPID(RobotArm.getMIDDLEPOS(), drop3);
+
         BeepArm.ViperSlideSetPos(0, 24, 0);
 
 
