@@ -39,8 +39,8 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
     private static final int CAMERA_HEIGHT = 720; // height of wanted camera resolution
 
     // Change these values to move the little square/region where we check what color we see
-    private static double RegionCenterX = 855; // Distance in pixels from the Left
-    private static double RegionCenterY = 340; // Distance in pixels from the top
+    public static double RegionCenterX = 855; // Distance in pixels from the Left
+    public static double RegionCenterY = 340; // Distance in pixels from the top
     private static double RegionWidth = 50;
     private static double RegionHeight = 50;
 
@@ -68,7 +68,7 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
 
     public static long stackDelay = 500;
 
-    public static double stackh = 5;
+    public static double stackh = 4.75;
     public static double stackinc = 1.25;
 
 
@@ -89,6 +89,8 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
 
     public static double p6x = -24;
     public static double p6y = coneStack.getY();
+
+    public static double p7yOffset = 3;
 
     // GOing to Short Pole
     public static double p7x;
@@ -329,9 +331,9 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
         // Create Trajectory to drop on medium Pole
         dropAngle = 270;
         p7x = mediumPole.getX() - coneApproachDist * Math.cos(Math.toRadians(dropAngle));
-        p7y = mediumPole.getY() - coneApproachDist * Math.sin(Math.toRadians(dropAngle));
+        p7y = mediumPole.getY() - coneApproachDist * Math.sin(Math.toRadians(dropAngle)) - p7yOffset;
         TrajectorySequence drop3 = drive.trajectorySequenceBuilder(end)
-                .splineToConstantHeading(new Vector2d(end.getX()+5, end.getY()+2),Math.toRadians(180))
+                .lineToConstantHeading(new Vector2d(end.getX()+20, end.getY()))
                // .setTangent(Math.toRadians(0))
                 .lineToSplineHeading(new Pose2d(p7x,p7y,Math.toRadians(dropAngle)))
                 .build();

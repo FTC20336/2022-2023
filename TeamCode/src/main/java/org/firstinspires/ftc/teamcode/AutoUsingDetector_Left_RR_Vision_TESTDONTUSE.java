@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Config
+@Disabled
 @Autonomous(name="TESTDIBT USE", group="Left")
 public class AutoUsingDetector_Left_RR_Vision_TESTDONTUSE extends LinearOpMode {
     private OpenCvCamera webcam;

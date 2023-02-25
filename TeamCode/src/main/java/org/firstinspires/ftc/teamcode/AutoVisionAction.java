@@ -62,7 +62,7 @@ public class AutoVisionAction {
     public static double poleFwdAftTolerance =4;
     public static double coneFwdAftTolerance =6;
 
-    public static long preScanDelay = 500;
+    public static long preScanDelay = 750;
     
          // Drop Cone function assumes the robot is near a junction
         // We supply the dropping height in inches
@@ -205,7 +205,7 @@ public class AutoVisionAction {
                      || (fwdAftError < (poleApproachDist -BeepArm.getClawToRobotCenter() - poleFwdAftTolerance  )))
             {
                 myOp.telemetry.addData("FwdAft OUTSIDE LIMIT", String.format("%.2f", fwdAftError));
-                fwdAftError = 6; // (poleApproachDist - BeepArm.getClawToRobotCenter()) ;
+                fwdAftError = 5; // (poleApproachDist - BeepArm.getClawToRobotCenter()) ;
             }
 
             // Convert the lateral error from pixels to inches.... This may be need change
@@ -250,7 +250,7 @@ public class AutoVisionAction {
         myOp.sleep(250);
 
         // Move slide Down slowly.. and wait xx
-        BeepArm.ViperSlideSetPos(dropHeight - 3, 12, 150);
+        BeepArm.ViperSlideSetPos(dropHeight - 2, 12, 150);
 
         // Open Claw and wait xx
         BeepArm.ClawFullOpen(250);

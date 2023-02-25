@@ -15,7 +15,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
  public class BBBDetector_Color extends OpenCvPipeline{
 
 
-    public static double RX = 950;
+    public static double RX = 855;
     public static double RY = 150; // Distance in pixels from the top
     public static double RW=50;
     public static double RH=50;

@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -21,6 +22,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config
+@Disabled
 @Autonomous(name="Left-MediumPole-BLUE", group="Left")
 public class AutoUsingDetector_Left_RR_MP_Vision extends LinearOpMode {
     private OpenCvCamera webcam;
@@ -36,8 +38,8 @@ public class AutoUsingDetector_Left_RR_MP_Vision extends LinearOpMode {
     private static final int CAMERA_HEIGHT = 720; // height of wanted camera resolution
 
     // Change these values to move the little square/region where we check what color we see
-    private static double RegionCenterX = 875; // Distance in pixels from the Left
-    private static double RegionCenterY = 340; // Distance in pixels from the top
+    public static double RegionCenterX = 875; // Distance in pixels from the Left
+    public static double RegionCenterY = 340; // Distance in pixels from the top
     private static double RegionWidth = 50;
     private static double RegionHeight = 50;
 
