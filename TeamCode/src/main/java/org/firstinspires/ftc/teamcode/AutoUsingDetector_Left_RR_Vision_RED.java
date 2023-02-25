@@ -312,7 +312,7 @@ public class AutoUsingDetector_Left_RR_Vision_RED extends LinearOpMode {
         } else { // (ParkingPos == BBBDetector_Color.ElementPosition.CENTER) {
             drive.followTrajectorySequence(center);
         }
-
+        BeepArm.ViperSlideSetPos(0, 24, -1);
     }
 
 

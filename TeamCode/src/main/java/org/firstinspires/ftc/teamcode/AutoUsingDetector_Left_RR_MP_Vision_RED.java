@@ -294,7 +294,7 @@ public class AutoUsingDetector_Left_RR_MP_Vision_RED extends LinearOpMode {
 
         dropConeAt(RobotArm.getLOWPOS(), myPipelinePole, drive, toCyclePole);
 */
-        BeepArm.ViperSlideSetPos(0, 24, 1);
+        BeepArm.ViperSlideSetPos(0, 24, -11);
 
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
             drive.followTrajectorySequence(right);
@@ -303,7 +303,7 @@ public class AutoUsingDetector_Left_RR_MP_Vision_RED extends LinearOpMode {
         } else { // (ParkingPos == BBBDetector_Color.ElementPosition.CENTER) {
             drive.followTrajectorySequence(center);
         }
-
+        BeepArm.ViperSlideSetPos(0, 24, -1);
     }
 
     public void dropConeAt(double dropHeight, @NonNull BBBDetector_Contour_Pole_Cone myPipeline, SampleMecanumDrive drive, TrajectorySequence lastTraj) {
