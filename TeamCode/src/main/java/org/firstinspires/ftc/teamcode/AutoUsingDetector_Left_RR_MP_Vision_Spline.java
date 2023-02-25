@@ -87,7 +87,7 @@ public class AutoUsingDetector_Left_RR_MP_Vision_Spline extends LinearOpMode {
     public static double p5x = -16;
     public static double p5y = -23.75;
 
-    public static double p6x = -30;
+    public static double p6x = -23;
     public static double p6y = coneStack.getY();
 
     // GOing to Short Pole
@@ -333,7 +333,7 @@ public class AutoUsingDetector_Left_RR_MP_Vision_Spline extends LinearOpMode {
         p7x = mediumPole.getX() - poleApproachDist * Math.cos(Math.toRadians(dropAngle));
         p7y = mediumPole.getY() - poleApproachDist * Math.sin(Math.toRadians(dropAngle)) - p7yOffset;
         TrajectorySequence drop3 = drive.trajectorySequenceBuilder(end)
-                .splineToConstantHeading(new Vector2d(end.getX()+20, end.getY()+0),Math.toRadians(180))
+                .lineToConstantHeading(new Vector2d(end.getX()+20, end.getY()+0))
                 // .setTangent(Math.toRadians(0))
                 .lineToSplineHeading(new Pose2d(p7x,p7y,Math.toRadians(dropAngle)))
                 .build();
