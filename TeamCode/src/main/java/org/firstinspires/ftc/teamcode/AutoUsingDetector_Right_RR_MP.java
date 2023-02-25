@@ -17,7 +17,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config
-@Disabled
+
 @Autonomous(name="Right_RR_MP", group="Right")
 
 public class AutoUsingDetector_Right_RR_MP extends LinearOpMode {

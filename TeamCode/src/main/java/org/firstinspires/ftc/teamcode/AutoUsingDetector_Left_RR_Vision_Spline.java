@@ -344,7 +344,7 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
         // Drop to Medium Pole
         end = AutoAction.dropConeAtNoPID(RobotArm.getMIDDLEPOS(), drop3);
 
-        BeepArm.ViperSlideSetPos(0, 24, 0);
+
 
 
         if (ParkingPos == BBBDetector_Color.ElementPosition.RIGHT) {
@@ -371,6 +371,8 @@ public class AutoUsingDetector_Left_RR_Vision_Spline extends LinearOpMode {
                 .build();
             drive.followTrajectorySequence(park);
         }
+
+        BeepArm.ViperSlideSetPos(0, 24, -1);
 
     }
 
