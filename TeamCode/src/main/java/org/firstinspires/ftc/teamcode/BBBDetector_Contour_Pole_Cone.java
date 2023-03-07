@@ -15,6 +15,21 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/* This Class Finds Pole and Cone in a image.
+The Constructor must  be provided the following:
+    width and height of the image in pixels
+    targetx is the center of the claw or where the robot must move to align to the pole or cone (pixels)
+    targetTolerance  is not really used.. it only traces 2 vertical lines on each side of our target (pixels)
+    conecolor is the color of the cone we want to detect.. ENUM from this method
+
+
+    Pole detection is based on yellow color and in a small predefined region (whole width of image but only a few pixels high)
+        center of the region is saved in centroid values
+    Cone detection is based on Provided Color (Red or Blue) and is detected in a large predefined region.
+        center of the region is saved in centroid values
+
+ */
 //@Disabled
 @Config
  public class BBBDetector_Contour_Pole_Cone extends OpenCvPipeline{
@@ -29,11 +44,15 @@ import java.util.List;
 
     private double width;
     private double height;
+
+
     public static int targetX;
-    private int targetTolerance;
+    private static int targetTolerance;
 
-    private double cameraHFOV = 60; // How wide in degrees the camera image is.
+    private double cameraHFOV = 60; // How wide in degrees the camera image is. Comes from Camera Manufacturer. Can be used to estimate size of object
 
+    // TO BE CHECKED>> VALUES BELOW are from 0 to 255.. EASY OPEN CV uses a Range from 0-180.
+    // These work..but the 255 should be changed to 180
     // Yellow Color for Pole
     public static double H1y=15; //15
     public static double S1y=90; //93
@@ -67,14 +86,15 @@ import java.util.List;
     public static double V2r2=255; //255
     
 
-    public static double poleRegionPercentWidth = 1; // we assume the region is centered with the camera
+    // Region starts 0,0 at the top left corner
+    public static double poleRegionPercentWidth = 1; // 1 is 100% use of the width. We assume the region is centered with the camera
     public static int poleRegionY1 = 300; // Top of rectangle of the region to check
     public static int poleRegionPixelHeight = 25;
 
     private int poleRegionX1; // = (int) (this.width/2-(this.width/2*poleRegionPercentWidth));
     private int poleRegionX2; // = (int) (this.width/2+(this.width/2*poleRegionPercentWidth));
 
-    // Initially look at the top 600 pixels on the screen
+    // Initially look at the top 700 pixels on the screen
     public static double coneRegionPercentWidth = 1; // we assume the region is centered with the camera
     public static int coneRegionY1 = 0; // Top of rectangle of the region to check
     public static int coneRegionPixelHeight = 700;
@@ -83,17 +103,19 @@ import java.util.List;
     private int coneRegionX2; // = (int) (this.width/2+(this.width/2*poleRegionPercentWidth));
 
 
-    int poleMaxContourId = -1;
-    double poleMaxContourArea=0;
+    private int poleMaxContourId = -1;
+    private double poleMaxContourArea=0;
 
-    int coneMaxContourId = -1;
-    double coneMaxContourArea=0;
+    private int coneMaxContourId = -1;
+    private double coneMaxContourArea=0;
 
     // Create Rectangle to make sure we have rectangles in case we don't detect color
+    // This is a rectangle/bounding box around the contour we find
     private Rect poleSizingBox = new Rect();
     private Rect coneSizingBox = new Rect();
 
 
+    //Generic Color Code
     static final Scalar ORANGE = new Scalar(255, 100, 0);
     static final Scalar YELLOW = new Scalar(255, 255, 0);
     static final Scalar RED = new Scalar(255, 0, 0);
@@ -102,12 +124,14 @@ import java.util.List;
     static final Scalar CYAN = new Scalar(0,255, 255);
 
 
-
+    // Centroid in X and Y in pixels of Pole and Cone
+    // Initially calculated from the Region
     private double poleCentroidX;
     double poleCentroidY=0;
     private double coneCentroidX;
     double coneCentroidY=0;
 
+    // Width in pixels based on Bounding Box.
     private double poleWidth;
     private double[] poleVals = new double[4];
 
@@ -126,6 +150,7 @@ import java.util.List;
     Mat coneRegion;
     Mat coneRegionTop;
 
+    // Matrix or Image foh....
     Mat hsv = new Mat();
     Mat poleMat = new Mat();
     Mat coneMat = new Mat();
@@ -163,7 +188,7 @@ import java.util.List;
         
 
         /*
-         * We need to call this in order to make sure the 'Cb'
+         * We need to call this in order to make sure the 'hsv'
          * object is initialized, so that the submats we make
          * will still be linked to it on subsequent frames. (If
          * the object were to only be initialized in processFrame,
@@ -201,7 +226,7 @@ import java.util.List;
         Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
 
         // Process All the POLE
-        // Look for yellow in the region_H.. dump into yellow matrix (image in yellow will be white if it found yellow.. black if not)
+        // Look for yellow in the region_H.. dump into poleMat matrix (image in yellow will be white if it found yellow.. black if not)
         Core.inRange(poleRegion, new Scalar(H1y, S1y, V1y), new Scalar(H2y, S2y, V2y), poleMat);
 
         // Find all the poleContours of pole stuff
@@ -239,7 +264,8 @@ import java.util.List;
             poleCentroidY = (int) (moment.get_m01() / moment.get_m00() +poleRegionY1) ;
         }
 
-        // Create bounding box around biggest Area, this will be used to calculate the width of the pol
+        // Since the contour definition may not be a nice defined rectangle, we create a
+        //   bounding box around biggest Area, this will be used to calculate the width of the pol
         // hence it's distance
         poleSizingBox = Imgproc.boundingRect(poleContours.get(poleMaxContourId));
         poleVals[0] = (double)(poleSizingBox.x+poleRegionX1);
@@ -292,31 +318,12 @@ import java.util.List;
                 coneMaxContourArea = Imgproc.contourArea(coneContours.get(i));
             }
         }
- /*       Imgproc.putText (
-                input,                          // Matrix obj of the image
-                "issue: "+ String.valueOf(coneMaxContourId),          // Text to be added
-                new Point (100,200),               // point
-                3,      // front face
-                2,                               // front scale
-                RED,             // Scalar object for color
-                2                                // Thickness
-        );
-*/
+
 
         // if we did find a contour with big area.. calculate the center of mass.
         //https://docs.opencv.org/4.x/dd/d49/tutorial_py_contour_features.html
         if(coneMaxContourId!= -1) {
-            /*Moments momentCone = new Moments();
-            momentCone = Imgproc.moments(coneContours.get(coneMaxContourId), true);
 
-
-            if (momentCone.m00 != 0) {
-                // We add the 'poleRegionX1' value because the center of mass location origin is the corner of the region
-                // We need to know the centroid from the original image size.
-                coneCentroidX = (int) (momentCone.get_m10() / momentCone.get_m00() + coneRegionX1);
-                coneCentroidY = (int) (momentCone.get_m01() / momentCone.get_m00() + coneRegionY1);
-            }
-*/
             coneSizingBox = Imgproc.boundingRect(coneContours.get(coneMaxContourId));
             coneVals[0] = (double) (coneSizingBox.x + coneRegionX1);
             coneVals[1] = (double) (coneSizingBox.y + coneRegionY1);
@@ -340,6 +347,7 @@ import java.util.List;
         return input; // return the mat with rectangles drawn
     }
 
+
     // Distance in Pixels from Top left corner of image to Pole Center
     public int getPolePositionPixels() {
         return (int) (poleCentroidX);
@@ -352,23 +360,24 @@ import java.util.List;
 
     }
 
-
+    // Based on the Angle of the Camera image (60 Deg or so)
+    // we could figure out the distance to the camera/Claw Center..
+    // Right now we measured the distance VS Pole Width in Pixels..
     public double getPoleDistanceInches() {
         // Distance approximation from Claw center to POle
         // Excel says Polynomial Equation: Distance (inches)= y = 7E-05x2 - 0.0616x + 15.581
-        if (!poleSizingBox.empty()) {
-            if (poleSizingBox.width != 0) {
-                return (.00007 * poleSizingBox.width * poleSizingBox.width - .0616 * poleSizingBox.width + 15.581);
-            } else {
-                return -1;
-            }
+            if (!poleSizingBox.empty()) {
+                if (poleSizingBox.width != 0) {
+                    return (.00007 * poleSizingBox.width * poleSizingBox.width - .0616 * poleSizingBox.width + 15.581);
+                } else {
+                    return -1;
+                }
             }
             return -1;
         }
 
     public int getPoleWidthPixels() {
-        // Distance approximation
-        // Excel says Polynomial Equation: Distance (inches)= y = 7E-05x2 - 0.0616x + 15.581
+        // Width of Pole in Pixels
         if (!poleSizingBox.empty()) {
             if (poleSizingBox.width != 0) {
                 return poleSizingBox.width;
@@ -379,14 +388,13 @@ import java.util.List;
         return -1;
     }
 
-    // Distance approximation
-    // Base on the known width of the Pole of 0.75"
+    // Position Left/Right of the Pole to Claw center
+    // Based on the known width of the Pole of 1.00"
     public double getPolePositionFromClawInches() {
 
         if (!poleSizingBox.empty()) {
             if (poleSizingBox.width != 0) {
                 return ((double) getPolePositionPixelsFromCenter() * (1.0 / getPoleWidthPixels()) );
-                //return (.00007 * poleSizingBox.width * poleSizingBox.width - .0616 * poleSizingBox.width + 15.581);
             } else {
                 return -1;
             }
@@ -394,7 +402,7 @@ import java.util.List;
         return -1;
     }
 
-
+    // This function doesn't return the right value.. still need work.
     public double getPoleDistancePixel() {
         if (!poleSizingBox.empty()) {
             if (poleSizingBox.width != 0) {
@@ -413,10 +421,9 @@ import java.util.List;
 
     }
 
+    // THis is not correct.. just a test.
     public double getConePositionInches() {
-
         return  (coneCentroidX/25);
-
     }
 
     public double getConeDistanceInches() {
@@ -445,7 +452,7 @@ import java.util.List;
     }
 
     // Distance approximation
-    // Base on the known width of the Pole of 0.75"
+    // Base on the known width of the COne of 4.0"
     public double getConePositionFromClawInches() {
 
         if (!coneSizingBox.empty()) {
